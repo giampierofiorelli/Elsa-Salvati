@@ -53,6 +53,11 @@ Sito professionale con **agenda proprietaria** e **prenotazione online del primo
    | `EMAIL_API_KEY`, `EMAIL_FROM`, `EMAIL_FROM_NAME` | dal provider email |
    | `ICS_INCLUDE_INITIALS` | facoltativo: `true` per mostrare le iniziali nel calendario del telefono |
 
+   Note pratiche:
+   - sul piano gratuito di Netlify le variabili vanno create con ambito **“All scopes”** (l'ambito “solo funzioni” è a pagamento e non viene salvato);
+   - l'indirizzo del pooler di Supabase va copiato esattamente dal pannello (*Connect*): per alcuni progetti è `aws-0-…`, per altri `aws-1-…`. Con quello sbagliato l'errore è “tenant/user not found”;
+   - per una diagnosi temporanea si può impostare `DEBUG_ERRORS=true`: l'API mostra la causa tecnica degli errori. Va rimossa subito dopo.
+
 5. Apri `https://<sito>/admin/`, accedi, imposta **Orari** (fasce prenotabili online) e **Impostazioni** (durate, anticipo minimo, cancellazione).
 6. Su Google Business Profile collega il link `https://<sito>/prenota/`.
 
