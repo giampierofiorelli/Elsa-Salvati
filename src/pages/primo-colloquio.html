@@ -1,0 +1,51 @@
+---
+title: Il primo colloquio psicologico: come funziona – {{professionalName}}
+description: Cosa succede al primo colloquio con la psicologa, quanto dura, quanto costa, cosa portare e come prenotare online a {{city}} o in videochiamata.
+path: /primo-colloquio/
+nav: primo
+---
+<section class="page-hero">
+  <div class="wrap">
+    <p class="eyebrow">Il primo colloquio</p>
+    <h1>Cosa succede al primo incontro.</h1>
+    <p class="lead">È normale sentirsi un po' in imbarazzo o non sapere da dove cominciare. Il primo colloquio serve proprio a questo: conoscerci e capire insieme.</p>
+    {{@cta}}
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap two-col">
+    <div class="prose">
+      <h2>A cosa serve</h2>
+      <p>Durante il primo colloquio raccogliamo la tua richiesta e capiamo insieme se sono la professionista adatta. Non devi preparare niente: puoi raccontare quello che ti senti, nell'ordine che preferisci.</p>
+
+      <h2>Come si svolge</h2>
+      <ol>
+        <li><strong>Accoglienza.</strong> Ti spiego come lavoro, la riservatezza e i suoi limiti, i costi e le modalità.</li>
+        <li><strong>Ascolto.</strong> Mi racconti che cosa ti porta qui e che cosa vorresti cambiare.</li>
+        <li><strong>Restituzione.</strong> Ti dico che cosa ho compreso e ti propongo un possibile percorso, oppure un altro professionista se più indicato.</li>
+      </ol>
+      <p>Alla fine sei libera o libero di decidere se proseguire.</p>
+
+      <h2>Durata e costo</h2>
+      <p>Il primo colloquio dura circa {{fees.sessionMinutes}} minuti e costa {{fees.firstSession}}. Ricevi fattura, detraibile come spesa sanitaria.</p>
+
+      <h2>Consenso informato</h2>
+      <p>Prima di iniziare ti chiederò di firmare il consenso informato, che descrive la prestazione, le sue finalità e i limiti della riservatezza. È un documento distinto dall'informativa sulla privacy del sito.</p>
+
+      <h2>Annullare o spostare</h2>
+      <p>{{fees.cancellation}} Puoi farlo in autonomia dal link che ricevi nell'email di conferma.</p>
+    </div>
+    <aside class="panel panel-mint aside-sticky">
+      <h2 class="h3">Prenota il primo colloquio</h2>
+      <dl class="summary">
+        <dt>Durata</dt><dd>{{fees.sessionMinutes}} minuti</dd>
+        <dt>Tariffa</dt><dd>{{fees.firstSession}}</dd>
+        <dt>Dove</dt><dd>Studio a {{city}} o online</dd>
+      </dl>
+      <a class="btn btn-primary" href="/prenota/">Scegli un orario {{@arrow}}</a>
+    </aside>
+  </div>
+</section>
+
+{{@closing}}

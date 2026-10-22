@@ -1,0 +1,62 @@
+{
+  "_nota": "Tutti i dati della professionista sono qui. I valori tra [parentesi quadre] sono segnaposto da sostituire prima della pubblicazione: il build segnala quelli rimasti.",
+  "siteUrl": "https://[dominio].it",
+  "professionalName": "Dott.ssa Elsa Salvati",
+  "firstName": "Elsa",
+  "title": "Psicologa",
+  "titleLong": "Psicologa [e Psicoterapeuta, solo se in possesso del titolo]",
+  "city": "[Città]",
+  "alboRegion": "[Regione]",
+  "alboNumber": "[n. Albo]",
+  "vat": "[P.IVA]",
+  "orientation": "[orientamento teorico reale]",
+  "audience": "adulti e giovani adulti",
+  "areas": [
+    {
+      "slug": "ansia-e-stress",
+      "title": "Ansia e stress",
+      "short": "Quando preoccupazione e tensione iniziano a limitare la vita di tutti i giorni."
+    },
+    {
+      "slug": "difficolta-relazionali",
+      "title": "Difficoltà relazionali",
+      "short": "Rapporti di coppia, in famiglia, con amici o al lavoro che pesano più del dovuto."
+    },
+    {
+      "slug": "momenti-di-cambiamento",
+      "title": "Momenti di cambiamento",
+      "short": "Scelte, perdite, trasferimenti e passaggi di vita che chiedono uno spazio per pensare."
+    },
+    {
+      "slug": "autostima",
+      "title": "Autostima e benessere",
+      "short": "Ritrovare fiducia in sé e un rapporto più sereno con le proprie emozioni."
+    }
+  ],
+  "studio": {
+    "address": "[Via e numero civico], [CAP] [Città]",
+    "neighbourhood": "[quartiere]",
+    "transport": "[mezzi pubblici e fermate più vicine]",
+    "parking": "[parcheggio]",
+    "access": "[piano, ascensore, accessibilità]",
+    "mapsUrl": "https://www.google.com/maps/search/?api=1&query=[indirizzo]"
+  },
+  "fees": {
+    "firstSession": "€[tariffa]",
+    "session": "€[tariffa]",
+    "sessionMinutes": 50,
+    "cancellation": "[Politica di cancellazione, es.: gli appuntamenti si possono annullare o spostare senza costi fino a 24 ore prima.]"
+  },
+  "contact": {
+    "email": "[email]@[dominio].it",
+    "phone": "+39 [telefono]",
+    "phoneHref": "+39",
+    "whatsapp": "39",
+    "hours": "[es. risposta entro un giorno lavorativo, dal lunedì al venerdì]"
+  },
+  "education": [
+    "[Laurea magistrale in Psicologia – Università, anno]",
+    "[Abilitazione e iscrizione all'Albo – anno]",
+    "[Formazione o specializzazione rilevante]"
+  ]
+}

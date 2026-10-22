@@ -1,0 +1,19 @@
+{
+  "name": "elsa-salvati-sito",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sito della Dott.ssa Elsa Salvati con agenda e prenotazione del primo colloquio",
+  "type": "module",
+  "engines": {
+    "node": ">=20.10"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "setup:secrets": "node scripts/setup-secrets.mjs",
+    "db:setup": "node scripts/db-setup.mjs"
+  },
+  "dependencies": {
+    "postgres": "3.4.9"
+  }
+}

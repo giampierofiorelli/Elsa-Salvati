@@ -1,0 +1,141 @@
+---
+title: {{professionalName}} – Psicologa a {{city}} e online
+description: Colloqui psicologici in studio a {{city}} e online per {{audience}}. Prenota un primo colloquio scegliendo un orario libero, senza dover raccontare nulla in anticipo.
+path: /
+nav: home
+---
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">{{title}} · {{city}} e online</p>
+      <h1>Uno spazio per ritrovare il tuo <em>equilibrio</em>.</h1>
+      <p class="lead">Un percorso di ascolto e sostegno psicologico per {{audience}}, costruito intorno alle tue esigenze. Colloqui in studio a {{city}} e online.</p>
+      {{@cta}}
+      {{@trustline}}
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
+        <rect width="400" height="500" fill="#CDEFE2"/>
+        <circle cx="300" cy="120" r="150" fill="#8FBFB3" opacity=".55"/>
+        <circle cx="90" cy="380" r="170" fill="#E6F6EF"/>
+        <path d="M-20 330 C 90 250, 200 420, 420 300 L 420 520 L -20 520 Z" fill="#205A54" opacity=".9"/>
+        <path d="M-20 390 C 120 330, 230 470, 420 380 L 420 520 L -20 520 Z" fill="#183B38"/>
+        <circle cx="140" cy="170" r="46" fill="#FAF8F3"/>
+      </svg>
+      <p class="photo-note">Qui andrà una fotografia professionale autentica della dott.ssa (da inserire).</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-mint" aria-labelledby="aiuto-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Come posso aiutarti</p>
+        <h2 id="aiuto-title">Percorsi individuali per i momenti in cui da soli non basta.</h2>
+      </div>
+      <a class="btn btn-ghost" href="/aree/">Tutte le aree {{@arrowRight}}</a>
+    </div>
+    {{@areaCards}}
+  </div>
+</section>
+
+<section class="section" aria-labelledby="come-title">
+  <div class="wrap">
+    <p class="eyebrow">Come funziona</p>
+    <h2 id="come-title">Tre passi, senza fretta.</h2>
+    <ol class="steps" role="list">
+      <li class="step">
+        <h3>Scegli un orario</h3>
+        <p>Vedi subito gli orari liberi per il primo colloquio, in studio oppure online, e prenoti in meno di un minuto. Servono solo nome ed email.</p>
+      </li>
+      <li class="step">
+        <h3>Il primo colloquio</h3>
+        <p>Ci conosciamo, mi racconti cosa ti porta qui con i tuoi tempi e chiariamo insieme la tua richiesta.</p>
+      </li>
+      <li class="step">
+        <h3>Una scelta condivisa</h3>
+        <p>Valutiamo se e come proseguire: obiettivi, frequenza e durata indicativa. Se un altro professionista è più indicato, te lo dirò con chiarezza.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="section section-white" aria-labelledby="metodo-title">
+  <div class="wrap split">
+    <div class="media-block" aria-hidden="true">
+      <svg viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice">
+        <rect width="500" height="400" fill="#E6F6EF"/>
+        <rect x="60" y="70" width="170" height="260" rx="85" fill="#8FBFB3" opacity=".7"/>
+        <rect x="270" y="130" width="170" height="200" rx="24" fill="#CDEFE2"/>
+        <circle cx="355" cy="110" r="38" fill="#205A54"/>
+      </svg>
+    </div>
+    <div>
+      <p class="eyebrow">Come lavoro</p>
+      <h2 id="metodo-title">Ascolto, chiarezza e obiettivi concreti.</h2>
+      <p>Il mio orientamento è {{orientation}}. In pratica significa lavorare insieme su ciò che ti fa stare male oggi, comprendere da dove nasce e costruire strumenti utili nella vita di tutti i giorni.</p>
+      <p>Ti spiego sempre cosa stiamo facendo e perché, e facciamo il punto periodicamente su come sta andando.</p>
+      <a class="btn btn-ghost" href="/come-lavoro/">Approfondisci il metodo {{@arrowRight}}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="chi-title">
+  <div class="wrap split reverse">
+    <div class="media-block" aria-hidden="true">
+      <svg viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice">
+        <rect width="500" height="400" fill="#CDEFE2"/>
+        <circle cx="250" cy="170" r="80" fill="#FAF8F3"/>
+        <path d="M110 400 C 130 290, 370 290, 390 400 Z" fill="#205A54"/>
+      </svg>
+    </div>
+    <div>
+      <p class="eyebrow">Chi sono</p>
+      <h2 id="chi-title">Sono {{professionalName}}.</h2>
+      <p>{{titleLong}}, iscritta all'Ordine degli Psicologi della {{alboRegion}} con il n. {{alboNumber}}. Ricevo in studio a {{city}} e online.</p>
+      <p>Lavoro con {{audience}} che attraversano un momento di difficoltà o di cambiamento, o che sentono semplicemente il bisogno di fermarsi a capire.</p>
+      <a class="btn btn-ghost" href="/chi-sono/">Il mio percorso professionale {{@arrowRight}}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-soft" aria-labelledby="pratica-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Informazioni pratiche</p>
+        <h2 id="pratica-title">Tutto quello che serve sapere prima di iniziare.</h2>
+      </div>
+      <a class="btn btn-ghost" href="/costi-e-faq/">Costi e domande frequenti {{@arrowRight}}</a>
+    </div>
+    {{@practical}}
+  </div>
+</section>
+
+<section class="section" aria-labelledby="faq-title">
+  <div class="wrap narrow">
+    <p class="eyebrow">Domande frequenti</p>
+    <h2 id="faq-title">Le domande che mi fanno più spesso.</h2>
+    <div class="faq">
+      <details>
+        <summary>Quanto costa un colloquio?</summary>
+        <div class="answer"><p>Il primo colloquio costa {{fees.firstSession}}, le sedute successive {{fees.session}}. Ogni incontro dura circa {{fees.sessionMinutes}} minuti. Per ogni seduta ricevi fattura, che puoi portare in detrazione come spesa sanitaria.</p></div>
+      </details>
+      <details>
+        <summary>Devo spiegare il mio problema per prenotare?</summary>
+        <div class="answer"><p>No. Per prenotare bastano nome ed email. Di quello che ti porta qui parleremo insieme durante il colloquio, con i tuoi tempi.</p></div>
+      </details>
+      <details>
+        <summary>I colloqui online funzionano?</summary>
+        <div class="answer"><p>Per molte persone sì, e permettono di non rinunciare per distanza o orari. Nel primo incontro valutiamo insieme se la modalità online è adatta alla tua situazione. <a href="/online/">Come funzionano i colloqui online</a>.</p></div>
+      </details>
+      <details>
+        <summary>Posso annullare o spostare un appuntamento?</summary>
+        <div class="answer"><p>Sì. Dopo la prenotazione ricevi un'email con un link personale per annullare o spostare l'appuntamento. {{fees.cancellation}}</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+{{@closing}}

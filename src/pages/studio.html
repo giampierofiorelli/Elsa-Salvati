@@ -1,0 +1,40 @@
+---
+title: Lo studio a {{city}} – come arrivare | {{professionalName}}
+description: Indirizzo dello studio di psicologia a {{city}} ({{studio.neighbourhood}}), mezzi pubblici, parcheggio e accessibilità.
+path: /studio/
+nav: studio
+---
+<section class="page-hero">
+  <div class="wrap">
+    <p class="eyebrow">Lo studio</p>
+    <h1>Lo studio a {{city}}.</h1>
+    <p class="lead">Un ambiente tranquillo e riservato, in {{studio.neighbourhood}}.</p>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap two-col">
+    <div class="panel">
+      <dl class="practical">
+        <div><dt>Indirizzo</dt><dd>{{studio.address}}</dd></div>
+        <div><dt>Mezzi pubblici</dt><dd>{{studio.transport}}</dd></div>
+        <div><dt>Parcheggio</dt><dd>{{studio.parking}}</dd></div>
+        <div><dt>Accesso</dt><dd>{{studio.access}}</dd></div>
+      </dl>
+      <div class="cta-row">
+        <a class="btn btn-ghost" href="{{studio.mapsUrl}}" rel="noopener" target="_blank">Apri in Google Maps {{@arrow}}</a>
+      </div>
+      <p class="hint">La mappa si apre su Google Maps: non carichiamo mappe nel sito per non trasmettere i tuoi dati a terze parti.</p>
+    </div>
+    <div class="media-block" aria-hidden="true">
+      <svg viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice">
+        <rect width="500" height="400" fill="#E6F6EF"/>
+        <path d="M0 260 H500 M0 140 H500 M180 0 V400 M360 0 V400" stroke="#CDEFE2" stroke-width="22"/>
+        <circle cx="270" cy="200" r="34" fill="#205A54"/>
+        <circle cx="270" cy="200" r="12" fill="#FAF8F3"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+{{@closing}}

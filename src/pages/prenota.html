@@ -1,0 +1,133 @@
+---
+title: Prenota un primo colloquio – {{professionalName}}
+description: Scegli un orario libero per il primo colloquio, in studio a {{city}} o online. Conferma immediata, bastano nome ed email.
+path: /prenota/
+nav: prenota
+scripts: booking
+---
+<section class="page-hero">
+  <div class="wrap">
+    <p class="eyebrow">Prenotazione</p>
+    <h1>Prenota un primo colloquio.</h1>
+    <p class="lead">Scegli la modalità e un orario libero. La conferma è immediata e ricevi un'email con il riepilogo. Non serve raccontare nulla della tua situazione.</p>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap two-col">
+    <div class="booking" id="booking" data-mode="book" aria-live="polite">
+      <div class="booking-step" data-step="pick">
+        <h2>1. Modalità e orario</h2>
+        <div class="seg" role="group" aria-label="Modalità del colloquio">
+          <button type="button" data-mode-btn="studio" aria-pressed="true">In studio</button>
+          <button type="button" data-mode-btn="online" aria-pressed="false">Online</button>
+        </div>
+        <p class="label" id="days-label">Giorno</p>
+        <div class="days" role="group" aria-labelledby="days-label" data-days>
+          <div class="skeleton" aria-hidden="true"></div>
+        </div>
+        <p class="label" id="times-label">Orario</p>
+        <div class="times" role="group" aria-labelledby="times-label" data-times></div>
+        <div data-empty hidden>
+          <p class="note">Al momento non ci sono orari liberi per questa modalità nelle prossime settimane. Puoi provare l'altra modalità oppure <a href="#ricontatto">chiedermi di ricontattarti</a>.</p>
+        </div>
+        <dl class="summary" data-summary hidden></dl>
+        <button class="btn btn-primary" type="button" data-next disabled>Continua con i tuoi recapiti</button>
+      </div>
+
+      <form class="booking-step" data-step="details" hidden novalidate>
+        <h2>2. I tuoi recapiti</h2>
+        <dl class="summary" data-summary-2></dl>
+        <div class="field">
+          <label for="b-name">Nome e cognome</label>
+          <input id="b-name" name="name" type="text" autocomplete="name" required maxlength="80">
+        </div>
+        <div class="field">
+          <label for="b-email">Email</label>
+          <input id="b-email" name="email" type="email" autocomplete="email" required maxlength="254">
+          <span class="hint">Ti invio qui la conferma e il link per annullare o spostare.</span>
+        </div>
+        <div class="field">
+          <label for="b-phone">Telefono <span class="hint">(facoltativo)</span></label>
+          <input id="b-phone" name="phone" type="tel" autocomplete="tel" maxlength="20">
+          <span class="hint">Utile per avvisarti in caso di imprevisti.</span>
+        </div>
+        <div class="hp" aria-hidden="true"><label for="b-website">Lascia vuoto</label><input id="b-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+        <label class="check"><input type="checkbox" name="privacy" required> <span>Ho letto l'<a href="/privacy/" target="_blank" rel="noopener">informativa sulla privacy</a>.</span></label>
+        <p class="note">Per prenotare non serve descrivere il motivo della richiesta: ne parleremo durante il colloquio.</p>
+        <p class="status form-error" role="alert" data-error></p>
+        <div class="cta-row">
+          <button class="btn btn-primary" type="submit" data-confirm>Conferma la prenotazione</button>
+          <button class="btn btn-ghost" type="button" data-back>Indietro</button>
+        </div>
+      </form>
+
+      <div class="booking-step" data-step="done" hidden tabindex="-1">
+        <div class="success-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h2>Appuntamento confermato.</h2>
+        <dl class="summary" data-summary-3></dl>
+        <p>Ti ho inviato un'email con il riepilogo e il link personale per annullare o spostare l'appuntamento. Se non la trovi, controlla nella cartella spam.</p>
+        <div class="cta-row">
+          <a class="btn btn-ghost" data-ics download="appuntamento.ics" href="#">Aggiungi al calendario</a>
+          <a class="btn btn-ghost" data-manage href="#">Gestisci l'appuntamento</a>
+        </div>
+      </div>
+      <p class="hint">Questo sistema di prenotazione non è un servizio di emergenza: in caso di pericolo immediato chiama il 112 o il 118.</p>
+    </div>
+
+    <aside class="panel panel-mint aside-sticky">
+      <h2 class="h3">Il primo colloquio</h2>
+      <dl class="summary">
+        <dt>Durata</dt><dd>{{fees.sessionMinutes}} minuti</dd>
+        <dt>Tariffa</dt><dd>{{fees.firstSession}}</dd>
+        <dt>Studio</dt><dd>{{studio.address}}</dd>
+      </dl>
+      <p>{{fees.cancellation}}</p>
+      <p><a href="/primo-colloquio/">Cosa succede al primo colloquio</a></p>
+    </aside>
+  </div>
+</section>
+
+<section class="section" id="ricontatto" aria-labelledby="ricontatto-title">
+  <div class="wrap narrow">
+    <p class="eyebrow">Nessun orario adatto?</p>
+    <h2 id="ricontatto-title">Chiedimi di ricontattarti.</h2>
+    <p>Se non trovi un orario compatibile o preferisci parlarne prima, lasciami un recapito: ti risponderò personalmente {{contact.hours}}.</p>
+    <form class="panel" data-request-form novalidate>
+      <div class="field">
+        <label for="r-name">Nome</label>
+        <input id="r-name" name="name" type="text" autocomplete="name" required maxlength="80">
+      </div>
+      <div class="field">
+        <label for="r-email">Email</label>
+        <input id="r-email" name="email" type="email" autocomplete="email" maxlength="254">
+      </div>
+      <div class="field">
+        <label for="r-phone">Telefono</label>
+        <input id="r-phone" name="phone" type="tel" autocomplete="tel" maxlength="20">
+        <span class="hint">Indica almeno un recapito tra email e telefono.</span>
+      </div>
+      <div class="field">
+        <label for="r-mode">Preferenza</label>
+        <select id="r-mode" name="mode">
+          <option value="da_definire">Da definire</option>
+          <option value="studio">In studio</option>
+          <option value="online">Online</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="r-pref">Giorni e orari preferiti <span class="hint">(facoltativo)</span></label>
+        <input id="r-pref" name="preference" type="text" maxlength="200" placeholder="es. martedì pomeriggio">
+      </div>
+      <div class="field">
+        <label for="r-msg">Messaggio <span class="hint">(facoltativo)</span></label>
+        <textarea id="r-msg" name="message" maxlength="600"></textarea>
+        <span class="hint">Per favore non inserire informazioni cliniche o personali delicate: basta indicare come ricontattarti.</span>
+      </div>
+      <div class="hp" aria-hidden="true"><label for="r-website">Lascia vuoto</label><input id="r-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <label class="check"><input type="checkbox" name="privacy" required> <span>Ho letto l'<a href="/privacy/" target="_blank" rel="noopener">informativa sulla privacy</a>.</span></label>
+      <p class="status" role="status" data-request-status></p>
+      <button class="btn btn-primary" type="submit">Invia la richiesta</button>
+    </form>
+  </div>
+</section>

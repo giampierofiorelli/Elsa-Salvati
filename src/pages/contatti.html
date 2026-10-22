@@ -1,0 +1,72 @@
+---
+title: Contatti – {{professionalName}}, psicologa a {{city}}
+description: Prenota online, chiama o scrivi per informazioni pratiche. Studio a {{city}} e colloqui online.
+path: /contatti/
+nav: contatti
+scripts: booking
+---
+<section class="page-hero">
+  <div class="wrap">
+    <p class="eyebrow">Contatti</p>
+    <h1>Come preferisci contattarmi?</h1>
+    <p class="lead">Se hai già deciso puoi prenotare subito. Se hai dubbi, scrivimi o chiamami: ti rispondo personalmente {{contact.hours}}.</p>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap contact-grid">
+    <div class="contact-card">
+      <h3>Prenota online</h3>
+      <p>Vedi gli orari liberi per il primo colloquio e prenoti in meno di un minuto.</p>
+      <a class="btn btn-primary" href="/prenota/">Verifica disponibilità</a>
+    </div>
+    <div class="contact-card">
+      <h3>Telefono ed email</h3>
+      <p><a href="tel:{{contact.phoneHref}}">{{contact.phone}}</a><br><a href="mailto:{{contact.email}}">{{contact.email}}</a></p>
+      <a class="btn btn-ghost" href="tel:{{contact.phoneHref}}">Chiama</a>
+    </div>
+    <div class="contact-card">
+      <h3>WhatsApp</h3>
+      <p>Per domande pratiche su orari, costi e modalità. Per favore non inviare informazioni cliniche o delicate.</p>
+      <a class="btn btn-ghost" href="{{@whatsapp}}" rel="noopener" target="_blank">Scrivi su WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="ricontatto" aria-labelledby="ricontatto-title">
+  <div class="wrap narrow">
+    <h2 id="ricontatto-title">Chiedimi di ricontattarti.</h2>
+    <form class="panel" data-request-form novalidate>
+      <div class="field">
+        <label for="r-name">Nome</label>
+        <input id="r-name" name="name" type="text" autocomplete="name" required maxlength="80">
+      </div>
+      <div class="field">
+        <label for="r-email">Email</label>
+        <input id="r-email" name="email" type="email" autocomplete="email" maxlength="254">
+      </div>
+      <div class="field">
+        <label for="r-phone">Telefono</label>
+        <input id="r-phone" name="phone" type="tel" autocomplete="tel" maxlength="20">
+        <span class="hint">Indica almeno un recapito tra email e telefono.</span>
+      </div>
+      <div class="field">
+        <label for="r-mode">Preferenza</label>
+        <select id="r-mode" name="mode">
+          <option value="da_definire">Da definire</option>
+          <option value="studio">In studio</option>
+          <option value="online">Online</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="r-msg">Messaggio <span class="hint">(facoltativo)</span></label>
+        <textarea id="r-msg" name="message" maxlength="600"></textarea>
+        <span class="hint">Non è necessario raccontare la tua situazione: basta indicare come preferisci essere ricontattato o ricontattata.</span>
+      </div>
+      <div class="hp" aria-hidden="true"><label for="r-website">Lascia vuoto</label><input id="r-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <label class="check"><input type="checkbox" name="privacy" required> <span>Ho letto l'<a href="/privacy/" target="_blank" rel="noopener">informativa sulla privacy</a>.</span></label>
+      <p class="status" role="status" data-request-status></p>
+      <button class="btn btn-primary" type="submit">Invia la richiesta</button>
+    </form>
+  </div>
+</section>

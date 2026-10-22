@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Agenda professionale</title>
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/admin/admin.css">
+<script src="/admin/admin.js" defer></script>
+</head>
+<body class="admin">
+
+<!-- Login -->
+<main id="login" class="login" hidden>
+  <form class="panel login-card" data-login novalidate>
+    <span class="brand-mark" aria-hidden="true">E</span>
+    <h1>Agenda professionale</h1>
+    <p class="hint">Accesso riservato.</p>
+    <div class="field">
+      <label for="l-password">Password</label>
+      <input id="l-password" name="password" type="password" autocomplete="current-password" required>
+    </div>
+    <div class="field">
+      <label for="l-code">Codice dell'app di autenticazione</label>
+      <input id="l-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+    </div>
+    <p class="status form-error" role="alert" data-login-error></p>
+    <button class="btn btn-primary" type="submit">Entra</button>
+  </form>
+</main>
+
+<!-- App -->
+<div id="app" hidden>
+  <header class="admin-header">
+    <div class="admin-title">
+      <h1>Agenda professionale</h1>
+      <p class="hint" data-session-info></p>
+    </div>
+    <nav class="admin-tabs" aria-label="Sezioni">
+      <button type="button" data-tab="agenda" aria-pressed="true">Agenda</button>
+      <button type="button" data-tab="richieste" aria-pressed="false">Richieste <span class="badge" data-req-count hidden></span></button>
+      <button type="button" data-tab="orari" aria-pressed="false">Orari</button>
+      <button type="button" data-tab="impostazioni" aria-pressed="false">Impostazioni</button>
+      <button type="button" data-logout>Esci</button>
+    </nav>
+  </header>
+
+  <section data-panel="agenda" class="admin-panel">
+    <div class="toolbar">
+      <div class="toolbar-nav">
+        <button type="button" class="round" data-prev aria-label="Periodo precedente">‹</button>
+        <button type="button" class="round" data-next aria-label="Periodo successivo">›</button>
+        <button type="button" class="link-btn" data-today>Oggi</button>
+        <strong data-range></strong>
+      </div>
+      <div class="seg" role="group" aria-label="Vista">
+        <button type="button" data-view="week" aria-pressed="true">Settimana</button>
+        <button type="button" data-view="list" aria-pressed="false">Elenco</button>
+      </div>
+      <button type="button" class="btn btn-primary btn-small" data-new>+ Nuovo</button>
+    </div>
+    <div class="week-wrap" data-week></div>
+    <div class="list-view" data-list hidden></div>
+    <ul class="legend" role="list">
+      <li><span class="sw sw-sito"></span>Dal sito</li>
+      <li><span class="sw sw-manuale"></span>Manuale</li>
+      <li><span class="sw sw-blocco"></span>Blocco</li>
+      <li><span class="sw sw-open"></span>Prenotabile online</li>
+    </ul>
+  </section>
+
+  <section data-panel="richieste" class="admin-panel" hidden>
+    <h2>Richieste di ricontatto</h2>
+    <p class="hint">Persone che hanno chiesto di essere ricontattate. Vengono cancellate automaticamente dopo il periodo impostato.</p>
+    <div data-requests></div>
+  </section>
+
+  <section data-panel="orari" class="admin-panel" hidden>
+    <h2>Orari di lavoro</h2>
+    <p class="hint">Nelle fasce “prenotabili online” i nuovi pazienti vedono gli orari liberi per il primo colloquio. Le altre fasce restano riservate a te (per esempio per le sedute successive).</p>
+    <form data-rules-form>
+      <div class="rules" data-rules></div>
+      <div class="cta-row">
+        <button type="button" class="btn btn-ghost btn-small" data-add-rule>+ Aggiungi fascia</button>
+        <button type="submit" class="btn btn-primary btn-small">Salva orari</button>
+      </div>
+      <p class="status" role="status" data-rules-status></p>
+    </form>
+  </section>
+
+  <section data-panel="impostazioni" class="admin-panel" hidden>
+    <h2>Impostazioni della prenotazione</h2>
+    <form data-settings-form class="settings-grid">
+      <div class="field"><label for="s-first">Durata primo colloquio (minuti)</label><input id="s-first" name="firstSessionMinutes" type="number" min="15" max="240"></div>
+      <div class="field"><label for="s-session">Durata seduta predefinita (minuti)</label><input id="s-session" name="sessionMinutes" type="number" min="15" max="240"></div>
+      <div class="field"><label for="s-step">Un orario prenotabile ogni (minuti)</label><input id="s-step" name="slotStepMinutes" type="number" min="15" max="240"></div>
+      <div class="field"><label for="s-buffer">Pausa minima tra appuntamenti (minuti)</label><input id="s-buffer" name="bufferMinutes" type="number" min="0" max="120"></div>
+      <div class="field"><label for="s-notice">Anticipo minimo per prenotare (ore)</label><input id="s-notice" name="minNoticeHours" type="number" min="0" max="336"></div>
+      <div class="field"><label for="s-horizon">Prenotabile fino a (giorni avanti)</label><input id="s-horizon" name="horizonDays" type="number" min="1" max="180"></div>
+      <div class="field"><label for="s-cancel">Annullabile online fino a (ore prima)</label><input id="s-cancel" name="cancelHours" type="number" min="0" max="168"></div>
+      <div class="field"><label for="s-reminder">Promemoria email (ore prima)</label><input id="s-reminder" name="reminderHours" type="number" min="1" max="72"></div>
+      <div class="field"><label for="s-retention">Cancella i recapiti dopo (mesi)</label><input id="s-retention" name="retentionMonths" type="number" min="1" max="120"></div>
+      <div class="field"><label for="s-req">Cancella le richieste dopo (mesi)</label><input id="s-req" name="requestRetentionMonths" type="number" min="1" max="24"></div>
+      <div class="cta-row"><button type="submit" class="btn btn-primary btn-small">Salva impostazioni</button></div>
+      <p class="status" role="status" data-settings-status></p>
+    </form>
+
+    <h2>Calendario sul telefono</h2>
+    <p class="hint">Aggiungi questo indirizzo come “calendario in abbonamento” su iPhone, Google Calendar o Outlook: vedrai gli appuntamenti anche se il sito non fosse raggiungibile. I titoli sono neutri, senza nomi. Tieni l'indirizzo riservato.</p>
+    <p><code data-feed>Non configurato (variabile ICAL_TOKEN).</code></p>
+
+    <h2>Copia di sicurezza</h2>
+    <p class="hint">Scarica tutta l'agenda in un file. Conservalo in un luogo protetto: contiene dati personali.</p>
+    <a class="btn btn-ghost btn-small" href="/api/admin/export" download>Scarica l'agenda</a>
+  </section>
+</div>
+
+<!-- Event dialog -->
+<dialog class="dlg" data-dialog>
+  <form method="dialog" class="dlg-inner" data-event-form novalidate>
+    <div class="dlg-head">
+      <h2 data-dlg-title>Nuovo</h2>
+      <button type="button" class="round" data-close aria-label="Chiudi">×</button>
+    </div>
+
+    <div class="seg" role="group" aria-label="Tipo" data-kind-group>
+      <button type="button" data-kind="seduta" aria-pressed="true">Seduta</button>
+      <button type="button" data-kind="primo_colloquio" aria-pressed="false">Primo colloquio</button>
+      <button type="button" data-kind="blocco" aria-pressed="false">Blocco</button>
+    </div>
+
+    <div data-appt-fields>
+      <div class="grid2">
+        <div class="field"><label for="e-date">Data</label><input id="e-date" name="date" type="date"></div>
+        <div class="field"><label for="e-time">Ora</label><input id="e-time" name="time" type="time" step="300"></div>
+        <div class="field"><label for="e-dur">Durata (min)</label><input id="e-dur" name="durationMinutes" type="number" min="5" max="600"></div>
+        <div class="field"><label for="e-mode">Modalità</label>
+          <select id="e-mode" name="mode"><option value="studio">In studio</option><option value="online">Online</option><option value="">—</option></select>
+        </div>
+      </div>
+      <div class="field"><label for="e-name">Nome o iniziali</label><input id="e-name" name="name" type="text" maxlength="80"></div>
+      <div class="grid2">
+        <div class="field"><label for="e-email">Email</label><input id="e-email" name="email" type="email" maxlength="254"></div>
+        <div class="field"><label for="e-phone">Telefono</label><input id="e-phone" name="phone" type="tel" maxlength="20"></div>
+      </div>
+      <div class="field"><label for="e-note">Nota organizzativa</label><input id="e-note" name="note" type="text" maxlength="300"><span class="hint">Solo informazioni pratiche: l'agenda non è una cartella clinica.</span></div>
+      <div data-repeat-box>
+        <label class="check"><input type="checkbox" name="repeat"> <span>Si ripete</span></label>
+        <div class="grid2" data-repeat-fields hidden>
+          <div class="field"><label for="e-every">Ogni (settimane)</label><input id="e-every" name="intervalWeeks" type="number" min="1" max="8" value="1"></div>
+          <div class="field"><label for="e-count">Numero di incontri</label><input id="e-count" name="count" type="number" min="2" max="104" value="10"></div>
+        </div>
+      </div>
+      <label class="check" data-send-box><input type="checkbox" name="sendEmail"> <span>Invia email di conferma al paziente</span></label>
+    </div>
+
+    <div data-block-fields hidden>
+      <div class="field"><label for="b-title">Motivo (visibile solo a te)</label><input id="b-title" name="title" type="text" maxlength="60" placeholder="es. Ferie, Formazione"></div>
+      <label class="check"><input type="checkbox" name="allDay" checked> <span>Giornate intere</span></label>
+      <div class="grid2">
+        <div class="field"><label for="b-start">Dal</label><input id="b-start" name="startDate" type="date"></div>
+        <div class="field" data-time-field hidden><label for="b-stime">Ora inizio</label><input id="b-stime" name="startTime" type="time" step="300"></div>
+        <div class="field"><label for="b-end">Al</label><input id="b-end" name="endDate" type="date"></div>
+        <div class="field" data-time-field hidden><label for="b-etime">Ora fine</label><input id="b-etime" name="endTime" type="time" step="300"></div>
+      </div>
+    </div>
+
+    <div data-cancel-box hidden class="cancel-box">
+      <p class="label">Annullare l'appuntamento?</p>
+      <label class="check" data-scope-box hidden><input type="checkbox" name="following"> <span>Annulla anche gli incontri successivi della serie</span></label>
+      <label class="check" data-notify-box><input type="checkbox" name="notify"> <span>Avvisa il paziente via email</span></label>
+      <div class="cta-row">
+        <button type="button" class="btn btn-danger btn-small" data-confirm-cancel>Conferma annullamento</button>
+        <button type="button" class="btn btn-ghost btn-small" data-abort-cancel>Indietro</button>
+      </div>
+    </div>
+
+    <p class="status form-error" role="alert" data-dlg-error></p>
+    <div class="cta-row dlg-actions">
+      <button type="submit" class="btn btn-primary btn-small" data-save>Salva</button>
+      <button type="button" class="btn btn-danger btn-small" data-cancel hidden>Annulla appuntamento</button>
+    </div>
+  </form>
+</dialog>
+</body>
+</html>

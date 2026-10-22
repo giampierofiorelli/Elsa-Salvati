@@ -1,0 +1,42 @@
+---
+title: Chi sono – {{professionalName}}, {{title}} a {{city}}
+description: {{professionalName}}, {{title}} iscritta all'Ordine degli Psicologi della {{alboRegion}}. Formazione, approccio e modo di lavorare.
+path: /chi-sono/
+nav: chi-sono
+---
+<section class="page-hero">
+  <div class="wrap split">
+    <div>
+      <p class="eyebrow">Chi sono</p>
+      <h1>Sono {{professionalName}}.</h1>
+      <p class="lead">{{titleLong}}. Lavoro con {{audience}} in studio a {{city}} e online.</p>
+      <p class="trustline">Iscritta all'Ordine degli Psicologi della {{alboRegion}}, n. {{alboNumber}}</p>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
+        <rect width="400" height="500" fill="#CDEFE2"/>
+        <circle cx="200" cy="210" r="90" fill="#FAF8F3"/>
+        <path d="M60 500 C 80 360, 320 360, 340 500 Z" fill="#205A54"/>
+      </svg>
+      <p class="photo-note">Ritratto professionale (da inserire).</p>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap prose">
+    <p class="placeholder-note">Testo da completare con la dott.ssa (400–700 parole): chi è, perché fa questo lavoro, con chi lavora e con chi no, come si svolgono gli incontri. Tono semplice e personale, senza promesse di risultato.</p>
+
+    <h2>Il mio modo di lavorare</h2>
+    <p>Nel primo colloquio cerchiamo di capire che cosa ti porta qui, quali obiettivi vorresti affrontare e se il mio modo di lavorare è adatto alle tue esigenze. Se ritengo che un altro professionista possa essere più indicato, te lo dirò con chiarezza.</p>
+    <p>Il mio orientamento è {{orientation}}. <a href="/come-lavoro/">Che cosa significa in pratica</a>.</p>
+
+    <h2>Formazione</h2>
+    <ul>{{@education}}</ul>
+
+    <h2>Iscrizione all'Albo</h2>
+    <p>Sono iscritta all'Ordine degli Psicologi della {{alboRegion}} con il numero {{alboNumber}}. L'iscrizione è verificabile sul sito dell'Ordine regionale o nell'Albo nazionale pubblicato dal CNOP.</p>
+  </div>
+</section>
+
+{{@closing}}

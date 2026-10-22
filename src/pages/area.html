@@ -1,0 +1,43 @@
+---
+template: area
+title: {{area.title}} – psicologa a {{city}} e online | {{professionalName}}
+nav: aree
+---
+<section class="page-hero">
+  <div class="wrap">
+    <p class="eyebrow"><a href="/aree/">Come posso aiutarti</a></p>
+    <h1>{{area.title}}: un aiuto psicologico a {{city}} e online</h1>
+    <p class="lead">{{area.short}}</p>
+    {{@cta}}
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap two-col">
+    <div class="prose">
+      <p class="placeholder-note">Testo da completare con la dott.ssa: descrivere come lavora realmente in quest'area, con parole semplici (700–1.200 parole). Non indicare competenze o tecniche non possedute.</p>
+
+      <h2>Quando può essere utile chiedere un colloquio</h2>
+      <p>Non serve aspettare di stare “abbastanza male”. Può essere utile parlarne con una professionista quando una difficoltà dura da settimane, quando inizia a pesare sul lavoro, sul sonno o sulle relazioni, o quando hai la sensazione di girare a vuoto.</p>
+
+      <h2>Come lavoro su questi temi</h2>
+      <p>Nei primi incontri cerchiamo di capire insieme che cosa succede, in quali momenti e con quali effetti nella tua vita. Poi definiamo obiettivi concreti e condivisi, e facciamo periodicamente il punto su come sta andando.</p>
+
+      <h2>Come si svolge il primo colloquio</h2>
+      <p>È un incontro di circa {{fees.sessionMinutes}} minuti per conoscerci e chiarire la tua richiesta. Al termine valutiamo insieme se e come proseguire. <a href="/primo-colloquio/">Leggi come funziona il primo colloquio</a>.</p>
+
+      <h2>In studio a {{city}} oppure online</h2>
+      <p>Puoi scegliere di incontrarci in studio, in {{studio.address}}, oppure online in videochiamata. <a href="/online/">Come funzionano i colloqui online</a>.</p>
+
+      <h2>Costi</h2>
+      <p>Il primo colloquio costa {{fees.firstSession}}, le sedute successive {{fees.session}}. <a href="/costi-e-faq/">Tutte le informazioni su costi e cancellazioni</a>.</p>
+    </div>
+    <aside class="panel panel-mint aside-sticky">
+      <h2 class="h3">Prenota un primo colloquio</h2>
+      <p>Scegli un orario libero in studio o online. Per prenotare non serve spiegare nulla della tua situazione.</p>
+      <a class="btn btn-primary" href="/prenota/">Verifica disponibilità {{@arrow}}</a>
+    </aside>
+  </div>
+</section>
+
+{{@closing}}

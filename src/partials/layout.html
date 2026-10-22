@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{pageTitle}}</title>
+<meta name="description" content="{{pageDescription}}">
+<!--robots-->
+<!--canonical-->
+<meta name="theme-color" content="#FAF8F3">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{pageTitle}}">
+<meta property="og:description" content="{{pageDescription}}">
+<meta property="og:locale" content="it_IT">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css">
+<!--jsonld-->
+<script src="/assets/js/site.js" defer></script>
+<!--scripts-->
+</head>
+<body>
+<a class="skip" href="#contenuto">Vai al contenuto</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true">E</span>
+      <span class="brand-text"><strong>{{professionalName}}</strong><span>{{title}} · {{city}}</span></span>
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu">
+      <span class="menu-bars" aria-hidden="true"></span><span class="sr">Menu</span>
+    </button>
+    <nav id="menu" class="nav" aria-label="Principale">
+      <ul role="list">
+        <li><a href="/aree/" data-nav="aree">Come posso aiutarti</a></li>
+        <li><a href="/come-lavoro/" data-nav="come-lavoro">Come lavoro</a></li>
+        <li><a href="/chi-sono/" data-nav="chi-sono">Chi sono</a></li>
+        <li><a href="/costi-e-faq/" data-nav="costi">Costi e FAQ</a></li>
+        <li><a href="/contatti/" data-nav="contatti">Contatti</a></li>
+      </ul>
+      <a class="btn btn-primary btn-small" href="/prenota/">Verifica disponibilità</a>
+    </nav>
+  </div>
+</header>
+
+<main id="contenuto">
+<!--content-->
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <p class="footer-name">{{professionalName}}</p>
+      <p>{{titleLong}}<br>Iscritta all'Ordine degli Psicologi della {{alboRegion}}, n. {{alboNumber}}<br>P.IVA {{vat}}</p>
+    </div>
+    <div>
+      <p class="footer-label">Studio</p>
+      <p>{{studio.address}}<br><a href="/studio/">Come raggiungere lo studio</a></p>
+    </div>
+    <div>
+      <p class="footer-label">Contatti</p>
+      <p><a href="tel:{{contact.phoneHref}}">{{contact.phone}}</a><br><a href="mailto:{{contact.email}}">{{contact.email}}</a></p>
+    </div>
+    <div>
+      <p class="footer-label">Informazioni</p>
+      <ul role="list" class="footer-links">
+        <li><a href="/primo-colloquio/">Il primo colloquio</a></li>
+        <li><a href="/online/">Colloqui online</a></li>
+        <li><a href="/privacy/">Privacy</a></li>
+        <li><a href="/cookie/">Cookie</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap">
+    <p class="emergency"><strong>Non è un servizio di emergenza.</strong> Questo sito, l'email, WhatsApp e il sistema di prenotazione non sono adatti alle emergenze. In caso di pericolo immediato chiama il <a href="tel:112">112</a> o il <a href="tel:118">118</a>, oppure rivolgiti al Pronto Soccorso più vicino.</p>
+    <p class="footer-small">© {{professionalName}} · Questo sito non usa cookie di profilazione né strumenti di tracciamento.</p>
+  </div>
+</footer>
+
+<div class="mobile-cta">
+  <a class="btn btn-primary" href="/prenota/">Prenota un primo colloquio</a>
+</div>
+</body>
+</html>

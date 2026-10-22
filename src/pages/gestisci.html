@@ -1,0 +1,65 @@
+---
+title: Gestisci il tuo appuntamento – {{professionalName}}
+description: Annulla o sposta il tuo appuntamento.
+path: /prenota/gestisci/
+noindex: true
+scripts: booking
+---
+<section class="page-hero">
+  <div class="wrap narrow">
+    <p class="eyebrow">Il tuo appuntamento</p>
+    <h1>Gestisci l'appuntamento.</h1>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap narrow">
+    <div class="booking" id="booking" data-mode="manage" aria-live="polite">
+      <div data-manage-loading><div class="skeleton" aria-hidden="true"></div></div>
+
+      <div class="booking-step" data-step="view" hidden>
+        <dl class="summary" data-current></dl>
+        <p data-change-note></p>
+        <div class="cta-row" data-actions>
+          <button class="btn btn-primary" type="button" data-start-reschedule>Sposta a un altro orario</button>
+          <button class="btn btn-danger" type="button" data-cancel>Annulla l'appuntamento</button>
+        </div>
+        <p class="status form-error" role="alert" data-view-error></p>
+      </div>
+
+      <div class="booking-step" data-step="pick" hidden>
+        <h2>Scegli il nuovo orario</h2>
+        <div class="seg" role="group" aria-label="Modalità del colloquio">
+          <button type="button" data-mode-btn="studio" aria-pressed="true">In studio</button>
+          <button type="button" data-mode-btn="online" aria-pressed="false">Online</button>
+        </div>
+        <p class="label" id="days-label">Giorno</p>
+        <div class="days" role="group" aria-labelledby="days-label" data-days></div>
+        <p class="label" id="times-label">Orario</p>
+        <div class="times" role="group" aria-labelledby="times-label" data-times></div>
+        <div data-empty hidden><p class="note">Non ci sono orari liberi per questa modalità. Prova l'altra modalità o <a href="/contatti/">contattami</a>.</p></div>
+        <dl class="summary" data-summary hidden></dl>
+        <p class="status form-error" role="alert" data-error></p>
+        <div class="cta-row">
+          <button class="btn btn-primary" type="button" data-next disabled>Conferma il nuovo orario</button>
+          <button class="btn btn-ghost" type="button" data-back-view>Indietro</button>
+        </div>
+      </div>
+
+      <div class="booking-step" data-step="done" hidden tabindex="-1">
+        <div class="success-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h2 data-done-title>Fatto.</h2>
+        <dl class="summary" data-summary-3 hidden></dl>
+        <p data-done-text></p>
+        <div class="cta-row">
+          <a class="btn btn-ghost" data-ics download="appuntamento.ics" href="#" hidden>Aggiungi al calendario</a>
+          <a class="btn btn-primary" href="/prenota/" data-rebook hidden>Prenota un nuovo orario</a>
+        </div>
+      </div>
+
+      <div data-invalid hidden>
+        <p class="note">Questo link non è valido o è scaduto. Se hai bisogno di modificare un appuntamento, <a href="/contatti/">contattami</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
