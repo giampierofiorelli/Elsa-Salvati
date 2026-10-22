@@ -10,6 +10,7 @@
   var fmtLong = new Intl.DateTimeFormat('it-IT', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   var fmtTime = new Intl.DateTimeFormat('it-IT', { timeZone: TZ, hour: '2-digit', minute: '2-digit' });
   var MODE_LABEL = { studio: 'In studio', online: 'Online' };
+  var SERVICE_LABEL = { psicoterapia: 'Psicoterapia individuale', coaching: 'Business coaching e lavoro' };
 
   function $(root, sel) { return root.querySelector(sel); }
   function el(tag, attrs, children) {
@@ -168,15 +169,26 @@
   // ---------- booking ----------
 
   function initBooking(root) {
+    var serviceBtns = root.querySelectorAll('[data-service-btn]');
+    var wanted = (location.search.match(/servizio=(\w+)/) || [])[1];
+    var service = SERVICE_LABEL[wanted] ? wanted : (serviceBtns[0] && serviceBtns[0].getAttribute('data-service-btn'));
+    function rows() { return [['Servizio', SERVICE_LABEL[service]]].concat(picker.summaryRows()); }
+    function setService(key) {
+      service = key;
+      serviceBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-service-btn') === key)); });
+      if (picker && picker.slot) fillSummary($(root, '[data-summary]'), rows());
+    }
     var picker = new SlotPicker(root, function (slot) {
       $(root, '[data-next]').disabled = !slot;
       var dl = $(root, '[data-summary]');
-      if (slot) fillSummary(dl, picker.summaryRows()); else dl.hidden = true;
+      if (slot) fillSummary(dl, rows()); else dl.hidden = true;
     });
+    serviceBtns.forEach(function (b) { b.addEventListener('click', function () { setService(b.getAttribute('data-service-btn')); }); });
+    setService(service);
     picker.load();
 
     $(root, '[data-next]').addEventListener('click', function () {
-      fillSummary($(root, '[data-summary-2]'), picker.summaryRows());
+      fillSummary($(root, '[data-summary-2]'), rows());
       show(root, 'details');
       $(root, '#b-name').focus();
     });
@@ -196,10 +208,10 @@
       btn.disabled = true;
       btn.textContent = 'Conferma in corso…';
       api('/book', {
-        start: picker.slot.start, mode: picker.mode, name: name, email: email,
+        start: picker.slot.start, mode: picker.mode, service: service, name: name, email: email,
         phone: form.phone.value.trim(), privacy: true, website: form.website.value,
       }).then(function (res) {
-        fillSummary($(root, '[data-summary-3]'), picker.summaryRows());
+        fillSummary($(root, '[data-summary-3]'), rows());
         $(root, '[data-ics]').href = icsHref(res.booking.start, res.booking.end, res.booking.mode);
         $(root, '[data-manage]').href = res.manageUrl.replace(/^https?:\/\/[^/]+/, '');
         show(root, 'done');
@@ -317,6 +329,7 @@
       btn.disabled = true;
       api('/request', {
         name: name, email: email, phone: phone, mode: form.mode.value,
+        service: form.service ? form.service.value : 'da_definire',
         preference: form.preference ? form.preference.value.trim() : '',
         message: form.message ? form.message.value.trim() : '',
         privacy: true, website: form.website.value,

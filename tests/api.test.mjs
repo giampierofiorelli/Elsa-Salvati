@@ -106,7 +106,7 @@ let manageToken;
 test('patient books a slot instantly and receives a neutral confirmation', opts, async () => {
   const start = '2026-10-26T09:00:00.000Z'; // 10:00 in Rome (winter time from 25 Oct)
   const r = await call(pub, 'POST', '/api/public/book', {
-    start, mode: 'studio', name: 'Giulia Bianchi', email: 'giulia@example.it', privacy: true,
+    start, mode: 'studio', service: 'psicoterapia', name: 'Giulia Bianchi', email: 'giulia@example.it', privacy: true,
   }, { context: freshCtx() });
   assert.equal(r.status, 201, JSON.stringify(r.body));
   assert.equal(r.body.booking.start, start);
@@ -131,7 +131,7 @@ test('patient books a slot instantly and receives a neutral confirmation', opts,
 test('only one of many simultaneous bookings for the same slot succeeds', opts, async () => {
   const start = '2026-10-26T10:00:00.000Z';
   const results = await Promise.all(Array.from({ length: 6 }, (_, i) => call(pub, 'POST', '/api/public/book', {
-    start, mode: 'online', name: `Persona ${i}`, email: `p${i}@example.it`, privacy: true,
+    start, mode: 'online', service: 'coaching', name: `Persona ${i}`, email: `p${i}@example.it`, privacy: true,
   }, { context: freshCtx() })));
   const codes = results.map((r) => r.status).sort();
   assert.equal(codes.filter((c) => c === 201).length, 1, JSON.stringify(codes));
@@ -142,24 +142,30 @@ test('only one of many simultaneous bookings for the same slot succeeds', opts, 
 
 test('booking validation: unavailable slot, duplicate email, privacy, honeypot', opts, async () => {
   let r = await call(pub, 'POST', '/api/public/book', {
-    start: '2026-10-26T09:30:00.000Z', mode: 'studio', name: 'Ada', email: 'ada@example.it', privacy: true,
+    start: '2026-10-26T09:30:00.000Z', mode: 'studio', service: 'psicoterapia', name: 'Ada', email: 'ada@example.it', privacy: true,
   }, { context: freshCtx() });
   assert.equal(r.status, 409);
   assert.equal(r.body.error, 'slot_unavailable');
 
   r = await call(pub, 'POST', '/api/public/book', {
-    start: '2026-10-26T11:00:00.000Z', mode: 'studio', name: 'Giulia', email: 'GIULIA@example.it', privacy: true,
+    start: '2026-10-26T11:00:00.000Z', mode: 'studio', service: 'psicoterapia', name: 'Giulia', email: 'GIULIA@example.it', privacy: true,
   }, { context: freshCtx() });
   assert.equal(r.status, 409);
   assert.equal(r.body.error, 'already_booked');
 
   r = await call(pub, 'POST', '/api/public/book', {
-    start: '2026-10-26T11:00:00.000Z', mode: 'studio', name: 'Ada', email: 'ada@example.it',
+    start: '2026-10-26T11:00:00.000Z', mode: 'studio', service: 'psicoterapia', name: 'Ada', email: 'ada@example.it',
+  }, { context: freshCtx() });
+  assert.equal(r.status, 400);
+
+  // The service is required.
+  r = await call(pub, 'POST', '/api/public/book', {
+    start: '2026-10-26T11:00:00.000Z', mode: 'studio', name: 'Ada', email: 'ada@example.it', privacy: true,
   }, { context: freshCtx() });
   assert.equal(r.status, 400);
 
   r = await call(pub, 'POST', '/api/public/book', {
-    start: '2026-10-26T11:00:00.000Z', mode: 'studio', name: 'Bot', email: 'b@example.it', privacy: true, website: 'x',
+    start: '2026-10-26T11:00:00.000Z', mode: 'studio', service: 'psicoterapia', name: 'Bot', email: 'b@example.it', privacy: true, website: 'x',
   }, { context: freshCtx() });
   assert.equal(r.status, 400);
 });
@@ -189,7 +195,7 @@ test('patient reschedules and then cancels from the personal link', opts, async 
 
 test('cancellation is refused inside the notice window', opts, async () => {
   const r = await call(pub, 'POST', '/api/public/book', {
-    start: '2026-10-26T08:00:00.000Z', mode: 'studio', name: 'Luca Verdi', email: 'luca@example.it', privacy: true,
+    start: '2026-10-26T08:00:00.000Z', mode: 'studio', service: 'psicoterapia', name: 'Luca Verdi', email: 'luca@example.it', privacy: true,
   }, { context: freshCtx() });
   assert.equal(r.status, 201);
   const token = new URL(r.body.manageUrl).hash.slice(3);
@@ -234,6 +240,8 @@ test('studio adds a weekly series; conflicts are skipped, not fatal', opts, asyn
   assert.deepEqual(r.body.skipped.map((s) => s.date), ['2026-11-05']);
 
   r = await adminCall('GET', '/events?from=2026-10-26&to=2026-11-22');
+  const fromSite = r.body.events.filter((e) => e.source === 'sito');
+  assert.ok(fromSite.length >= 2 && fromSite.every((e) => ['psicoterapia', 'coaching'].includes(e.service)), 'site bookings carry the service');
   const series = r.body.events.filter((e) => e.kind === 'seduta');
   assert.deepEqual(series.map((e) => `${e.date} ${e.time}`), ['2026-10-29 17:00', '2026-11-12 17:00', '2026-11-19 17:00']);
   assert.equal(series[0].name, 'M. R.');

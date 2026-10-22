@@ -59,6 +59,9 @@ create table if not exists events (
   ) where (status = 'confermato')
 );
 
+-- Servizio richiesto (aggiunto per lo studio associato).
+alter table events add column if not exists service text check (service in ('coaching', 'psicoterapia'));
+
 create index if not exists events_start_idx on events (start_at);
 create index if not exists events_contact_idx on events (contact_hash) where status = 'confermato';
 create index if not exists events_series_idx on events (series_id);
@@ -74,6 +77,9 @@ create table if not exists contact_requests (
 
 -- Contatori per limitare abusi (tentativi di accesso, prenotazioni ripetute).
 -- La chiave è un HMAC: nessun indirizzo IP in chiaro.
+alter table contact_requests add column if not exists service text
+  check (service in ('coaching', 'psicoterapia', 'aziende', 'da_definire'));
+
 create table if not exists rate_events (
   id       bigserial primary key,
   key_hash text not null,

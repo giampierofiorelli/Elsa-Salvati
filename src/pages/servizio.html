@@ -1,0 +1,51 @@
+---
+template: service
+title: {{svc.title}} a {{city}} e online – {{studioName}}
+nav: servizi
+---
+<section class="page-hero">
+  <div class="wrap">
+    <p class="eyebrow"><a href="/servizi/">Servizi</a></p>
+    <h1>{{svc.title}}</h1>
+    <p class="lead">{{svc.short}}</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/prenota/?servizio={{svc.key}}">Verifica disponibilità {{@arrow}}</a>
+      <a class="btn btn-ghost" href="/primo-colloquio/">Come funziona il primo colloquio</a>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap two-col">
+    <div class="prose">
+      <h2>Di cosa ci occupiamo</h2>
+      {{@serviceAreas}}
+
+      {{@serviceExtra}}
+
+      <h2>Come si inizia</h2>
+      <p>Il primo passo è un colloquio di circa {{fees.sessionMinutes}} minuti, in studio a {{city}} oppure online, per capire la tua richiesta e proporti il percorso e il professionista più adatti. <a href="/primo-colloquio/">Come funziona il primo colloquio</a>.</p>
+
+      <p class="placeholder-note">Testo da completare con i professionisti dello studio: descrivere in parole semplici come lavorano su questi temi, senza promettere risultati.</p>
+    </div>
+    <aside class="panel panel-mint aside-sticky">
+      <h2 class="h3">Prenota un primo colloquio</h2>
+      <dl class="summary">
+        <dt>Durata</dt><dd>{{fees.sessionMinutes}} minuti</dd>
+        <dt>Tariffa</dt><dd>{{@serviceFee}}</dd>
+        <dt>Dove</dt><dd>Studio a {{city}} o online</dd>
+      </dl>
+      <a class="btn btn-primary" href="/prenota/?servizio={{svc.key}}">Verifica disponibilità {{@arrow}}</a>
+    </aside>
+  </div>
+</section>
+
+<section class="section section-white" aria-labelledby="chi-title">
+  <div class="wrap">
+    <p class="eyebrow">Chi se ne occupa</p>
+    <h2 id="chi-title">I professionisti di questo percorso.</h2>
+    {{@serviceTeam}}
+  </div>
+</section>
+
+{{@closing}}

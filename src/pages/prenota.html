@@ -1,5 +1,5 @@
 ---
-title: Prenota un primo colloquio – {{professionalName}}
+title: Prenota un primo colloquio – {{studioName}}
 description: Scegli un orario libero per il primo colloquio, in studio a {{city}} o online. Conferma immediata, bastano nome ed email.
 path: /prenota/
 nav: prenota
@@ -9,7 +9,7 @@ scripts: booking
   <div class="wrap">
     <p class="eyebrow">Prenotazione</p>
     <h1>Prenota un primo colloquio.</h1>
-    <p class="lead">Scegli la modalità e un orario libero. La conferma è immediata e ricevi un'email con il riepilogo. Non serve raccontare nulla della tua situazione.</p>
+    <p class="lead">Scegli il servizio, la modalità e un orario libero. La conferma è immediata e ricevi un'email con il riepilogo. Non serve raccontare nulla della tua situazione.</p>
   </div>
 </section>
 
@@ -17,8 +17,12 @@ scripts: booking
   <div class="wrap two-col">
     <div class="booking" id="booking" data-mode="book" aria-live="polite">
       <div class="booking-step" data-step="pick">
-        <h2>1. Modalità e orario</h2>
-        <div class="seg" role="group" aria-label="Modalità del colloquio">
+        <h2>1. Servizio, modalità e orario</h2>
+        <p class="label" id="svc-label">Servizio</p>
+        <div class="seg seg-wrap" role="group" aria-labelledby="svc-label" data-service-group>{{@serviceButtons}}</div>
+        <p class="hint">Non sai quale scegliere? Indica quello che ti sembra più vicino: nel primo colloquio lo capiamo insieme.</p>
+        <p class="label" id="mode-label">Modalità</p>
+        <div class="seg" role="group" aria-labelledby="mode-label">
           <button type="button" data-mode-btn="studio" aria-pressed="true">In studio</button>
           <button type="button" data-mode-btn="online" aria-pressed="false">Online</button>
         </div>
@@ -79,7 +83,7 @@ scripts: booking
       <h2 class="h3">Il primo colloquio</h2>
       <dl class="summary">
         <dt>Durata</dt><dd>{{fees.sessionMinutes}} minuti</dd>
-        <dt>Tariffa</dt><dd>{{fees.firstSession}}</dd>
+        <dt>Tariffa</dt><dd>Psicoterapia {{fees.psicoterapia}} · Coaching {{fees.coaching}}</dd>
         <dt>Studio</dt><dd>{{studio.address}}</dd>
       </dl>
       <p>{{fees.cancellation}}</p>
@@ -91,8 +95,8 @@ scripts: booking
 <section class="section" id="ricontatto" aria-labelledby="ricontatto-title">
   <div class="wrap narrow">
     <p class="eyebrow">Nessun orario adatto?</p>
-    <h2 id="ricontatto-title">Chiedimi di ricontattarti.</h2>
-    <p>Se non trovi un orario compatibile o preferisci parlarne prima, lasciami un recapito: ti risponderò personalmente {{contact.hours}}.</p>
+    <h2 id="ricontatto-title">Chiedici di ricontattarti.</h2>
+    <p>Se non trovi un orario compatibile o preferisci parlarne prima, lasciaci un recapito: ti risponderemo personalmente {{contact.hours}}.</p>
     <form class="panel" data-request-form novalidate>
       <div class="field">
         <label for="r-name">Nome</label>
@@ -106,6 +110,14 @@ scripts: booking
         <label for="r-phone">Telefono</label>
         <input id="r-phone" name="phone" type="tel" autocomplete="tel" maxlength="20">
         <span class="hint">Indica almeno un recapito tra email e telefono.</span>
+      </div>
+      <div class="field">
+        <label for="r-service">Servizio</label>
+        <select id="r-service" name="service">
+          <option value="da_definire">Non so ancora</option>
+          {{@serviceOptions}}
+          <option value="aziende">Consulenza per la mia azienda</option>
+        </select>
       </div>
       <div class="field">
         <label for="r-mode">Preferenza</label>

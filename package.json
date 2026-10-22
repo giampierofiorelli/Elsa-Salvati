@@ -2,7 +2,7 @@
   "name": "elsa-salvati-sito",
   "private": true,
   "version": "1.0.0",
-  "description": "Sito della Dott.ssa Elsa Salvati con agenda e prenotazione del primo colloquio",
+  "description": "Sito dello studio associato Blooming con agenda e prenotazione del primo colloquio",
   "type": "module",
   "engines": {
     "node": ">=20.10"

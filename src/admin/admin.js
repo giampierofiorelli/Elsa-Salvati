@@ -8,6 +8,7 @@
   var DAY_LONG = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
   var KIND_LABEL = { primo_colloquio: 'Primo colloquio', seduta: 'Seduta', blocco: 'Non disponibile' };
   var MODE_LABEL = { studio: 'studio', online: 'online' };
+  var SERVICE_LABEL = { psicoterapia: 'Psicoterapia', coaching: 'Coaching', aziende: 'Azienda', da_definire: 'Da definire' };
   var fmtDayMonth = new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short', timeZone: 'UTC' });
   var fmtLongDay = new Intl.DateTimeFormat('it-IT', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' });
 
@@ -206,7 +207,7 @@
         if (to <= from) return;
         var cls = ev.kind === 'blocco' ? 'ev-blocco' : (ev.source === 'sito' ? 'ev-sito' : 'ev-manuale');
         var title = ev.kind === 'blocco' ? (ev.title || 'Non disponibile') : (ev.name || KIND_LABEL[ev.kind]);
-        var sub = ev.kind === 'blocco' ? '' : KIND_LABEL[ev.kind] + (ev.mode ? ' · ' + MODE_LABEL[ev.mode] : '');
+        var sub = ev.kind === 'blocco' ? '' : (ev.service ? SERVICE_LABEL[ev.service] : KIND_LABEL[ev.kind]) + (ev.mode ? ' · ' + MODE_LABEL[ev.mode] : '');
         var b = el('button', { type: 'button', class: 'ev ' + cls, 'aria-label': title + ', ' + hhmm(p.from) + '–' + hhmm(Math.min(p.to, 1439)) }, [
           el('strong', { text: (ev.kind === 'blocco' ? '' : ev.time + ' ') + title }),
           sub ? el('span', { text: sub }) : null,
@@ -250,7 +251,7 @@
         var label = ev.kind === 'blocco' ? (ev.title || 'Non disponibile') : (ev.name || '—');
         section.appendChild(el('button', { type: 'button', class: 'list-item', onclick: function () { openEdit(ev); } }, [
           el('time', { text: ev.time + '–' + (ev.endDate === ev.date ? ev.endTime : '…') }),
-          el('span', {}, [label, el('span', { class: 'tag', text: KIND_LABEL[ev.kind] }), ev.mode ? el('span', { class: 'tag', text: MODE_LABEL[ev.mode] }) : null, ev.source === 'sito' ? el('span', { class: 'tag', text: 'dal sito' }) : null]),
+          el('span', {}, [label, el('span', { class: 'tag', text: KIND_LABEL[ev.kind] }), ev.service ? el('span', { class: 'tag', text: SERVICE_LABEL[ev.service] }) : null, ev.mode ? el('span', { class: 'tag', text: MODE_LABEL[ev.mode] }) : null, ev.source === 'sito' ? el('span', { class: 'tag', text: 'dal sito' }) : null]),
         ]));
       });
       box.appendChild(section);
@@ -326,6 +327,7 @@
       form.time.value = ev.time;
       form.durationMinutes.value = Math.round((new Date(ev.end) - new Date(ev.start)) / 60000);
       form.mode.value = ev.mode || '';
+      form.service.value = ev.service || '';
       form.name.value = ev.name;
       form.email.value = ev.email;
       form.phone.value = ev.phone;
@@ -344,7 +346,7 @@
     }
     var p = {
       kind: state.kind, date: form.date.value, time: form.time.value,
-      durationMinutes: Number(form.durationMinutes.value), mode: form.mode.value || null,
+      durationMinutes: Number(form.durationMinutes.value), mode: form.mode.value || null, service: form.service.value || null,
       name: form.name.value.trim(), email: form.email.value.trim(), phone: form.phone.value.trim(), note: form.note.value.trim(),
     };
     if (!state.editing) {
@@ -499,7 +501,7 @@
           el('p', {}, [el('strong', { text: r.name || '—' }), ' · ' + when]),
           r.email ? el('p', {}, [el('a', { href: 'mailto:' + r.email, text: r.email })]) : null,
           r.phone ? el('p', {}, [el('a', { href: 'tel:' + r.phone.replace(/\s/g, ''), text: r.phone })]) : null,
-          el('p', { class: 'hint', text: 'Preferenza: ' + ({ studio: 'in studio', online: 'online', da_definire: 'da definire' }[r.mode] || '—') + (r.preference ? ' · ' + r.preference : '') }),
+          el('p', { class: 'hint', text: 'Servizio: ' + (SERVICE_LABEL[r.service] || 'Da definire') + ' · Preferenza: ' + ({ studio: 'in studio', online: 'online', da_definire: 'da definire' }[r.mode] || '—') + (r.preference ? ' · ' + r.preference : '') }),
           r.message ? el('p', { text: r.message }) : null,
           el('div', { class: 'cta-row' }, [
             el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: r.handledAt ? 'Segna da gestire' : 'Segna come gestita', onclick: function () { api('POST', '/requests/' + r.id, { handled: !r.handledAt }).then(loadRequests); } }),

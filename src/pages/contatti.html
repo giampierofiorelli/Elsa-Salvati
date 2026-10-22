@@ -1,5 +1,5 @@
 ---
-title: Contatti – {{professionalName}}, psicologa a {{city}}
+title: Contatti – {{studioFullName}}, {{city}}
 description: Prenota online, chiama o scrivi per informazioni pratiche. Studio a {{city}} e colloqui online.
 path: /contatti/
 nav: contatti
@@ -8,8 +8,8 @@ scripts: booking
 <section class="page-hero">
   <div class="wrap">
     <p class="eyebrow">Contatti</p>
-    <h1>Come preferisci contattarmi?</h1>
-    <p class="lead">Se hai già deciso puoi prenotare subito. Se hai dubbi, scrivimi o chiamami: ti rispondo personalmente {{contact.hours}}.</p>
+    <h1>Come preferisci contattarci?</h1>
+    <p class="lead">Se hai già deciso puoi prenotare subito. Se hai dubbi, scrivici o chiamaci: ti rispondiamo personalmente {{contact.hours}}.</p>
   </div>
 </section>
 
@@ -35,7 +35,7 @@ scripts: booking
 
 <section class="section" id="ricontatto" aria-labelledby="ricontatto-title">
   <div class="wrap narrow">
-    <h2 id="ricontatto-title">Chiedimi di ricontattarti.</h2>
+    <h2 id="ricontatto-title">Chiedici di ricontattarti.</h2>
     <form class="panel" data-request-form novalidate>
       <div class="field">
         <label for="r-name">Nome</label>
@@ -49,6 +49,14 @@ scripts: booking
         <label for="r-phone">Telefono</label>
         <input id="r-phone" name="phone" type="tel" autocomplete="tel" maxlength="20">
         <span class="hint">Indica almeno un recapito tra email e telefono.</span>
+      </div>
+      <div class="field">
+        <label for="r-service">Servizio</label>
+        <select id="r-service" name="service">
+          <option value="da_definire">Non so ancora</option>
+          {{@serviceOptions}}
+          <option value="aziende">Consulenza per la mia azienda</option>
+        </select>
       </div>
       <div class="field">
         <label for="r-mode">Preferenza</label>

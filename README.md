@@ -1,6 +1,8 @@
-# Sito della Dott.ssa Elsa Salvati
+# Blooming – Studio di psicologia e coaching (Bologna)
 
-Sito professionale con **agenda proprietaria** e **prenotazione online del primo colloquio** con conferma immediata.
+Sito dello studio associato Blooming, con **agenda proprietaria** e **prenotazione online del primo colloquio** con conferma immediata.
+
+Due servizi: **psicoterapia individuale** (sostegno alla genitorialità, ansia, depressione) e **business coaching e lavoro** (cambio di lavoro, difficoltà e stress sul lavoro, mobbing, consulenza per le imprese). Servizi, team e tariffe sono in `src/site.config.json`. Chi prenota sceglie il servizio; per ora l'agenda è unica per lo studio (agende separate per professionista: passo successivo).
 
 - Sito statico, mobile-first, palette *Deep Teal & Mint*, ispirazione [Q Psychology](https://www.qpsychology.com.au/).
 - Nessun cookie di profilazione, nessun tracciamento, font ospitati sul sito (nessun dato a Google).
@@ -9,7 +11,7 @@ Sito professionale con **agenda proprietaria** e **prenotazione online del primo
 
 ## Cosa fa
 
-| Per i pazienti | Per la psicologa (`/admin/`) |
+| Per i pazienti | Per lo studio (`/admin/`) |
 |---|---|
 | Vede solo gli orari realmente liberi (studio / online) | Vista settimanale e a elenco, anche da telefono |
 | Prenota in meno di un minuto: solo nome ed email | Aggiunge sedute, anche ricorrenti (ogni N settimane) |

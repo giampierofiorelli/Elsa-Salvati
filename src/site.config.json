@@ -1,38 +1,101 @@
 {
-  "_nota": "Tutti i dati della professionista sono qui. I valori tra [parentesi quadre] sono segnaposto da sostituire prima della pubblicazione: il build segnala quelli rimasti.",
+  "_nota": "Dati dello studio. I valori tra [parentesi quadre] sono segnaposto da sostituire prima della pubblicazione: il build segnala quelli rimasti.",
   "siteUrl": "https://[dominio].it",
   "studioName": "Blooming",
   "studioTagline": "Studio di psicologia e coaching",
-  "professionalName": "Dott.ssa Elsa Salvati",
-  "firstName": "Elsa",
-  "title": "Psicologa",
-  "titleLong": "Psicologa [e Psicoterapeuta, solo se in possesso del titolo]",
+  "studioFullName": "Blooming – Studio di psicologia e coaching",
+  "studioLegal": "Blooming – Studio associato",
   "city": "Bologna",
   "albo": "Ordine degli Psicologi dell'Emilia-Romagna",
-  "alboNumber": "[n. Albo]",
-  "vat": "[P.IVA]",
-  "orientation": "[orientamento teorico reale]",
-  "audience": "adulti e giovani adulti",
-  "areas": [
+  "vat": "[P.IVA dello studio]",
+  "services": [
     {
-      "slug": "ansia-e-stress",
-      "title": "Ansia e stress",
-      "short": "Quando preoccupazione e tensione iniziano a limitare la vita di tutti i giorni."
+      "key": "coaching",
+      "slug": "business-coaching",
+      "title": "Business coaching e lavoro",
+      "short": "Per chi vuole cambiare lavoro o vive difficoltà sul lavoro, e per le imprese che vogliono prendersi cura delle persone.",
+      "audience": "professionisti, lavoratori e aziende",
+      "areas": [
+        {
+          "title": "Cambiare lavoro",
+          "short": "Fare chiarezza su competenze, valori e obiettivi per scegliere la prossima tappa professionale."
+        },
+        {
+          "title": "Difficoltà sul lavoro e mobbing",
+          "short": "Conflitti, ambienti ostili, situazioni di mobbing: uno spazio per orientarsi e ritrovare strumenti."
+        },
+        {
+          "title": "Stress e ansia legati al lavoro",
+          "short": "Carichi eccessivi, pressione, rischio di burnout: riconoscere i segnali e recuperare equilibrio."
+        },
+        {
+          "title": "Consulenza per le imprese",
+          "short": "Benessere organizzativo, gestione dello stress e percorsi per team e responsabili."
+        }
+      ]
     },
     {
-      "slug": "difficolta-relazionali",
-      "title": "Difficoltà relazionali",
-      "short": "Rapporti di coppia, in famiglia, con amici o al lavoro che pesano più del dovuto."
+      "key": "psicoterapia",
+      "slug": "psicoterapia",
+      "title": "Psicoterapia individuale",
+      "short": "Percorsi di psicoterapia per adulti, con professionisti di diversi orientamenti.",
+      "audience": "adulti e giovani adulti",
+      "areas": [
+        {
+          "title": "Sostegno alla genitorialità",
+          "short": "Le fatiche e i dubbi dell'essere genitori, dalla nascita all'adolescenza dei figli."
+        },
+        {
+          "title": "Ansia",
+          "short": "Quando preoccupazioni, tensione o attacchi di panico iniziano a limitare la vita quotidiana."
+        },
+        {
+          "title": "Depressione",
+          "short": "Tristezza persistente, perdita di energia e di interesse: non affrontarle da soli."
+        }
+      ]
+    }
+  ],
+  "team": [
+    {
+      "name": "Dott.ssa Elsa Salvati",
+      "role": "Psicologa · Business coach",
+      "services": [
+        "coaching"
+      ],
+      "focus": "Business coaching individuale e consulenza per le imprese.",
+      "albo": "[n. Albo]",
+      "photo": "elsa-salvati"
     },
     {
-      "slug": "momenti-di-cambiamento",
-      "title": "Momenti di cambiamento",
-      "short": "Scelte, perdite, trasferimenti e passaggi di vita che chiedono uno spazio per pensare."
+      "name": "[Nome e cognome]",
+      "role": "Psicologa psicoterapeuta",
+      "services": [
+        "psicoterapia"
+      ],
+      "focus": "Orientamento [es. cognitivo-comportamentale]. [Aree principali].",
+      "albo": "[n. Albo]",
+      "photo": ""
     },
     {
-      "slug": "autostima",
-      "title": "Autostima e benessere",
-      "short": "Ritrovare fiducia in sé e un rapporto più sereno con le proprie emozioni."
+      "name": "[Nome e cognome]",
+      "role": "Psicologo psicoterapeuta",
+      "services": [
+        "psicoterapia"
+      ],
+      "focus": "Orientamento [es. sistemico-relazionale]. [Aree principali].",
+      "albo": "[n. Albo]",
+      "photo": ""
+    },
+    {
+      "name": "[Nome e cognome]",
+      "role": "Psicologa · Business coach",
+      "services": [
+        "coaching"
+      ],
+      "focus": "[Ambiti di coaching e consulenza].",
+      "albo": "[n. Albo]",
+      "photo": ""
     }
   ],
   "studio": {
@@ -44,8 +107,9 @@
     "mapsUrl": "https://www.google.com/maps/search/?api=1&query=[indirizzo]+Bologna"
   },
   "fees": {
-    "firstSession": "€[tariffa]",
-    "session": "€[tariffa]",
+    "psicoterapia": "€[tariffa]",
+    "coaching": "€[tariffa]",
+    "aziende": "Preventivo su misura",
     "sessionMinutes": 50,
     "cancellation": "[Politica di cancellazione, es.: gli appuntamenti si possono annullare o spostare senza costi fino a 24 ore prima.]"
   },
@@ -56,11 +120,6 @@
     "whatsapp": "39",
     "hours": "[es. risposta entro un giorno lavorativo, dal lunedì al venerdì]"
   },
-  "education": [
-    "[Laurea magistrale in Psicologia – Università, anno]",
-    "[Abilitazione e iscrizione all'Albo – anno]",
-    "[Formazione o specializzazione rilevante]"
-  ],
   "portrait": {
     "alt": "Ritratto della Dott.ssa Elsa Salvati nel suo studio",
     "width": 800,
