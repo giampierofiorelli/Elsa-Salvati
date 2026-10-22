@@ -22,17 +22,17 @@ async function readCatalog() {
   const { loadCatalog } = await import('../lib/public-api.mjs');
   const sql = getSql();
   try {
-    return { source: 'database', ...(await loadCatalog(createStore(sql))) };
+    // A stuck connection must not hang the build: give up after 30 s.
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout dopo 30 s')), 30000).unref());
+    return { source: 'database', ...(await Promise.race([loadCatalog(createStore(sql)), timeout])) };
   } catch (err) {
-    // Keep the site online with the demo catalogue and leave a note for whoever deploys.
+    // Keep the site online with the demo catalogue; the cause is in the build log.
     console.error(`Catalogo dal database non disponibile: ${err.code || ''} ${err.message}`);
-    catalogError = `${new Date().toISOString()} ${err.code || ''} ${err.message}`;
     return { source: 'demo (database non raggiungibile)', ...config.demoCatalog, professionals: proList(config.demoCatalog) };
   } finally {
     await sql.end({ timeout: 2 }).catch(() => {});
   }
 }
-let catalogError = '';
 function proList(cat) {
   const map = new Map();
   for (const c of cat.categories) for (const sv of c.services) for (const p of sv.professionals) {
@@ -289,8 +289,6 @@ write('robots.txt', demo ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nDisa
 if (base) {
   write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.sort().map((u) => `  <url><loc>${base}${u}</loc></url>`).join('\n')}\n</urlset>\n`);
 }
-
-if (catalogError) write('catalog-error.txt', catalogError + '\n');
 
 // Report placeholders still to fill.
 const pending = [];
