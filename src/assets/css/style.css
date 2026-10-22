@@ -285,3 +285,5 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); outline: 
 .h3 { font-size: clamp(1.3rem, 2.2vw, 1.6rem); }
 .two-col > *, .split > *, .hero-grid > * { min-width: 0; }
 .demo-banner { background: #FFF6DB; color: #5C4A12; text-align: center; font-size: .85rem; padding: 8px var(--gutter); border-bottom: 1px solid #E8D58F; }
+.hero-visual picture, .hero-visual img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-visual img { object-fit: cover; object-position: 50% 22%; }

@@ -27,8 +27,12 @@ const arrowRight = '<svg class="icon" aria-hidden="true" viewBox="0 0 16 16" wid
 
 const components = {
   arrow: () => arrow,
+  portrait: () => `<picture>
+        <source type="image/webp" srcset="/assets/img/elsa-salvati-480.webp 480w, /assets/img/elsa-salvati-800.webp 800w" sizes="(min-width: 900px) 460px, 100vw">
+        <img src="/assets/img/elsa-salvati-800.jpg" alt="${esc(config.portrait.alt)}" width="${config.portrait.width}" height="${config.portrait.height}" fetchpriority="high">
+      </picture>`,
   arrowRight: () => arrowRight,
-  trustline: () => `<p class="trustline">Iscritta all'Ordine degli Psicologi della ${esc(config.alboRegion)}, n. ${esc(config.alboNumber)} · Colloqui in studio a ${esc(config.city)} e online</p>`,
+  trustline: () => `<p class="trustline">Iscritta all'${esc(config.albo)}, n. ${esc(config.alboNumber)} · Colloqui in studio a ${esc(config.city)} e online</p>`,
   areaCards: () => `<ul class="cards" role="list">${config.areas.map((a) => `
     <li class="card">
       <a class="card-link" href="/aree/${a.slug}/">

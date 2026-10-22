@@ -5,8 +5,8 @@
   "firstName": "Elsa",
   "title": "Psicologa",
   "titleLong": "Psicologa [e Psicoterapeuta, solo se in possesso del titolo]",
-  "city": "[Città]",
-  "alboRegion": "[Regione]",
+  "city": "Bologna",
+  "albo": "Ordine degli Psicologi dell'Emilia-Romagna",
   "alboNumber": "[n. Albo]",
   "vat": "[P.IVA]",
   "orientation": "[orientamento teorico reale]",
@@ -34,12 +34,12 @@
     }
   ],
   "studio": {
-    "address": "[Via e numero civico], [CAP] [Città]",
+    "address": "[Via e numero civico], [CAP] Bologna",
     "neighbourhood": "[quartiere]",
     "transport": "[mezzi pubblici e fermate più vicine]",
     "parking": "[parcheggio]",
     "access": "[piano, ascensore, accessibilità]",
-    "mapsUrl": "https://www.google.com/maps/search/?api=1&query=[indirizzo]"
+    "mapsUrl": "https://www.google.com/maps/search/?api=1&query=[indirizzo]+Bologna"
   },
   "fees": {
     "firstSession": "€[tariffa]",
@@ -58,5 +58,10 @@
     "[Laurea magistrale in Psicologia – Università, anno]",
     "[Abilitazione e iscrizione all'Albo – anno]",
     "[Formazione o specializzazione rilevante]"
-  ]
+  ],
+  "portrait": {
+    "alt": "Ritratto della Dott.ssa Elsa Salvati nel suo studio",
+    "width": 800,
+    "height": 1067
+  }
 }

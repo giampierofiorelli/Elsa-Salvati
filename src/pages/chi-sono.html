@@ -1,6 +1,6 @@
 ---
 title: Chi sono – {{professionalName}}, {{title}} a {{city}}
-description: {{professionalName}}, {{title}} iscritta all'Ordine degli Psicologi della {{alboRegion}}. Formazione, approccio e modo di lavorare.
+description: {{professionalName}}, {{title}} iscritta all'{{albo}}. Formazione, approccio e modo di lavorare.
 path: /chi-sono/
 nav: chi-sono
 ---
@@ -10,15 +10,10 @@ nav: chi-sono
       <p class="eyebrow">Chi sono</p>
       <h1>Sono {{professionalName}}.</h1>
       <p class="lead">{{titleLong}}. Lavoro con {{audience}} in studio a {{city}} e online.</p>
-      <p class="trustline">Iscritta all'Ordine degli Psicologi della {{alboRegion}}, n. {{alboNumber}}</p>
+      <p class="trustline">Iscritta all'{{albo}}, n. {{alboNumber}}</p>
     </div>
-    <div class="hero-visual" aria-hidden="true">
-      <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
-        <rect width="400" height="500" fill="#CDEFE2"/>
-        <circle cx="200" cy="210" r="90" fill="#FAF8F3"/>
-        <path d="M60 500 C 80 360, 320 360, 340 500 Z" fill="#205A54"/>
-      </svg>
-      <p class="photo-note">Ritratto professionale (da inserire).</p>
+    <div class="hero-visual">
+      {{@portrait}}
     </div>
   </div>
 </section>
@@ -35,7 +30,7 @@ nav: chi-sono
     <ul>{{@education}}</ul>
 
     <h2>Iscrizione all'Albo</h2>
-    <p>Sono iscritta all'Ordine degli Psicologi della {{alboRegion}} con il numero {{alboNumber}}. L'iscrizione è verificabile sul sito dell'Ordine regionale o nell'Albo nazionale pubblicato dal CNOP.</p>
+    <p>Sono iscritta all'{{albo}} con il numero {{alboNumber}}. L'iscrizione è verificabile sul sito dell'Ordine regionale o nell'Albo nazionale pubblicato dal CNOP.</p>
   </div>
 </section>
 

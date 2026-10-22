@@ -13,16 +13,8 @@ nav: home
       {{@cta}}
       {{@trustline}}
     </div>
-    <div class="hero-visual" aria-hidden="true">
-      <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
-        <rect width="400" height="500" fill="#CDEFE2"/>
-        <circle cx="300" cy="120" r="150" fill="#8FBFB3" opacity=".55"/>
-        <circle cx="90" cy="380" r="170" fill="#E6F6EF"/>
-        <path d="M-20 330 C 90 250, 200 420, 420 300 L 420 520 L -20 520 Z" fill="#205A54" opacity=".9"/>
-        <path d="M-20 390 C 120 330, 230 470, 420 380 L 420 520 L -20 520 Z" fill="#183B38"/>
-        <circle cx="140" cy="170" r="46" fill="#FAF8F3"/>
-      </svg>
-      <p class="photo-note">Qui andrà una fotografia professionale autentica della dott.ssa (da inserire).</p>
+    <div class="hero-visual">
+      {{@portrait}}
     </div>
   </div>
 </section>
@@ -93,7 +85,7 @@ nav: home
     <div>
       <p class="eyebrow">Chi sono</p>
       <h2 id="chi-title">Sono {{professionalName}}.</h2>
-      <p>{{titleLong}}, iscritta all'Ordine degli Psicologi della {{alboRegion}} con il n. {{alboNumber}}. Ricevo in studio a {{city}} e online.</p>
+      <p>{{titleLong}}, iscritta all'{{albo}} con il n. {{alboNumber}}. Ricevo in studio a {{city}} e online.</p>
       <p>Lavoro con {{audience}} che attraversano un momento di difficoltà o di cambiamento, o che sentono semplicemente il bisogno di fermarsi a capire.</p>
       <a class="btn btn-ghost" href="/chi-sono/">Il mio percorso professionale {{@arrowRight}}</a>
     </div>
