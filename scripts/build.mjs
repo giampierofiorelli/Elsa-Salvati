@@ -277,7 +277,7 @@ function page(meta, body, path, ctx = {}) {
   return render(layout, { pageTitle: meta.title, pageDescription: meta.description || '' })
     .replace('<!--canonical-->', canonical)
     .replace('<!--robots-->', meta.noindex === 'true' || demo ? '<meta name="robots" content="noindex, nofollow">' : '')
-    .replace('<!--demo-->', demo ? '<div class="demo-banner" role="note">Anteprima dimostrativa: testi e dati tra [parentesi] sono provvisori, gli appuntamenti sono di prova.</div>' : '')
+    .replace('<!--demo-->', '')
     .replace('<!--jsonld-->', path === '/' ? `<script type="application/ld+json">${jsonLd()}</script>` : '')
     .replace('<!--scripts-->', scripts)
     .replace(/<a ([^>]*)data-nav="([\w-]+)"/g, (all, attrs, key) => (key === nav ? `<a ${attrs}aria-current="page"` : `<a ${attrs}`))
