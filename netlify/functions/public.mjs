@@ -1,17 +1,16 @@
-import { getDeps } from '../../lib/app.mjs';
+import { withDeps } from '../../lib/app.mjs';
 import { json } from '../../lib/http.mjs';
 import { createPublicApi } from '../../lib/public-api.mjs';
 
-let handler;
+const unavailable = () => json(503, { error: 'unavailable', message: 'Servizio temporaneamente non disponibile. Riprova più tardi o contatta lo studio.' });
 
 export default async (req, context) => {
   try {
-    if (!handler) handler = createPublicApi(getDeps());
+    return await withDeps((deps) => createPublicApi(deps)(req, context));
   } catch (err) {
     console.error('[setup]', err.message);
-    return json(503, { error: 'unavailable', message: 'Servizio temporaneamente non disponibile. Riprova più tardi o contatta lo studio.' });
+    return unavailable();
   }
-  return handler(req, context);
 };
 
 export const config = { path: '/api/public/*' };

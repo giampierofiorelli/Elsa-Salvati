@@ -1,9 +1,9 @@
 // Hourly: email reminders for upcoming appointments.
-import { getDeps } from '../../lib/app.mjs';
+import { withDeps } from '../../lib/app.mjs';
 import { runReminders } from '../../lib/jobs.mjs';
 
 export default async () => {
-  const result = await runReminders(getDeps());
+  const result = await withDeps((deps) => runReminders(deps));
   console.log('[reminders]', JSON.stringify(result));
 };
 

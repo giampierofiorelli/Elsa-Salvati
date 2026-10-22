@@ -1,10 +1,9 @@
 // Personal read-only calendar feed: /api/calendar.ics?k=<token from the agenda>
-import { getDeps } from '../../lib/app.mjs';
+import { withDeps } from '../../lib/app.mjs';
 import { buildIcs } from '../../lib/jobs.mjs';
 import { sha256 } from '../../lib/crypto.mjs';
 
-export default async (req) => {
-  const deps = getDeps();
+export default (req) => withDeps(async (deps) => {
   const k = new URL(req.url).searchParams.get('k') || '';
   const user = k.length >= 24 && k.length <= 100 ? await deps.store.getUserByIcs(sha256(k)) : null;
   if (!user || !user.enrolled_at) return new Response('Not found', { status: 404 });
@@ -17,6 +16,6 @@ export default async (req) => {
       'x-robots-tag': 'noindex',
     },
   });
-};
+});
 
 export const config = { path: '/api/calendar.ics' };

@@ -18,9 +18,9 @@ const demo = process.env.SITE_DEMO === 'true';
 // Without DATABASE_URL (local build) the demo catalogue in the config is used.
 async function readCatalog() {
   if (!process.env.DATABASE_URL) return { source: 'demo', ...config.demoCatalog, professionals: proList(config.demoCatalog) };
-  const { getSql, createStore } = await import('../lib/db.mjs');
+  const { createSql, createStore } = await import('../lib/db.mjs');
   const { loadCatalog } = await import('../lib/public-api.mjs');
-  const sql = getSql();
+  const sql = createSql();
   try {
     // A stuck connection must not hang the build: give up after 30 s.
     const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout dopo 30 s')), 30000).unref());
