@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Agenda professionale</title>
+<title>Area riservata – Blooming</title>
 <link rel="icon" href="/assets/img/favicon-64.png" type="image/png">
 <link rel="stylesheet" href="/assets/css/style.css">
 <link rel="stylesheet" href="/admin/admin.css">
+<script src="/admin/vendor/qrcode.js" defer></script>
 <script src="/admin/admin.js" defer></script>
 </head>
 <body class="admin">
@@ -16,8 +17,12 @@
 <main id="login" class="login" hidden>
   <form class="panel login-card" data-login novalidate>
     <img class="login-logo" src="/assets/img/logo-icon.webp" width="147" height="112" alt="">
-    <h1>Agenda professionale</h1>
-    <p class="hint">Accesso riservato.</p>
+    <h1>Area riservata</h1>
+    <p class="hint">Agenda e gestione dello studio.</p>
+    <div class="field">
+      <label for="l-email">Email</label>
+      <input id="l-email" name="email" type="email" autocomplete="username" required>
+    </div>
     <div class="field">
       <label for="l-password">Password</label>
       <input id="l-password" name="password" type="password" autocomplete="current-password" required>
@@ -31,20 +36,53 @@
   </form>
 </main>
 
+<!-- Account activation from an invitation link -->
+<main id="invite" class="login" hidden>
+  <form class="panel login-card invite-card" data-invite novalidate>
+    <img class="login-logo" src="/assets/img/logo-icon.webp" width="147" height="112" alt="">
+    <h1>Attiva il tuo accesso</h1>
+    <p data-invite-who></p>
+    <ol class="invite-steps">
+      <li>
+        <strong>Installa un'app di autenticazione</strong> sul telefono, se non l'hai già: Google Authenticator, Microsoft Authenticator o simili (gratuite).
+      </li>
+      <li>
+        <strong>Aggiungi l'account Blooming all'app.</strong>
+        <span class="hint">Da computer: nell'app tocca “+” → “Scansiona un codice QR” e inquadra il codice qui sotto. Da telefono: tocca “Aggiungi all'app”.</span>
+        <div class="qr" data-qr></div>
+        <div class="cta-row">
+          <a class="btn btn-primary btn-small" data-otpauth href="#">Aggiungi all'app</a>
+          <button class="btn btn-ghost btn-small" type="button" data-copy-key>Copia la chiave</button>
+        </div>
+        <p class="hint">Chiave per l'inserimento manuale: <code data-key></code></p>
+      </li>
+      <li>
+        <strong>Scegli la password</strong> (almeno 12 caratteri).
+        <div class="field"><label for="i-pass">Password</label><input id="i-pass" name="password" type="password" autocomplete="new-password" minlength="12" required></div>
+        <div class="field"><label for="i-pass2">Ripeti la password</label><input id="i-pass2" name="password2" type="password" autocomplete="new-password" minlength="12" required></div>
+      </li>
+      <li>
+        <strong>Scrivi il codice di 6 cifre</strong> che l'app mostra per Blooming.
+        <div class="field"><label for="i-code">Codice</label><input id="i-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required></div>
+      </li>
+    </ol>
+    <p class="status form-error" role="alert" data-invite-error></p>
+    <button class="btn btn-primary" type="submit">Attiva e accedi</button>
+  </form>
+</main>
+
 <!-- App -->
 <div id="app" hidden>
   <header class="admin-header">
     <div class="admin-title">
-      <h1>Agenda professionale</h1>
+      <h1>Agenda</h1>
       <p class="hint" data-session-info></p>
     </div>
-    <nav class="admin-tabs" aria-label="Sezioni">
-      <button type="button" data-tab="agenda" aria-pressed="true">Agenda</button>
-      <button type="button" data-tab="richieste" aria-pressed="false">Richieste <span class="badge" data-req-count hidden></span></button>
-      <button type="button" data-tab="orari" aria-pressed="false">Orari</button>
-      <button type="button" data-tab="impostazioni" aria-pressed="false">Impostazioni</button>
-      <button type="button" data-logout>Esci</button>
-    </nav>
+    <div class="pro-switch" data-pro-switch hidden>
+      <label for="pro-select" class="hint">Agenda di</label>
+      <select id="pro-select" data-pro-select></select>
+    </div>
+    <nav class="admin-tabs" aria-label="Sezioni" data-tabs></nav>
   </header>
 
   <section data-panel="agenda" class="admin-panel">
@@ -78,8 +116,8 @@
   </section>
 
   <section data-panel="orari" class="admin-panel" hidden>
-    <h2>Orari di lavoro</h2>
-    <p class="hint">Nelle fasce “prenotabili online” i nuovi pazienti vedono gli orari liberi per il primo colloquio. Le altre fasce restano riservate a te (per esempio per le sedute successive).</p>
+    <h2>Orari di lavoro <span class="hint" data-rules-who></span></h2>
+    <p class="hint">Nelle fasce “prenotabili online” i nuovi pazienti vedono gli orari liberi per il primo colloquio. Le altre fasce restano riservate (per esempio per le sedute successive).</p>
     <form data-rules-form>
       <div class="rules" data-rules></div>
       <div class="cta-row">
@@ -90,39 +128,93 @@
     </form>
   </section>
 
+  <section data-panel="profilo" class="admin-panel" hidden>
+    <h2>Il mio profilo</h2>
+    <p class="hint">Come appari sul sito e in quali modalità offri i tuoi servizi. I servizi li assegna l'amministratore.</p>
+    <div data-profile></div>
+  </section>
+
+  <section data-panel="servizi" class="admin-panel" hidden>
+    <div class="section-toolbar">
+      <h2>Servizi</h2>
+      <button type="button" class="btn btn-primary btn-small" data-new-service>+ Nuovo servizio</button>
+    </div>
+    <div data-services></div>
+    <div class="publish-box" data-publish-box></div>
+  </section>
+
+  <section data-panel="professionisti" class="admin-panel" hidden>
+    <div class="section-toolbar">
+      <h2>Professionisti</h2>
+      <button type="button" class="btn btn-primary btn-small" data-new-pro>+ Nuovo professionista</button>
+    </div>
+    <div data-pros></div>
+  </section>
+
+  <section data-panel="account" class="admin-panel" hidden>
+    <div class="section-toolbar">
+      <h2>Account</h2>
+      <button type="button" class="btn btn-primary btn-small" data-new-user>+ Nuovo account</button>
+    </div>
+    <p class="hint">Ogni professionista ha il suo accesso e vede solo la propria agenda. Gli amministratori gestiscono servizi, professionisti e account e vedono tutte le agende.</p>
+    <div data-users></div>
+  </section>
+
   <section data-panel="impostazioni" class="admin-panel" hidden>
-    <h2>Impostazioni della prenotazione</h2>
-    <form data-settings-form class="settings-grid">
-      <div class="field"><label for="s-first">Durata primo colloquio (minuti)</label><input id="s-first" name="firstSessionMinutes" type="number" min="15" max="240"></div>
-      <div class="field"><label for="s-session">Durata seduta predefinita (minuti)</label><input id="s-session" name="sessionMinutes" type="number" min="15" max="240"></div>
-      <div class="field"><label for="s-step">Un orario prenotabile ogni (minuti)</label><input id="s-step" name="slotStepMinutes" type="number" min="15" max="240"></div>
-      <div class="field"><label for="s-buffer">Pausa minima tra appuntamenti (minuti)</label><input id="s-buffer" name="bufferMinutes" type="number" min="0" max="120"></div>
-      <div class="field"><label for="s-notice">Anticipo minimo per prenotare (ore)</label><input id="s-notice" name="minNoticeHours" type="number" min="0" max="336"></div>
-      <div class="field"><label for="s-horizon">Prenotabile fino a (giorni avanti)</label><input id="s-horizon" name="horizonDays" type="number" min="1" max="180"></div>
-      <div class="field"><label for="s-cancel">Annullabile online fino a (ore prima)</label><input id="s-cancel" name="cancelHours" type="number" min="0" max="168"></div>
-      <div class="field"><label for="s-reminder">Promemoria email (ore prima)</label><input id="s-reminder" name="reminderHours" type="number" min="1" max="72"></div>
-      <div class="field"><label for="s-retention">Cancella i recapiti dopo (mesi)</label><input id="s-retention" name="retentionMonths" type="number" min="1" max="120"></div>
-      <div class="field"><label for="s-req">Cancella le richieste dopo (mesi)</label><input id="s-req" name="requestRetentionMonths" type="number" min="1" max="24"></div>
-      <div class="cta-row"><button type="submit" class="btn btn-primary btn-small">Salva impostazioni</button></div>
-      <p class="status" role="status" data-settings-status></p>
-    </form>
+    <div data-settings-admin>
+      <h2>Impostazioni della prenotazione</h2>
+      <form data-settings-form class="settings-grid">
+        <div class="field"><label for="s-session">Durata seduta predefinita (minuti)</label><input id="s-session" name="sessionMinutes" type="number" min="15" max="240"></div>
+        <div class="field"><label for="s-step">Un orario prenotabile ogni (minuti)</label><input id="s-step" name="slotStepMinutes" type="number" min="15" max="240"></div>
+        <div class="field"><label for="s-buffer">Pausa minima tra appuntamenti (minuti)</label><input id="s-buffer" name="bufferMinutes" type="number" min="0" max="120"></div>
+        <div class="field"><label for="s-notice">Anticipo minimo per prenotare (ore)</label><input id="s-notice" name="minNoticeHours" type="number" min="0" max="336"></div>
+        <div class="field"><label for="s-horizon">Prenotabile fino a (giorni avanti)</label><input id="s-horizon" name="horizonDays" type="number" min="1" max="180"></div>
+        <div class="field"><label for="s-cancel">Annullabile online fino a (ore prima)</label><input id="s-cancel" name="cancelHours" type="number" min="0" max="168"></div>
+        <div class="field"><label for="s-reminder">Promemoria email (ore prima)</label><input id="s-reminder" name="reminderHours" type="number" min="1" max="72"></div>
+        <div class="field"><label for="s-retention">Cancella i recapiti dopo (mesi)</label><input id="s-retention" name="retentionMonths" type="number" min="1" max="120"></div>
+        <div class="field"><label for="s-req">Cancella le richieste dopo (mesi)</label><input id="s-req" name="requestRetentionMonths" type="number" min="1" max="24"></div>
+        <div class="cta-row"><button type="submit" class="btn btn-primary btn-small">Salva impostazioni</button></div>
+        <p class="status" role="status" data-settings-status></p>
+      </form>
+    </div>
 
     <h2>Calendario sul telefono</h2>
-    <p class="hint">Aggiungi questo indirizzo come “calendario in abbonamento” su iPhone, Google Calendar o Outlook: vedrai gli appuntamenti anche se il sito non fosse raggiungibile. I titoli sono neutri, senza nomi. Tieni l'indirizzo riservato.</p>
-    <p><code data-feed>Non configurato (variabile ICAL_TOKEN).</code></p>
+    <p class="hint">Crea un indirizzo da aggiungere come “calendario in abbonamento” su iPhone, Google Calendar o Outlook: vedrai i tuoi appuntamenti anche se il sito non fosse raggiungibile. I titoli sono neutri, senza nomi dei pazienti. Tieni l'indirizzo riservato: crearne uno nuovo disattiva il precedente.</p>
+    <div class="cta-row"><button type="button" class="btn btn-ghost btn-small" data-make-feed>Crea indirizzo del calendario</button></div>
+    <p><code data-feed hidden></code></p>
 
     <h2>Copia di sicurezza</h2>
-    <p class="hint">Scarica tutta l'agenda in un file. Conservalo in un luogo protetto: contiene dati personali.</p>
+    <p class="hint">Scarica gli appuntamenti in un file. Conservalo in un luogo protetto: contiene dati personali.</p>
     <a class="btn btn-ghost btn-small" href="/api/admin/export" download>Scarica l'agenda</a>
   </section>
 </div>
 
-<!-- Event dialog -->
+<!-- Generic form dialog (services, professionals, accounts) -->
+<dialog class="dlg" data-form-dialog>
+  <form method="dialog" class="dlg-inner" novalidate>
+    <div class="dlg-head">
+      <h2 data-form-title></h2>
+      <button type="button" class="round" data-form-close aria-label="Chiudi">×</button>
+    </div>
+    <div data-form-body></div>
+    <p class="status form-error" role="alert" data-form-error></p>
+    <div class="cta-row dlg-actions">
+      <button type="submit" class="btn btn-primary btn-small" data-form-save>Salva</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Appointment dialog -->
 <dialog class="dlg" data-dialog>
   <form method="dialog" class="dlg-inner" data-event-form novalidate>
     <div class="dlg-head">
       <h2 data-dlg-title>Nuovo</h2>
       <button type="button" class="round" data-close aria-label="Chiudi">×</button>
+    </div>
+
+    <div class="field" data-ev-pro-field hidden>
+      <label for="e-pro">Agenda di</label>
+      <select id="e-pro" name="professionalId"></select>
     </div>
 
     <div class="seg" role="group" aria-label="Tipo" data-kind-group>
@@ -132,6 +224,7 @@
     </div>
 
     <div data-appt-fields>
+      <div class="field"><label for="e-service">Servizio</label><select id="e-service" name="serviceId"></select></div>
       <div class="grid2">
         <div class="field"><label for="e-date">Data</label><input id="e-date" name="date" type="date"></div>
         <div class="field"><label for="e-time">Ora</label><input id="e-time" name="time" type="time" step="300"></div>
@@ -139,9 +232,6 @@
         <div class="field"><label for="e-mode">Modalità</label>
           <select id="e-mode" name="mode"><option value="studio">In studio</option><option value="online">Online</option><option value="">—</option></select>
         </div>
-      </div>
-      <div class="field"><label for="e-service">Servizio</label>
-        <select id="e-service" name="service"><option value="psicoterapia">Psicoterapia individuale</option><option value="coaching">Business coaching</option><option value="">—</option></select>
       </div>
       <div class="field"><label for="e-name">Nome o iniziali</label><input id="e-name" name="name" type="text" maxlength="80"></div>
       <div class="grid2">
@@ -160,7 +250,7 @@
     </div>
 
     <div data-block-fields hidden>
-      <div class="field"><label for="b-title">Motivo (visibile solo a te)</label><input id="b-title" name="title" type="text" maxlength="60" placeholder="es. Ferie, Formazione"></div>
+      <div class="field"><label for="b-title">Motivo (visibile solo nell'agenda)</label><input id="b-title" name="title" type="text" maxlength="60" placeholder="es. Ferie, Formazione"></div>
       <label class="check"><input type="checkbox" name="allDay" checked> <span>Giornate intere</span></label>
       <div class="grid2">
         <div class="field"><label for="b-start">Dal</label><input id="b-start" name="startDate" type="date"></div>

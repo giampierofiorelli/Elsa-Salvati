@@ -1,5 +1,6 @@
-// Booking widget (/prenota/), self-service management (/prenota/gestisci/)
-// and call-back request forms. Plain JavaScript, no dependencies.
+// Booking (/prenota/): area → service → professional → mode → day and time → details.
+// Self-service management (/prenota/gestisci/) and call-back request forms.
+// Plain JavaScript, no dependencies.
 (function () {
   'use strict';
 
@@ -10,7 +11,6 @@
   var fmtLong = new Intl.DateTimeFormat('it-IT', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   var fmtTime = new Intl.DateTimeFormat('it-IT', { timeZone: TZ, hour: '2-digit', minute: '2-digit' });
   var MODE_LABEL = { studio: 'In studio', online: 'Online' };
-  var SERVICE_LABEL = { psicoterapia: 'Psicoterapia individuale', coaching: 'Business coaching e lavoro' };
 
   function $(root, sel) { return root.querySelector(sel); }
   function el(tag, attrs, children) {
@@ -19,13 +19,17 @@
       if (k === 'text') n.textContent = attrs[k];
       else n.setAttribute(k, attrs[k]);
     });
-    (children || []).forEach(function (c) { n.appendChild(c); });
+    (children || []).forEach(function (c) { if (c) n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
     return n;
   }
   function longDate(iso) {
     var d = new Date(iso);
     var s = fmtLong.format(d);
     return s.charAt(0).toUpperCase() + s.slice(1) + ', ore ' + fmtTime.format(d);
+  }
+  function param(name) {
+    var m = new RegExp('[?&]' + name + '=([^&#]+)').exec(location.search);
+    return m ? decodeURIComponent(m[1]) : null;
   }
 
   function api(path, body) {
@@ -47,9 +51,16 @@
     });
   }
 
+  var catalogPromise;
+  function getCatalog() {
+    if (!catalogPromise) catalogPromise = api('/catalog');
+    return catalogPromise;
+  }
+
   function fillSummary(dl, rows) {
     dl.textContent = '';
     rows.forEach(function (r) {
+      if (!r[1]) return;
       dl.appendChild(el('dt', { text: r[0] }));
       dl.appendChild(el('dd', { text: r[1] }));
     });
@@ -70,38 +81,32 @@
     return URL.createObjectURL(new Blob([body], { type: 'text/calendar' }));
   }
 
-  // ---------- slot picker (shared by booking and rescheduling) ----------
-
-  function SlotPicker(root, onChange) {
-    this.root = root;
-    this.mode = 'studio';
-    this.data = null;
-    this.day = null;
-    this.slot = null;
-    this.onChange = onChange;
-    var self = this;
-    root.querySelectorAll('[data-mode-btn]').forEach(function (b) {
-      b.addEventListener('click', function () { self.setMode(b.getAttribute('data-mode-btn')); });
+  function setPressed(container, attr, value) {
+    container.querySelectorAll('[' + attr + ']').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute(attr) === String(value)));
     });
   }
 
-  SlotPicker.prototype.setMode = function (mode) {
-    this.mode = mode;
-    this.root.querySelectorAll('[data-mode-btn]').forEach(function (b) {
-      b.setAttribute('aria-pressed', String(b.getAttribute('data-mode-btn') === mode));
-    });
-    this.load();
-  };
+  // ---------- day and time picker ----------
 
-  SlotPicker.prototype.load = function () {
+  function SlotPicker(root, onChange) {
+    this.root = root;
+    this.data = null;
+    this.slot = null;
+    this.onChange = onChange;
+  }
+
+  SlotPicker.prototype.load = function (fetcher) {
     var self = this;
     var days = $(this.root, '[data-days]');
     days.textContent = '';
     days.appendChild(el('div', { class: 'skeleton', 'aria-hidden': 'true' }));
     $(this.root, '[data-times]').textContent = '';
+    $(this.root, '[data-empty]').hidden = true;
     this.slot = null;
     this.onChange(null);
-    return api('/slots?mode=' + this.mode).then(function (data) {
+    this.fetcher = fetcher || this.fetcher;
+    return this.fetcher().then(function (data) {
       self.data = data;
       self.renderDays();
     }).catch(function (err) {
@@ -113,10 +118,9 @@
   SlotPicker.prototype.renderDays = function () {
     var self = this;
     var days = $(this.root, '[data-days]');
-    var empty = $(this.root, '[data-empty]');
     days.textContent = '';
     var list = this.data.days;
-    empty.hidden = list.length > 0;
+    $(this.root, '[data-empty]').hidden = list.length > 0;
     if (!list.length) { $(this.root, '[data-times]').textContent = ''; return; }
     list.forEach(function (d, i) {
       var noon = new Date(d.date + 'T12:00:00Z');
@@ -133,13 +137,13 @@
 
   SlotPicker.prototype.selectDay = function (i) {
     var self = this;
-    this.day = this.data.days[i];
+    var day = this.data.days[i];
     this.slot = null;
     this.onChange(null);
     this.root.querySelectorAll('.day').forEach(function (b, j) { b.setAttribute('aria-pressed', String(i === j)); });
     var times = $(this.root, '[data-times]');
     times.textContent = '';
-    this.day.slots.forEach(function (s) {
+    day.slots.forEach(function (s) {
       var b = el('button', { type: 'button', class: 'time', 'aria-pressed': 'false', text: s.time });
       b.addEventListener('click', function () {
         times.querySelectorAll('.time').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
@@ -151,15 +155,6 @@
     });
   };
 
-  SlotPicker.prototype.summaryRows = function () {
-    var minutes = this.data ? this.data.durationMinutes : 50;
-    return [
-      ['Quando', longDate(this.slot.start)],
-      ['Modalità', MODE_LABEL[this.mode]],
-      ['Durata', minutes + ' minuti'],
-    ];
-  };
-
   function show(root, step) {
     root.querySelectorAll('.booking-step').forEach(function (s) { s.hidden = s.getAttribute('data-step') !== step; });
     var target = root.querySelector('[data-step="' + step + '"]');
@@ -169,23 +164,126 @@
   // ---------- booking ----------
 
   function initBooking(root) {
-    var serviceBtns = root.querySelectorAll('[data-service-btn]');
-    var wanted = (location.search.match(/servizio=(\w+)/) || [])[1];
-    var service = SERVICE_LABEL[wanted] ? wanted : (serviceBtns[0] && serviceBtns[0].getAttribute('data-service-btn'));
-    function rows() { return [['Servizio', SERVICE_LABEL[service]]].concat(picker.summaryRows()); }
-    function setService(key) {
-      service = key;
-      serviceBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-service-btn') === key)); });
-      if (picker && picker.slot) fillSummary($(root, '[data-summary]'), rows());
-    }
+    var state = { category: null, service: null, pro: null, mode: null };
+    var catalog;
     var picker = new SlotPicker(root, function (slot) {
       $(root, '[data-next]').disabled = !slot;
       var dl = $(root, '[data-summary]');
       if (slot) fillSummary(dl, rows()); else dl.hidden = true;
     });
-    serviceBtns.forEach(function (b) { b.addEventListener('click', function () { setService(b.getAttribute('data-service-btn')); }); });
-    setService(service);
-    picker.load();
+
+    function rows() {
+      return [
+        ['Servizio', state.service && state.service.name],
+        ['Con', state.pro && state.pro.name],
+        ['Modalità', MODE_LABEL[state.mode]],
+        ['Quando', picker.slot && longDate(picker.slot.start)],
+        ['Durata', state.service && state.service.durationMinutes + ' minuti'],
+      ];
+    }
+
+    function hideFrom(name) {
+      var order = ['service', 'pro', 'mode', 'slot'];
+      order.slice(order.indexOf(name)).forEach(function (k) { $(root, '[data-' + k + '-box]').hidden = true; });
+    }
+
+    function selectCategory(slug, preset) {
+      state.category = catalog.categories.find(function (c) { return c.slug === slug; });
+      setPressed($(root, '[data-categories]'), 'data-cat', slug);
+      hideFrom('service');
+      var box = $(root, '[data-services]');
+      box.textContent = '';
+      var bookable = state.category.services.filter(function (s) { return s.professionals.length; });
+      if (!bookable.length) {
+        box.appendChild(el('p', { class: 'note', text: 'I servizi di quest\'area non sono ancora prenotabili online: chiedici di ricontattarti qui sotto.' }));
+      }
+      bookable.forEach(function (s) {
+        var b = el('button', { type: 'button', class: 'choice', 'data-svc': s.id, 'aria-pressed': 'false' }, [
+          el('strong', { text: s.name }),
+          el('span', { text: s.durationMinutes + ' minuti' + (s.price ? ' · ' + s.price : '') }),
+        ]);
+        b.addEventListener('click', function () { selectService(s.id); });
+        box.appendChild(b);
+      });
+      $(root, '[data-service-box]').hidden = false;
+      var pre = preset && bookable.find(function (s) { return s.id === preset.service; });
+      if (pre) selectService(pre.id, preset);
+      else if (bookable.length === 1) selectService(bookable[0].id);
+    }
+
+    function selectService(id, preset) {
+      state.service = state.category.services.find(function (s) { return s.id === id; });
+      setPressed($(root, '[data-services]'), 'data-svc', id);
+      hideFrom('pro');
+      var box = $(root, '[data-pros]');
+      box.textContent = '';
+      state.service.professionals.forEach(function (p) {
+        var photo = p.photo
+          ? el('img', { src: '/assets/img/' + p.photo + '-480.webp', alt: '', width: '56', height: '56', loading: 'lazy' })
+          : el('img', { src: '/assets/img/logo-icon.webp', alt: '', width: '56', height: '56', class: 'pro-logo' });
+        var b = el('button', { type: 'button', class: 'pro', 'data-pro': p.id, 'aria-pressed': 'false' }, [
+          el('span', { class: 'pro-photo' }, [photo]),
+          el('span', { class: 'pro-text' }, [
+            el('strong', { text: p.name }),
+            el('span', { text: p.title }),
+            el('span', { class: 'pro-modes', text: p.modes.map(function (m) { return MODE_LABEL[m]; }).join(' · ') }),
+          ]),
+        ]);
+        b.addEventListener('click', function () { selectPro(p.id); });
+        box.appendChild(b);
+      });
+      $(root, '[data-pro-box]').hidden = false;
+      var pre = preset && state.service.professionals.find(function (p) { return p.id === preset.pro; });
+      if (pre) selectPro(pre.id);
+      else if (state.service.professionals.length === 1) selectPro(state.service.professionals[0].id);
+    }
+
+    function selectPro(id) {
+      state.pro = state.service.professionals.find(function (p) { return p.id === id; });
+      setPressed($(root, '[data-pros]'), 'data-pro', id);
+      hideFrom('mode');
+      var box = $(root, '[data-modes]');
+      box.textContent = '';
+      state.pro.modes.forEach(function (m) {
+        var b = el('button', { type: 'button', 'data-mode': m, 'aria-pressed': 'false', text: MODE_LABEL[m] });
+        b.addEventListener('click', function () { selectMode(m); });
+        box.appendChild(b);
+      });
+      $(root, '[data-mode-box]').hidden = false;
+      selectMode(state.pro.modes.indexOf('studio') >= 0 ? 'studio' : state.pro.modes[0]);
+    }
+
+    function selectMode(m) {
+      state.mode = m;
+      setPressed($(root, '[data-modes]'), 'data-mode', m);
+      $(root, '[data-slot-box]').hidden = false;
+      var q = '/slots?service=' + state.service.id + '&professional=' + state.pro.id + '&mode=' + m;
+      picker.load(function () { return api(q); });
+    }
+
+    getCatalog().then(function (c) {
+      catalog = c;
+      var box = $(root, '[data-categories]');
+      box.textContent = '';
+      c.categories.forEach(function (cat) {
+        var b = el('button', { type: 'button', 'data-cat': cat.slug, 'aria-pressed': 'false', text: cat.name });
+        b.addEventListener('click', function () { selectCategory(cat.slug); });
+        box.appendChild(b);
+      });
+      // Preselection from links like /prenota/?servizio=4&professionista=2
+      var wantService = param('servizio');
+      var wantPro = param('professionista');
+      if (wantService) {
+        var cat = c.categories.find(function (x) { return x.services.some(function (s) { return s.id === wantService; }); });
+        if (cat) selectCategory(cat.slug, { service: wantService, pro: wantPro });
+      } else if (param('area')) {
+        selectCategory(param('area'));
+      }
+    }).catch(function (err) {
+      var box = $(root, '[data-categories]');
+      box.textContent = '';
+      box.appendChild(el('p', { class: 'form-error', text: err.message }));
+    });
 
     $(root, '[data-next]').addEventListener('click', function () {
       fillSummary($(root, '[data-summary-2]'), rows());
@@ -208,8 +306,8 @@
       btn.disabled = true;
       btn.textContent = 'Conferma in corso…';
       api('/book', {
-        start: picker.slot.start, mode: picker.mode, service: service, name: name, email: email,
-        phone: form.phone.value.trim(), privacy: true, website: form.website.value,
+        start: picker.slot.start, mode: state.mode, service: state.service.id, professional: state.pro.id,
+        name: name, email: email, phone: form.phone.value.trim(), privacy: true, website: form.website.value,
       }).then(function (res) {
         fillSummary($(root, '[data-summary-3]'), rows());
         $(root, '[data-ics]').href = icsHref(res.booking.start, res.booking.end, res.booking.mode);
@@ -232,13 +330,19 @@
 
   function initManage(root) {
     var token = (location.hash.match(/t=([\w-]+)/) || [])[1];
-    // Remove the token from the address bar so it is not shared by accident.
     if (token && history.replaceState) history.replaceState(null, '', location.pathname);
     var loading = $(root, '[data-manage-loading]');
     var invalid = $(root, '[data-invalid]');
     if (!token) { loading.hidden = true; invalid.hidden = false; return; }
 
-    var picker;
+    var pickStep = root.querySelector('[data-step="pick"]');
+    var mode;
+    var picker = new SlotPicker(pickStep, function (slot) {
+      $(root, '[data-next]').disabled = !slot;
+      var dl = $(root, '[data-summary]');
+      if (slot) fillSummary(dl, [['Nuovo orario', longDate(slot.start)], ['Modalità', MODE_LABEL[mode]]]); else dl.hidden = true;
+    });
+
     function done(title, text, booking) {
       $(root, '[data-done-title]').textContent = title;
       $(root, '[data-done-text]').textContent = text;
@@ -253,11 +357,19 @@
       show(root, 'done');
     }
 
+    function selectMode(m) {
+      mode = m;
+      setPressed($(root, '[data-modes]'), 'data-mode', m);
+      picker.load(function () { return api('/manage/slots', { t: token, mode: m }); });
+    }
+
     api('/manage', { t: token }).then(function (res) {
       loading.hidden = true;
       var b = res.booking;
       fillSummary($(root, '[data-current]'), [
         ['Quando', longDate(b.start)],
+        ['Servizio', b.service && b.service.name],
+        ['Con', b.professional && b.professional.name],
         ['Modalità', MODE_LABEL[b.mode] || '—'],
         ['Stato', b.status === 'confermato' ? 'Confermato' : 'Annullato'],
       ]);
@@ -273,31 +385,30 @@
       }
       show(root, 'view');
 
+      var modesBox = $(root, '[data-modes]');
+      (b.modes || ['studio', 'online']).forEach(function (m) {
+        var btn = el('button', { type: 'button', 'data-mode': m, 'aria-pressed': 'false', text: MODE_LABEL[m] });
+        btn.addEventListener('click', function () { selectMode(m); });
+        modesBox.appendChild(btn);
+      });
+
       $(root, '[data-cancel]').addEventListener('click', function () {
         if (!window.confirm('Vuoi davvero annullare l\'appuntamento?')) return;
         api('/manage/cancel', { t: token }).then(function () {
-          done('Appuntamento annullato.', 'Ti ho inviato un\'email di conferma. Se vuoi, puoi prenotare un nuovo orario quando preferisci.');
+          done('Appuntamento annullato.', 'Ti abbiamo inviato un\'email di conferma. Se vuoi, puoi prenotare un nuovo orario quando preferisci.');
         }).catch(function (err) { $(root, '[data-view-error]').textContent = err.message; });
       });
-
       $(root, '[data-start-reschedule]').addEventListener('click', function () {
         show(root, 'pick');
-        if (!picker) {
-          picker = new SlotPicker(root.querySelector('[data-step="pick"]'), function (slot) {
-            $(root, '[data-next]').disabled = !slot;
-            var dl = $(root, '[data-summary]');
-            if (slot) fillSummary(dl, picker.summaryRows()); else dl.hidden = true;
-          });
-          picker.setMode(b.mode === 'online' ? 'online' : 'studio');
-        }
+        if (!mode) selectMode((b.modes || []).indexOf(b.mode) >= 0 ? b.mode : (b.modes || ['studio'])[0]);
       });
       $(root, '[data-back-view]').addEventListener('click', function () { show(root, 'view'); });
       $(root, '[data-next]').addEventListener('click', function () {
         var btn = this;
         btn.disabled = true;
-        api('/manage/reschedule', { t: token, start: picker.slot.start, mode: picker.mode }).then(function (res) {
-          token = (res.manageUrl.match(/t=([\w-]+)/) || [])[1];
-          done('Appuntamento spostato.', 'Ti ho inviato un\'email con il nuovo orario e un nuovo link personale.', res.booking);
+        api('/manage/reschedule', { t: token, start: picker.slot.start, mode: mode }).then(function (r) {
+          token = (r.manageUrl.match(/t=([\w-]+)/) || [])[1];
+          done('Appuntamento spostato.', 'Ti abbiamo inviato un\'email con il nuovo orario e un nuovo link personale.', r.booking);
         }).catch(function (err) {
           $(root, '[data-error]').textContent = err.message;
           if (err.code === 'slot_unavailable') picker.load();
@@ -313,6 +424,27 @@
   // ---------- call-back request ----------
 
   function initRequest(form) {
+    var proField = form.querySelector('[data-pro-field]');
+    var proSelect = form.professional;
+    if (form.category && proField) {
+      form.category.addEventListener('change', function () {
+        var slug = form.category.value;
+        getCatalog().then(function (c) {
+          var cat = c.categories.find(function (x) { return x.slug === slug; });
+          proSelect.textContent = '';
+          proSelect.appendChild(el('option', { value: '', text: 'Indifferente' }));
+          var seen = {};
+          (cat ? cat.services : []).forEach(function (s) {
+            s.professionals.forEach(function (p) {
+              if (seen[p.id]) return;
+              seen[p.id] = true;
+              proSelect.appendChild(el('option', { value: p.id, text: p.name }));
+            });
+          });
+          proField.hidden = proSelect.options.length <= 1;
+        }).catch(function () { proField.hidden = true; });
+      });
+    }
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var status = $(form, '[data-request-status]');
@@ -329,14 +461,16 @@
       btn.disabled = true;
       api('/request', {
         name: name, email: email, phone: phone, mode: form.mode.value,
-        service: form.service ? form.service.value : 'da_definire',
+        category: form.category ? form.category.value : 'da_definire',
+        professional: proSelect && !proField.hidden ? proSelect.value : '',
         preference: form.preference ? form.preference.value.trim() : '',
         message: form.message ? form.message.value.trim() : '',
         privacy: true, website: form.website.value,
       }).then(function () {
         form.reset();
+        if (proField) proField.hidden = true;
         status.className = 'status form-ok';
-        status.textContent = 'Grazie, richiesta inviata. Ti ricontatterò personalmente al più presto.';
+        status.textContent = 'Grazie, richiesta inviata. Ti ricontatteremo personalmente al più presto.';
       }).catch(function (err) { fail(err.message); }).then(function () { btn.disabled = false; });
     });
   }

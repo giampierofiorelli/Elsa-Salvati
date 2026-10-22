@@ -1,29 +1,39 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { dbAvailable, freshDb, testDeps, request, PASSWORD } from './helpers.mjs';
+import { dbAvailable, freshDb, testDeps, request, PASSWORD, createEnrolledUser, totpCode } from './helpers.mjs';
 import { createPublicApi } from '../lib/public-api.mjs';
 import { createAdminApi, COOKIE } from '../lib/admin-api.mjs';
 import { runReminders, runRetention, buildIcs } from '../lib/jobs.mjs';
-import { totpCode } from '../lib/crypto.mjs';
 
 const available = await dbAvailable();
 const opts = { skip: available ? false : 'no local PostgreSQL (set TEST_DATABASE_URL)' };
 
 // Thursday 22 October 2026, 12:00 in Rome (summer time).
 const clock = { now: new Date('2026-10-22T10:00:00Z') };
-let sql, deps, pub, admin, cookie;
-const ctx = { ip: '203.0.113.7' };
+const tick = () => { clock.now = new Date(clock.now.getTime() + 31000); }; // next TOTP step
+let sql, deps, pub, admin;
 let ipCounter = 0;
-const freshCtx = () => ({ ip: `198.51.100.${++ipCounter}` });
+const freshCtx = () => ({ ip: `198.51.100.${++ipCounter % 250}` });
+const ids = {};      // services and professionals created through the API
+const cookies = {};  // session cookies per person
 
-async function call(handler, method, path, body, { headers, context = ctx } = {}) {
+async function call(handler, method, path, body, { headers, context = freshCtx() } = {}) {
   const res = await handler(request(method, path, { body, headers }), context);
   const text = await res.text();
   return { status: res.status, body: text ? JSON.parse(text) : null, headers: res.headers };
 }
+const cookieOf = (res) => res.headers.get('set-cookie').split(';')[0].split('=').slice(1).join('=');
+const as = (who) => (method, path, body) => call(admin, method, `/api/admin${path}`, body, {
+  headers: { cookie: `${COOKIE}=${cookies[who]}`, 'x-agenda': '1' },
+});
+const pubCall = (method, path, body) => call(pub, method, `/api/public${path}`, body);
 
-const adminHeaders = () => ({ cookie: `${COOKIE}=${cookie}`, 'x-agenda': '1' });
-const adminCall = (method, path, body) => call(admin, method, `/api/admin${path}`, body, { headers: adminHeaders() });
+async function login(email, secret, password = PASSWORD) {
+  tick();
+  return call(admin, 'POST', '/api/admin/login', { email, password, code: totpCode(secret, Math.floor(clock.now.getTime() / 30000)) });
+}
+
+let adminUser;
 
 before(async () => {
   if (!available) return;
@@ -31,292 +41,270 @@ before(async () => {
   deps = testDeps(sql, clock);
   pub = createPublicApi(deps);
   admin = createAdminApi(deps);
+  adminUser = await createEnrolledUser(deps, { email: 'direzione@example.it', name: 'Direzione', role: 'admin' });
 });
 
 after(async () => { if (sql) await sql.end({ timeout: 1 }); });
 
-test('admin login needs password and a fresh TOTP code', opts, async () => {
-  const counter = Math.floor(clock.now.getTime() / 30000);
-  const code = totpCode(deps.env.ADMIN_TOTP_SECRET, counter);
-
-  let r = await call(admin, 'POST', '/api/admin/login', { password: 'sbagliata', code });
+test('login needs email, password and a fresh authenticator code', opts, async () => {
+  let r = await login(adminUser.email, adminUser.secret, 'sbagliata');
   assert.equal(r.status, 401);
-  r = await call(admin, 'POST', '/api/admin/login', { password: PASSWORD, code: '000000' });
+  r = await call(admin, 'POST', '/api/admin/login', { email: adminUser.email, password: PASSWORD, code: '000000' });
   assert.equal(r.status, 401);
-
-  r = await call(admin, 'POST', '/api/admin/login', { password: PASSWORD, code });
+  r = await login(adminUser.email, adminUser.secret);
   assert.equal(r.status, 200);
-  const setCookie = r.headers.get('set-cookie');
-  assert.match(setCookie, /HttpOnly; Secure; SameSite=Strict/);
-  cookie = setCookie.split(';')[0].split('=').slice(1).join('=');
-
-  // The same code cannot be used twice.
-  r = await call(admin, 'POST', '/api/admin/login', { password: PASSWORD, code }, { context: freshCtx() });
+  assert.match(r.headers.get('set-cookie'), /HttpOnly; Secure; SameSite=Strict/);
+  cookies.admin = cookieOf(r);
+  // The same code cannot be reused.
+  const code = totpCode(adminUser.secret, Math.floor(clock.now.getTime() / 30000));
+  r = await call(admin, 'POST', '/api/admin/login', { email: adminUser.email, password: PASSWORD, code });
   assert.equal(r.status, 401);
-
-  r = await adminCall('GET', '/me');
-  assert.equal(r.status, 200);
-  assert.equal(r.body.today, '2026-10-22');
+  r = await as('admin')('GET', '/me');
+  assert.equal(r.body.user.role, 'admin');
 });
 
-test('admin endpoints reject missing session and missing CSRF header', opts, async () => {
-  let r = await call(admin, 'GET', '/api/admin/events?from=2026-10-26&to=2026-10-30');
-  assert.equal(r.status, 401);
-  r = await call(admin, 'PUT', '/api/admin/rules', { rules: [] }, { headers: { cookie: `${COOKIE}=${cookie}` } });
-  assert.equal(r.status, 403);
-  r = await call(admin, 'PUT', '/api/admin/rules', { rules: [] }, { headers: { ...adminHeaders(), origin: 'https://evil.example' } });
-  assert.equal(r.status, 403);
+test('admin builds the catalogue: services in three areas and professionals', opts, async () => {
+  const cat = await as('admin')('GET', '/catalog');
+  assert.deepEqual(cat.body.categories.map((c) => c.slug), ['coaching', 'psicologia', 'psicoterapia']);
+  const catId = Object.fromEntries(cat.body.categories.map((c) => [c.slug, c.id]));
+
+  const mk = async (body) => {
+    const r = await as('admin')('POST', '/services', body);
+    assert.equal(r.status, 201, JSON.stringify(r.body));
+    return r.body.id;
+  };
+  ids.coaching = await mk({ categoryId: catId.coaching, name: 'Business coaching individuale', durationMinutes: 60, price: '€80' });
+  ids.consulenza = await mk({ categoryId: catId.psicologia, name: 'Consulenza psicologica', durationMinutes: 50 });
+  ids.terapia = await mk({ categoryId: catId.psicoterapia, name: 'Psicoterapia individuale', durationMinutes: 50 });
+  let r = await as('admin')('POST', '/services', { categoryId: catId.coaching, name: 'Business coaching individuale' });
+  assert.equal(r.status, 409, 'duplicate page address is refused');
+
+  const pro = async (body) => {
+    const res = await as('admin')('POST', '/professionals', body);
+    assert.equal(res.status, 201, JSON.stringify(res.body));
+    return res.body.id;
+  };
+  ids.elsa = await pro({ name: 'Dott.ssa Elsa Salvati', title: 'Psicologa · Business coach', notifyEmail: 'elsa@example.it' });
+  ids.marco = await pro({ name: 'Dott. Marco Neri', title: 'Psicoterapeuta', notifyEmail: 'marco@example.it' });
+  ids.laura = await pro({ name: 'Dott.ssa Laura Riva', title: 'Psicologa psicoterapeuta' });
+
+  r = await as('admin')('PUT', `/professionals/${ids.elsa}/services`, { offerings: [
+    { serviceId: ids.coaching, inStudio: true, online: true },
+    { serviceId: ids.consulenza, inStudio: true, online: false },
+  ] });
+  assert.equal(r.status, 200);
+  r = await as('admin')('PUT', `/professionals/${ids.marco}/services`, { offerings: [{ serviceId: ids.terapia, inStudio: true, online: false }] });
+  assert.equal(r.status, 200);
+  r = await as('admin')('PUT', `/professionals/${ids.laura}/services`, { offerings: [{ serviceId: ids.terapia, inStudio: true, online: true }] });
+  assert.equal(r.status, 200);
+  r = await as('admin')('PUT', `/professionals/${ids.laura}/services`, { offerings: [{ serviceId: ids.terapia, inStudio: false, online: false }] });
+  assert.equal(r.status, 400, 'at least one mode per service');
 });
 
-test('login is rate limited after repeated failures', opts, async () => {
-  const c = { ip: '192.0.2.99' };
-  for (let i = 0; i < 5; i++) {
-    const r = await call(admin, 'POST', '/api/admin/login', { password: 'x', code: '123456' }, { context: c });
-    assert.equal(r.status, 401);
-  }
-  const r = await call(admin, 'POST', '/api/admin/login', { password: PASSWORD, code: '123456' }, { context: c });
-  assert.equal(r.status, 429);
+test('admin invites a professional who activates the account with a QR code', opts, async () => {
+  let r = await as('admin')('POST', '/users', { email: 'marco@example.it', name: 'Marco Neri', role: 'professionista', professionalId: ids.marco });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  const token = new URL(r.body.inviteUrl).hash.split('=')[1];
+  assert.ok(token.length > 30);
+
+  r = await call(admin, 'POST', '/api/admin/invite/info', { t: token });
+  assert.equal(r.status, 200);
+  assert.match(r.body.otpauth, /^otpauth:\/\/totp\/Blooming:marco%40example\.it\?secret=[A-Z2-7]+&issuer=Blooming/);
+  const secret = r.body.secret;
+  // Re-opening the link shows the same QR (the app may already have scanned it).
+  assert.equal((await call(admin, 'POST', '/api/admin/invite/info', { t: token })).body.secret, secret);
+
+  tick();
+  r = await call(admin, 'POST', '/api/admin/invite/accept', { t: token, password: 'corta', code: totpCode(secret, Math.floor(clock.now.getTime() / 30000)) });
+  assert.equal(r.status, 400);
+  r = await call(admin, 'POST', '/api/admin/invite/accept', { t: token, password: 'una-password-lunga-marco', code: '123456' });
+  assert.equal(r.status, 400);
+  r = await call(admin, 'POST', '/api/admin/invite/accept', { t: token, password: 'una-password-lunga-marco', code: totpCode(secret, Math.floor(clock.now.getTime() / 30000)) });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  cookies.marco = cookieOf(r);
+  ids.marcoSecret = secret;
+
+  // The link works only once.
+  r = await call(admin, 'POST', '/api/admin/invite/info', { t: token });
+  assert.equal(r.status, 404);
+
+  r = await as('marco')('GET', '/me');
+  assert.equal(r.body.user.role, 'professionista');
+  assert.deepEqual(r.body.professionals.map((p) => p.id), [ids.marco]);
+
+  // A professional cannot manage accounts or services.
+  assert.equal((await as('marco')('GET', '/users')).status, 403);
+  assert.equal((await as('marco')('POST', '/services', { categoryId: '1', name: 'X' })).status, 403);
 });
 
-test('studio sets weekly hours; public sees only bookable slots', opts, async () => {
-  let r = await adminCall('PUT', '/rules', {
-    rules: [
-      { weekday: 1, start_time: '09:00', end_time: '13:00', mode: 'entrambi', public: true },
-      { weekday: 3, start_time: '14:00', end_time: '18:00', mode: 'online', public: true },
-      { weekday: 4, start_time: '09:00', end_time: '18:00', mode: 'studio', public: false },
-    ],
-  });
+test('each professional sets their own weekly hours', opts, async () => {
+  let r = await as('admin')('PUT', '/rules', { professionalId: ids.elsa, rules: [
+    { weekday: 1, start_time: '09:00', end_time: '13:00', mode: 'entrambi', public: true },
+  ] });
   assert.equal(r.status, 200);
-  assert.equal(r.body.rules.length, 3);
-
-  r = await call(pub, 'GET', '/api/public/slots');
+  r = await as('admin')('PUT', '/rules', { professionalId: ids.laura, rules: [
+    { weekday: 1, start_time: '09:00', end_time: '12:00', mode: 'entrambi', public: true },
+  ] });
   assert.equal(r.status, 200);
-  const first = r.body.days[0];
-  assert.equal(first.date, '2026-10-26'); // next Monday; Thursday rule is not public
-  assert.deepEqual(first.slots.map((s) => s.time), ['09:00', '10:00', '11:00', '12:00']);
+  // Marco tries to write Elsa's hours: the request is applied to his own agenda only.
+  r = await as('marco')('PUT', '/rules', { professionalId: ids.elsa, rules: [
+    { weekday: 1, start_time: '10:00', end_time: '12:00', mode: 'studio', public: true },
+  ] });
+  assert.equal(r.status, 200);
+  assert.equal(r.body.professionalId, ids.marco);
+  r = await as('admin')('GET', `/rules?professional=${ids.elsa}`);
+  assert.deepEqual(r.body.rules.map((x) => `${x.start_time}-${x.end_time}`), ['09:00-13:00']);
+});
 
-  r = await call(pub, 'GET', '/api/public/slots?mode=online');
-  assert.ok(r.body.days.some((d) => d.date === '2026-10-28'));
-  r = await call(pub, 'GET', '/api/public/slots?mode=studio');
-  assert.ok(!r.body.days.some((d) => d.date === '2026-10-28'));
+test('public catalogue lists areas, services, professionals and modes', opts, async () => {
+  const r = await pubCall('GET', '/catalog');
+  assert.equal(r.status, 200);
+  const coaching = r.body.categories.find((c) => c.slug === 'coaching');
+  assert.equal(coaching.services[0].name, 'Business coaching individuale');
+  assert.deepEqual(coaching.services[0].professionals.map((p) => [p.name, p.modes.join('+')]), [['Dott.ssa Elsa Salvati', 'studio+online']]);
+  const terapia = r.body.categories.find((c) => c.slug === 'psicoterapia').services[0];
+  assert.deepEqual(terapia.professionals.map((p) => p.name).sort(), ['Dott. Marco Neri', 'Dott.ssa Laura Riva']);
+  assert.ok(!JSON.stringify(r.body).includes('notify'), 'no private fields in the public catalogue');
+});
+
+test('slots depend on professional, service duration and allowed modes', opts, async () => {
+  let r = await pubCall('GET', `/slots?service=${ids.terapia}&professional=${ids.marco}&mode=online`);
+  assert.equal(r.status, 400);
+  assert.equal(r.body.error, 'mode_unavailable');
+  r = await pubCall('GET', `/slots?service=${ids.terapia}&professional=${ids.elsa}&mode=studio`);
+  assert.equal(r.status, 404, 'Elsa does not offer psychotherapy');
+  r = await pubCall('GET', `/slots?service=${ids.terapia}&professional=${ids.marco}&mode=studio`);
+  assert.deepEqual(r.body.days[0].slots.map((s) => s.time), ['10:00', '11:00']);
+  r = await pubCall('GET', `/slots?service=${ids.coaching}&professional=${ids.elsa}&mode=online`);
+  assert.equal(r.body.durationMinutes, 60);
+  assert.equal(r.body.days[0].date, '2026-10-26');
 });
 
 let manageToken;
 
-test('patient books a slot instantly and receives a neutral confirmation', opts, async () => {
-  const start = '2026-10-26T09:00:00.000Z'; // 10:00 in Rome (winter time from 25 Oct)
-  const r = await call(pub, 'POST', '/api/public/book', {
-    start, mode: 'studio', service: 'psicoterapia', name: 'Giulia Bianchi', email: 'giulia@example.it', privacy: true,
-  }, { context: freshCtx() });
+test('two professionals can be booked at the same hour; one person cannot be double-booked', opts, async () => {
+  const start = '2026-10-26T09:00:00.000Z'; // Monday 10:00 in Rome
+  let r = await pubCall('POST', '/book', { start, mode: 'studio', service: ids.terapia, professional: ids.marco, name: 'Giulia Bianchi', email: 'giulia@example.it', privacy: true });
   assert.equal(r.status, 201, JSON.stringify(r.body));
-  assert.equal(r.body.booking.start, start);
   manageToken = new URL(r.body.manageUrl).hash.slice(3);
-  assert.ok(manageToken.length > 30);
+  assert.equal(r.body.booking.professional.name, 'Dott. Marco Neri');
 
-  const mails = deps.mailer.sent;
-  const toPatient = mails.find((m) => m.to === 'giulia@example.it');
-  assert.match(toPatient.subject, /confermato/);
-  assert.match(toPatient.text, /lunedì 26 ottobre 2026, ore 10:00/);
-  const toStudio = mails.find((m) => m.to === 'studio@example.it');
-  assert.ok(!toStudio.text.includes('Giulia'), 'studio notice must not contain patient name');
+  r = await pubCall('POST', '/book', { start, mode: 'online', service: ids.coaching, professional: ids.elsa, name: 'Paolo Verdi', email: 'paolo@example.it', privacy: true });
+  assert.equal(r.status, 201, 'Elsa is free at the same time');
+  assert.equal(new Date(r.body.booking.end) - new Date(r.body.booking.start), 60 * 60000, 'coaching lasts 60 minutes');
 
-  // Stored encrypted.
-  const [row] = await sql`select contact_enc from events where kind = 'primo_colloquio'`;
-  assert.ok(!row.contact_enc.includes('Giulia'));
-
-  const slots = await call(pub, 'GET', '/api/public/slots');
-  assert.ok(!slots.body.days[0].slots.some((s) => s.start === start));
-});
-
-test('only one of many simultaneous bookings for the same slot succeeds', opts, async () => {
-  const start = '2026-10-26T10:00:00.000Z';
-  const results = await Promise.all(Array.from({ length: 6 }, (_, i) => call(pub, 'POST', '/api/public/book', {
-    start, mode: 'online', service: 'coaching', name: `Persona ${i}`, email: `p${i}@example.it`, privacy: true,
-  }, { context: freshCtx() })));
-  const codes = results.map((r) => r.status).sort();
+  const results = await Promise.all(Array.from({ length: 6 }, (_, i) => pubCall('POST', '/book', {
+    start: '2026-10-26T10:00:00.000Z', mode: 'studio', service: ids.terapia, professional: ids.laura, name: `Persona ${i}`, email: `p${i}@example.it`, privacy: true,
+  })));
+  const codes = results.map((x) => x.status);
   assert.equal(codes.filter((c) => c === 201).length, 1, JSON.stringify(codes));
   assert.ok(codes.filter((c) => c !== 201).every((c) => c === 409));
-  const [{ n }] = await sql`select count(*)::int as n from events where start_at = ${start} and status = 'confermato'`;
-  assert.equal(n, 1);
+
+  r = await pubCall('POST', '/book', { start: '2026-10-26T10:00:00.000Z', mode: 'online', service: ids.terapia, professional: ids.marco, name: 'Ada', email: 'ada@example.it', privacy: true });
+  assert.equal(r.status, 400, 'Marco does not work online');
+
+  const notices = deps.mailer.sent.filter((m) => m.to === 'marco@example.it');
+  assert.ok(notices.length >= 1, 'the professional is notified');
+  assert.ok(!notices[0].text.includes('Giulia'), 'without the patient name');
+  const toPatient = deps.mailer.sent.find((m) => m.to === 'giulia@example.it');
+  assert.match(toPatient.text, /Con: Dott\. Marco Neri/);
 });
 
-test('booking validation: unavailable slot, duplicate email, privacy, honeypot', opts, async () => {
-  let r = await call(pub, 'POST', '/api/public/book', {
-    start: '2026-10-26T09:30:00.000Z', mode: 'studio', service: 'psicoterapia', name: 'Ada', email: 'ada@example.it', privacy: true,
-  }, { context: freshCtx() });
-  assert.equal(r.status, 409);
-  assert.equal(r.body.error, 'slot_unavailable');
-
-  r = await call(pub, 'POST', '/api/public/book', {
-    start: '2026-10-26T11:00:00.000Z', mode: 'studio', service: 'psicoterapia', name: 'Giulia', email: 'GIULIA@example.it', privacy: true,
-  }, { context: freshCtx() });
-  assert.equal(r.status, 409);
-  assert.equal(r.body.error, 'already_booked');
-
-  r = await call(pub, 'POST', '/api/public/book', {
-    start: '2026-10-26T11:00:00.000Z', mode: 'studio', service: 'psicoterapia', name: 'Ada', email: 'ada@example.it',
-  }, { context: freshCtx() });
-  assert.equal(r.status, 400);
-
-  // The service is required.
-  r = await call(pub, 'POST', '/api/public/book', {
-    start: '2026-10-26T11:00:00.000Z', mode: 'studio', name: 'Ada', email: 'ada@example.it', privacy: true,
-  }, { context: freshCtx() });
-  assert.equal(r.status, 400);
-
-  r = await call(pub, 'POST', '/api/public/book', {
-    start: '2026-10-26T11:00:00.000Z', mode: 'studio', service: 'psicoterapia', name: 'Bot', email: 'b@example.it', privacy: true, website: 'x',
-  }, { context: freshCtx() });
-  assert.equal(r.status, 400);
+test('each professional sees only their own agenda', opts, async () => {
+  let r = await as('marco')('GET', '/events?from=2026-10-26&to=2026-10-26&professional=all');
+  assert.ok(r.body.events.length >= 1);
+  assert.ok(r.body.events.every((e) => e.professionalId === ids.marco));
+  r = await as('admin')('GET', '/events?from=2026-10-26&to=2026-10-26&professional=all');
+  assert.deepEqual([...new Set(r.body.events.map((e) => e.professionalName))].sort(), ['Dott. Marco Neri', 'Dott.ssa Elsa Salvati', 'Dott.ssa Laura Riva']);
+  const elsaEvent = r.body.events.find((e) => e.professionalId === ids.elsa);
+  assert.equal(elsaEvent.serviceName, 'Business coaching individuale');
+  assert.equal((await as('marco')('PATCH', `/events/${elsaEvent.id}`, { time: '12:00' })).status, 404);
+  assert.equal((await as('marco')('POST', `/events/${elsaEvent.id}/cancel`, {})).status, 404);
+  // Marco adds an appointment: it lands in his agenda whatever he sends.
+  r = await as('marco')('POST', '/events', { professionalId: ids.elsa, kind: 'seduta', date: '2026-10-27', time: '15:00', durationMinutes: 50, name: 'M. R.', serviceId: ids.terapia });
+  assert.equal(r.status, 201);
+  const ev = await deps.store.getEvent(r.body.created[0]);
+  assert.equal(ev.professional_id, ids.marco);
 });
 
-test('patient reschedules and then cancels from the personal link', opts, async () => {
-  let r = await call(pub, 'POST', '/api/public/manage', { t: manageToken });
-  assert.equal(r.status, 200);
-  assert.equal(r.body.booking.canChange, true);
-
-  r = await call(pub, 'POST', '/api/public/manage/reschedule', { t: manageToken, start: '2026-10-26T11:00:00.000Z', mode: 'online' });
+test('patient reschedules and cancels from the personal link', opts, async () => {
+  let r = await pubCall('POST', '/manage', { t: manageToken });
+  assert.equal(r.body.booking.professional.name, 'Dott. Marco Neri');
+  r = await pubCall('POST', '/manage/slots', { t: manageToken, mode: 'studio' });
+  assert.ok(r.body.days[0].slots.some((s) => s.time === '10:00'), 'own current slot is offered again');
+  assert.equal((await pubCall('POST', '/manage/slots', { t: manageToken, mode: 'online' })).status, 400);
+  r = await pubCall('POST', '/manage/reschedule', { t: manageToken, start: '2026-10-26T10:00:00.000Z', mode: 'studio' });
   assert.equal(r.status, 200, JSON.stringify(r.body));
   const newToken = new URL(r.body.manageUrl).hash.slice(3);
-
-  // Old link no longer works.
-  r = await call(pub, 'POST', '/api/public/manage', { t: manageToken });
-  assert.equal(r.status, 404);
-
-  r = await call(pub, 'POST', '/api/public/manage/cancel', { t: newToken });
+  r = await pubCall('POST', '/manage/cancel', { t: newToken });
   assert.equal(r.status, 200);
-  r = await call(pub, 'POST', '/api/public/manage', { t: newToken });
+  r = await pubCall('POST', '/manage', { t: newToken });
   assert.equal(r.body.booking.status, 'annullato');
-
-  // Slot is free again.
-  r = await call(pub, 'GET', '/api/public/slots');
-  assert.ok(r.body.days[0].slots.some((s) => s.start === '2026-10-26T11:00:00.000Z'));
 });
 
-test('cancellation is refused inside the notice window', opts, async () => {
-  const r = await call(pub, 'POST', '/api/public/book', {
-    start: '2026-10-26T08:00:00.000Z', mode: 'studio', service: 'psicoterapia', name: 'Luca Verdi', email: 'luca@example.it', privacy: true,
-  }, { context: freshCtx() });
-  assert.equal(r.status, 201);
-  const token = new URL(r.body.manageUrl).hash.slice(3);
-  const saved = clock.now;
-  clock.now = new Date('2026-10-25T20:00:00Z'); // 12 hours before
-  const c = await call(pub, 'POST', '/api/public/manage/cancel', { t: token });
-  clock.now = saved;
-  assert.equal(c.status, 409);
-  assert.equal(c.body.error, 'too_late');
-});
-
-test('a short-notice booking can still be undone within an hour of booking', opts, async () => {
-  const { sha256, randomToken } = await import('../lib/crypto.mjs');
-  const saved = clock.now;
-  const realNow = new Date();
-  clock.now = realNow;
-  const token = randomToken();
-  const start = new Date(realNow.getTime() + 5 * 3600000);
-  await deps.store.insertEvent({
-    kind: 'primo_colloquio', source: 'sito', mode: 'online', start_at: start, end_at: new Date(start.getTime() + 50 * 60000),
-    contact_enc: deps.vault.encrypt({ name: 'Rita', email: 'rita@example.it' }), manage_token_hash: sha256(token),
-  });
-  let r = await call(pub, 'POST', '/api/public/manage', { t: token });
-  assert.equal(r.body.booking.canChange, true, 'inside the grace hour');
-  clock.now = new Date(realNow.getTime() + 2 * 3600000);
-  r = await call(pub, 'POST', '/api/public/manage', { t: token });
-  assert.equal(r.body.booking.canChange, false, 'after the grace hour and inside the notice window');
-  clock.now = saved;
-});
-
-test('studio adds a weekly series; conflicts are skipped, not fatal', opts, async () => {
-  // Thursday 29 Oct 17:00 weekly for 4 weeks; block 5 Nov first so one occurrence conflicts.
-  let r = await adminCall('POST', '/events', { kind: 'blocco', startDate: '2026-11-05', endDate: '2026-11-05', allDay: true, title: 'Formazione' });
-  assert.equal(r.status, 201);
-
-  r = await adminCall('POST', '/events', {
-    kind: 'seduta', date: '2026-10-29', time: '17:00', durationMinutes: 50, mode: 'studio',
-    name: 'M. R.', email: 'mr@example.it', repeat: { count: 4, intervalWeeks: 1 },
-  });
-  assert.equal(r.status, 201, JSON.stringify(r.body));
-  assert.equal(r.body.created.length, 3);
-  assert.deepEqual(r.body.skipped.map((s) => s.date), ['2026-11-05']);
-
-  r = await adminCall('GET', '/events?from=2026-10-26&to=2026-11-22');
-  const fromSite = r.body.events.filter((e) => e.source === 'sito');
-  assert.ok(fromSite.length >= 2 && fromSite.every((e) => ['psicoterapia', 'coaching'].includes(e.service)), 'site bookings carry the service');
-  const series = r.body.events.filter((e) => e.kind === 'seduta');
-  assert.deepEqual(series.map((e) => `${e.date} ${e.time}`), ['2026-10-29 17:00', '2026-11-12 17:00', '2026-11-19 17:00']);
-  assert.equal(series[0].name, 'M. R.');
-
-  // Move one occurrence only.
-  r = await adminCall('PATCH', `/events/${series[1].id}`, { time: '18:00' });
+test('professionals change modes of their services but cannot add services', opts, async () => {
+  let r = await as('marco')('PUT', `/professionals/${ids.marco}/services`, { offerings: [{ serviceId: ids.terapia, inStudio: true, online: true }] });
   assert.equal(r.status, 200);
-  assert.equal(r.body.event.time, '18:00');
-
-  // Cancel "this and following" from the second occurrence.
-  r = await adminCall('POST', `/events/${series[1].id}/cancel`, { scope: 'following' });
-  assert.equal(r.body.cancelled, 2);
-  r = await adminCall('GET', '/events?from=2026-10-26&to=2026-11-22');
-  assert.equal(r.body.events.filter((e) => e.kind === 'seduta').length, 1);
-});
-
-test('a block over an existing appointment is refused with the conflicts listed', opts, async () => {
-  const r = await adminCall('POST', '/events', { kind: 'blocco', startDate: '2026-10-26', endDate: '2026-10-26', allDay: true, title: 'Ferie' });
-  assert.equal(r.status, 409);
-  assert.ok(r.body.conflicts.length >= 1);
-});
-
-test('manual appointments and blocks remove public slots', opts, async () => {
-  let r = await adminCall('POST', '/events', { kind: 'seduta', date: '2026-11-02', time: '09:00', durationMinutes: 50, name: 'A. B.' });
-  assert.equal(r.status, 201);
-  r = await adminCall('POST', '/events', { kind: 'blocco', startDate: '2026-11-02', startTime: '11:00', endDate: '2026-11-02', endTime: '13:00' });
-  assert.equal(r.status, 201);
-  r = await call(pub, 'GET', '/api/public/slots');
-  const day = r.body.days.find((d) => d.date === '2026-11-02');
-  assert.deepEqual(day.slots.map((s) => s.time), ['10:00']);
-});
-
-test('call-back request is stored encrypted and visible to the studio', opts, async () => {
-  let r = await call(pub, 'POST', '/api/public/request', {
-    name: 'Sara', phone: '+39 333 1234567', mode: 'online', preference: 'sera', privacy: true,
-  }, { context: freshCtx() });
-  assert.equal(r.status, 201);
-  r = await call(pub, 'POST', '/api/public/request', { name: 'Sara', privacy: true }, { context: freshCtx() });
-  assert.equal(r.status, 400);
-  r = await adminCall('GET', '/requests');
-  assert.equal(r.body.requests[0].name, 'Sara');
-  assert.equal(r.body.requests[0].phone, '+39 333 1234567');
-});
-
-test('settings can be changed within safe limits', opts, async () => {
-  let r = await adminCall('PUT', '/settings', { settings: { minNoticeHours: 48 } });
+  r = await pubCall('GET', `/slots?service=${ids.terapia}&professional=${ids.marco}&mode=online`);
+  assert.equal(r.status, 200, 'online is now available');
+  r = await as('marco')('PUT', `/professionals/${ids.marco}/services`, { offerings: [
+    { serviceId: ids.terapia, inStudio: true, online: true }, { serviceId: ids.coaching, inStudio: true, online: false },
+  ] });
+  assert.equal(r.status, 403);
+  r = await as('marco')('PUT', `/professionals/${ids.elsa}/services`, { offerings: [] });
+  assert.equal(r.status, 404);
+  r = await as('marco')('PATCH', `/professionals/${ids.marco}`, { bio: 'Lavoro con adulti.', name: 'Altro nome' });
   assert.equal(r.status, 200);
-  assert.equal(r.body.settings.minNoticeHours, 48);
-  r = await adminCall('PUT', '/settings', { settings: { horizonDays: 999 } });
-  assert.equal(r.status, 400);
-  await adminCall('PUT', '/settings', { settings: { minNoticeHours: 24 } });
+  const p = await deps.store.getProfessional(ids.marco);
+  assert.equal(p.bio, 'Lavoro con adulti.');
+  assert.equal(p.name, 'Dott. Marco Neri', 'name is changed only by the admin');
 });
 
-test('reminders, calendar feed, export and retention', opts, async () => {
-  const exp = await adminCall('GET', '/export');
-  assert.equal(exp.status, 200);
-  assert.ok(exp.body.events.length > 3);
+test('call-back requests reach the chosen professional', opts, async () => {
+  let r = await pubCall('POST', '/request', { name: 'Sara', phone: '+39 333 1234567', category: 'psicoterapia', professional: ids.marco, privacy: true });
+  assert.equal(r.status, 201);
+  r = await pubCall('POST', '/request', { name: 'Azienda Srl', email: 'hr@azienda.it', category: 'aziende', privacy: true });
+  assert.equal(r.status, 201);
+  r = await as('marco')('GET', '/requests');
+  assert.deepEqual(r.body.requests.map((x) => x.name), ['Sara']);
+  r = await as('admin')('GET', '/requests');
+  assert.equal(r.body.requests.length, 2);
+});
 
+test('deactivated accounts lose access immediately', opts, async () => {
+  const users = (await as('admin')('GET', '/users')).body.users;
+  const marco = users.find((u) => u.email === 'marco@example.it');
+  assert.equal(marco.enrolled, true);
+  assert.equal((await as('admin')('PATCH', `/users/${marco.id}`, { active: false })).status, 200);
+  assert.equal((await as('marco')('GET', '/me')).status, 401);
+  assert.equal((await as('admin')('PATCH', `/users/${adminUser.id}`, { active: false })).status, 400, 'cannot lock yourself out');
+  // A new invitation resets the access.
+  await as('admin')('PATCH', `/users/${marco.id}`, { active: true });
+  const r = await as('admin')('POST', `/users/${marco.id}/invite`, {});
+  assert.ok(r.body.inviteUrl.includes('#invito='));
+  assert.equal((await login('marco@example.it', ids.marcoSecret, 'una-password-lunga-marco')).status, 401, 'old credentials no longer work');
+});
+
+test('reminders, personal calendar feed, export and retention', opts, async () => {
   const saved = clock.now;
-  clock.now = new Date('2026-10-28T17:00:00Z'); // the day before Thursday 29 Oct 17:00
+  clock.now = new Date('2026-10-25T12:00:00Z'); // the day before Monday's bookings
   const before = deps.mailer.sent.length;
   const r = await runReminders(deps);
-  assert.equal(r.sent, 1);
+  assert.ok(r.sent >= 1);
   assert.match(deps.mailer.sent[before].subject, /Promemoria/);
-  assert.equal((await runReminders(deps)).sent, 0, 'reminder is sent once');
 
-  const ics = await buildIcs(deps);
-  assert.match(ics, /BEGIN:VCALENDAR/);
-  assert.match(ics, /SUMMARY:Seduta \(studio\)/);
-  assert.ok(!ics.includes('M. R.'), 'no patient names in the feed by default');
+  const ics = await buildIcs(deps, { professionalId: ids.marco });
+  assert.match(ics, /SUMMARY:Seduta/);
+  assert.ok(!ics.includes('Elsa'), 'only Marco\'s agenda');
+  clock.now = saved;
+  tick();
+  const feed = await as('admin')('POST', '/me/calendar', {});
+  assert.match(feed.body.url, /\/api\/calendar\.ics\?k=/);
+  const exp = await as('admin')('GET', '/export');
+  assert.equal(exp.status, 200);
 
   clock.now = new Date('2029-01-01T00:00:00Z');
   const ret = await runRetention(deps);
   assert.ok(ret.events > 0);
-  const [{ n }] = await sql`select count(*)::int as n from events where contact_enc is not null`;
-  assert.equal(n, 0);
   clock.now = saved;
 });

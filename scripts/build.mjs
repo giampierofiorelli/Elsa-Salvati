@@ -14,6 +14,30 @@ const config = JSON.parse(readFileSync(join(src, 'site.config.json'), 'utf8'));
 // Preview mode (SITE_DEMO=true): visible banner, not indexed by search engines.
 const demo = process.env.SITE_DEMO === 'true';
 
+// Services and professionals come from the database (managed in /admin/).
+// Without DATABASE_URL (local build) the demo catalogue in the config is used.
+async function readCatalog() {
+  if (!process.env.DATABASE_URL) return { source: 'demo', ...config.demoCatalog, professionals: proList(config.demoCatalog) };
+  const { getSql, createStore } = await import('../lib/db.mjs');
+  const { loadCatalog } = await import('../lib/public-api.mjs');
+  const sql = getSql();
+  try {
+    return { source: 'database', ...(await loadCatalog(createStore(sql))) };
+  } finally {
+    await sql.end({ timeout: 2 });
+  }
+}
+function proList(cat) {
+  const map = new Map();
+  for (const c of cat.categories) for (const sv of c.services) for (const p of sv.professionals) {
+    if (!map.has(p.id)) map.set(p.id, { ...p, services: [] });
+    map.get(p.id).services.push({ id: sv.id, name: sv.name, category: sv.category, slug: sv.slug });
+  }
+  return [...map.values()];
+}
+const catalog = await readCatalog();
+const allServices = catalog.categories.flatMap((c) => c.services);
+
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const isPlaceholder = (s) => typeof s === 'string' && /\[[^\]]+\]/.test(s);
 
@@ -26,25 +50,53 @@ function get(path) {
 const arrow = '<svg class="icon" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16"><path d="M4.5 11.5l7-7M6 4.5h5.5V10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const arrowRight = '<svg class="icon" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-const svcByKey = Object.fromEntries(config.services.map((sv) => [sv.key, sv]));
+const MODE_LABEL = { studio: 'In studio', online: 'Online' };
 
-function personCard(m) {
-  const img = m.photo
+function avatar(p, sizes = '(min-width: 900px) 280px, 100vw') {
+  return p.photo
     ? `<picture>
-          <source type="image/webp" srcset="/assets/img/${m.photo}-480.webp 480w, /assets/img/${m.photo}-800.webp 800w" sizes="(min-width: 900px) 280px, 100vw">
-          <img src="/assets/img/${m.photo}-800.jpg" alt="${esc(m.name)}" width="800" height="1067" loading="lazy">
+          <source type="image/webp" srcset="/assets/img/${esc(p.photo)}-480.webp 480w, /assets/img/${esc(p.photo)}-800.webp 800w" sizes="${sizes}">
+          <img src="/assets/img/${esc(p.photo)}-800.jpg" alt="${esc(p.name)}" width="800" height="1067" loading="lazy">
         </picture>`
     : `<div class="person-placeholder" aria-hidden="true"><img src="/assets/img/logo-icon.webp" alt="" width="147" height="112"></div>`;
-  const tags = m.services.map((k) => `<span class="tag">${esc(svcByKey[k] ? svcByKey[k].title : k)}</span>`).join(' ');
-  return `<li class="person">
-      <div class="person-photo">${img}</div>
+}
+
+function modeTags(modes) {
+  return modes.map((m) => `<span class="tag tag-${m}">${MODE_LABEL[m]}</span>`).join(' ');
+}
+
+function personCard(p, { service } = {}) {
+  const services = service
+    ? `<p class="person-meta">${modeTags(p.modes)}</p>`
+    : `<ul class="person-services" role="list">${p.services.map((sv) => `<li><a href="/servizi/${esc(sv.slug)}/">${esc(sv.name)}</a></li>`).join('')}</ul>`;
+  const cta = service
+    ? `<a class="btn btn-primary btn-small" href="/prenota/?servizio=${esc(service.id)}&amp;professionista=${esc(p.id)}">Prenota con ${esc(p.name.split(' ').slice(-1)[0])}</a>`
+    : '';
+  return `<li class="person" id="${esc(p.slug)}">
+      <div class="person-photo">${avatar(p)}</div>
       <div class="person-body">
-        <h3>${esc(m.name)}</h3>
-        <p class="person-role">${esc(m.role)}</p>
-        <p>${esc(m.focus)}</p>
-        <p class="person-meta">${tags}</p>
-        <p class="person-albo">Iscritta/o all'${esc(config.albo)}, n. ${esc(m.albo)}</p>
+        <h3>${esc(p.name)}</h3>
+        <p class="person-role">${esc(p.title)}</p>
+        ${p.bio ? `<p>${esc(p.bio)}</p>` : ''}
+        ${services}
+        ${p.albo ? `<p class="person-albo">${esc(p.albo)}</p>` : ''}
+        ${cta}
       </div>
+    </li>`;
+}
+
+function serviceCard(sv) {
+  const pros = sv.professionals.map((p) => esc(p.name)).join(', ');
+  const modes = [...new Set(sv.professionals.flatMap((p) => p.modes))];
+  return `<li class="svc-card">
+      <a href="/servizi/${esc(sv.slug)}/">
+        <h3>${esc(sv.name)}</h3>
+        <p>${esc(sv.description)}</p>
+        <p class="svc-meta">${esc(sv.durationMinutes)} minuti${sv.price ? ` · ${esc(sv.price)}` : ''}</p>
+        <p class="svc-meta">${modeTags(modes)}</p>
+        ${pros ? `<p class="svc-pros">Con ${pros}</p>` : '<p class="svc-pros">Professionisti in arrivo</p>'}
+        <span class="card-more">Scopri il servizio ${arrowRight}</span>
+      </a>
     </li>`;
 }
 
@@ -60,29 +112,44 @@ const components = {
         <img src="/assets/img/logo-icon.webp" alt="" width="147" height="112">
       </div>`,
   trustline: () => `<p class="trustline">Studio associato a ${esc(config.city)} · Psicologi e psicoterapeuti iscritti all'${esc(config.albo)} · In studio e online</p>`,
-  serviceCards: () => `<ul class="services" role="list">${config.services.map((sv) => `
+  categoryCards: () => `<ul class="services" role="list">${catalog.categories.map((c) => `
     <li class="service-card">
-      <p class="eyebrow">${esc(sv.audience)}</p>
-      <h3>${esc(sv.title)}</h3>
-      <p>${esc(sv.short)}</p>
-      <ul class="service-areas" role="list">${sv.areas.map((a) => `<li>${esc(a.title)}</li>`).join('')}</ul>
-      <a class="btn btn-ghost btn-small" href="/servizi/${sv.slug}/">Scopri il percorso ${arrowRight}</a>
+      <h3>${esc(c.name)}</h3>
+      <p>${esc(c.intro)}</p>
+      <ul class="service-areas" role="list">${c.services.map((sv) => `<li><a href="/servizi/${esc(sv.slug)}/">${esc(sv.name)}</a></li>`).join('') || '<li>Servizi in arrivo</li>'}</ul>
+      <a class="btn btn-ghost btn-small" href="/servizi/#${esc(c.slug)}">Tutti i servizi di ${esc(c.name.toLowerCase())} ${arrowRight}</a>
     </li>`).join('')}
   </ul>`,
-  team: () => `<ul class="team" role="list">${config.team.map(personCard).join('')}</ul>`,
-  serviceAreas: (ctx) => `<div class="area-list">${ctx.service.areas.map((a) => `
-      <div class="area-item"><h3>${esc(a.title)}</h3><p>${esc(a.short)}</p></div>`).join('')}
-    </div>`,
-  serviceTeam: (ctx) => `<ul class="team" role="list">${config.team.filter((m) => m.services.includes(ctx.service.key)).map(personCard).join('')}</ul>`,
-  serviceFee: (ctx) => esc(config.fees[ctx.service.key]),
-  serviceExtra: (ctx) => (ctx.service.key === 'coaching' ? `<h2>Per le imprese</h2>
-      <p>Progettiamo interventi su misura per aziende e organizzazioni: benessere organizzativo, gestione dello stress, sportello di ascolto, percorsi di coaching per responsabili e team. Il primo incontro serve a capire bisogni e obiettivi e a preparare un preventivo.</p>
-      <p><a class="btn btn-ghost btn-small" href="/contatti/">Richiedi un incontro per la tua azienda ${arrowRight}</a></p>` : `<h2>Orientamenti diversi, un'unica attenzione</h2>
-      <p>Nello studio lavorano psicoterapeuti con orientamenti diversi. Durante il primo colloquio capiamo insieme la tua richiesta e, se utile, ti indichiamo il collega più adatto.</p>`),
+  servicesByCategory: () => catalog.categories.map((c) => `
+    <section class="cat-block" id="${esc(c.slug)}" aria-labelledby="cat-${esc(c.slug)}">
+      <div class="cat-head">
+        <h2 id="cat-${esc(c.slug)}">${esc(c.name)}</h2>
+        <p class="lead">${esc(c.intro)}</p>
+      </div>
+      ${c.services.length ? `<ul class="svc-grid" role="list">${c.services.map(serviceCard).join('')}</ul>` : '<p class="hint">Servizi in arrivo.</p>'}
+    </section>`).join(''),
+  team: () => `<ul class="team" role="list">${catalog.professionals.map((p) => personCard(p)).join('')}</ul>`,
+  serviceDetail: (ctx) => {
+    const sv = ctx.service;
+    const paras = String(sv.description || '').split(/\n{2,}/).map((t) => `<p>${esc(t)}</p>`).join('');
+    return paras;
+  },
+  serviceFacts: (ctx) => {
+    const sv = ctx.service;
+    const modes = [...new Set(sv.professionals.flatMap((p) => p.modes))];
+    return `<dl class="summary">
+        <dt>Durata</dt><dd>${esc(sv.durationMinutes)} minuti</dd>
+        ${sv.price ? `<dt>Tariffa</dt><dd>${esc(sv.price)}</dd>` : ''}
+        <dt>Dove</dt><dd>${modes.map((m) => (m === 'studio' ? `In studio a ${esc(config.city)}` : 'Online')).join(' · ') || '—'}</dd>
+      </dl>`;
+  },
+  serviceTeam: (ctx) => ctx.service.professionals.length
+    ? `<ul class="team" role="list">${ctx.service.professionals.map((p) => personCard(p, { service: ctx.service })).join('')}</ul>`
+    : '<p class="hint">I professionisti per questo servizio saranno presto disponibili. Puoi comunque chiederci di ricontattarti.</p>',
+  serviceBook: (ctx) => `/prenota/?servizio=${esc(ctx.service.id)}`,
   practical: () => `<dl class="practical">
-      <div><dt>Psicoterapia individuale</dt><dd>${esc(config.fees.psicoterapia)} · ${esc(config.fees.sessionMinutes)} minuti</dd></div>
-      <div><dt>Business coaching individuale</dt><dd>${esc(config.fees.coaching)} · ${esc(config.fees.sessionMinutes)} minuti</dd></div>
-      <div><dt>Consulenza per le imprese</dt><dd>${esc(config.fees.aziende)}</dd></div>
+      <div><dt>Durata</dt><dd>${esc(config.fees.sessionMinutes)}–60 minuti, secondo il servizio</dd></div>
+      <div><dt>Tariffe</dt><dd>Indicate nella pagina di ciascun servizio</dd></div>
       <div><dt>Dove</dt><dd>In studio a ${esc(config.city)} (${esc(config.studio.neighbourhood)}) e online</dd></div>
       <div><dt>Cancellazioni</dt><dd>${esc(config.fees.cancellation)}</dd></div>
     </dl>`,
@@ -101,8 +168,7 @@ const components = {
       </div>
     </section>`,
   whatsapp: () => `https://wa.me/${esc(config.contact.whatsapp)}?text=${encodeURIComponent('Buongiorno, vorrei alcune informazioni pratiche.')}`,
-  serviceOptions: () => config.services.map((sv) => `<option value="${sv.key}">${esc(sv.title)}</option>`).join(''),
-  serviceButtons: () => config.services.map((sv, i) => `<button type="button" data-service-btn="${sv.key}" aria-pressed="${i === 0}">${esc(sv.title)}</button>`).join(''),
+  categoryOptions: () => catalog.categories.map((c) => `<option value="${esc(c.slug)}">${esc(c.name)}</option>`).join(''),
 };
 
 function render(template, extra = {}, ctx = {}) {
@@ -132,7 +198,7 @@ function parsePage(text) {
 // ---------- structured data (only real values, never placeholders) ----------
 
 function jsonLd() {
-  const people = config.team.filter((m) => !isPlaceholder(m.name)).map((m) => ({ '@type': 'Person', name: m.name, jobTitle: m.role }));
+  const people = catalog.professionals.filter((m) => !isPlaceholder(m.name)).map((m) => ({ '@type': 'Person', name: m.name, jobTitle: m.title }));
   const business = { '@type': 'LocalBusiness', name: config.studioFullName };
   if (!isPlaceholder(config.siteUrl)) business.url = config.siteUrl;
   if (!isPlaceholder(config.contact.phone)) business.telephone = config.contact.phone;
@@ -182,11 +248,13 @@ const urls = [];
 for (const file of walk(join(src, 'pages')).filter((f) => f.endsWith('.html'))) {
   const { meta, body } = parsePage(readFileSync(file, 'utf8'));
   if (meta.template === 'service') {
-    for (const service of config.services) {
+    for (const service of allServices) {
       const path = `/servizi/${service.slug}/`;
-      const fill = (t) => t.replaceAll('{{svc.title}}', esc(service.title)).replaceAll('{{svc.short}}', esc(service.short)).replaceAll('{{svc.audience}}', esc(service.audience)).replaceAll('{{svc.key}}', esc(service.key));
+      const cat = catalog.categories.find((c) => c.slug === service.category);
+      const fill = (t) => t.replaceAll('{{svc.name}}', esc(service.name)).replaceAll('{{svc.category}}', esc(cat ? cat.name : ''))
+        .replaceAll('{{svc.categorySlug}}', esc(service.category));
       const title = render(fill(meta.title));
-      write(path, page({ ...meta, title, description: service.short }, fill(body), path, { service }));
+      write(path, page({ ...meta, title, description: String(service.description).slice(0, 155) }, fill(body), path, { service }));
       urls.push(path);
     }
     continue;
@@ -202,7 +270,7 @@ cpSync(join(src, 'admin'), join(out, 'admin'), { recursive: true });
 
 // Cache busting: assets are cached for a week, so every CSS/JS reference gets
 // ?v=<content hash>. A changed file gets a new URL and phones fetch it at once.
-const versioned = ['/assets/css/style.css', '/assets/js/site.js', '/assets/js/booking.js', '/admin/admin.css', '/admin/admin.js'];
+const versioned = ['/assets/css/style.css', '/assets/js/site.js', '/assets/js/booking.js', '/admin/admin.css', '/admin/admin.js', '/admin/vendor/qrcode.js'];
 const hashes = Object.fromEntries(versioned.map((u) => [u, createHash('sha256').update(readFileSync(join(out, u))).digest('hex').slice(0, 10)]));
 for (const file of walk(out).filter((f) => f.endsWith('.html'))) {
   let html = readFileSync(file, 'utf8');
@@ -226,7 +294,7 @@ const pending = [];
     else if (isPlaceholder(v)) pending.push(key);
   }
 })(config, '');
-console.log(`Sito generato in dist/ (${urls.length} pagine indicizzabili).`);
+console.log(`Sito generato in dist/ (${urls.length} pagine indicizzabili, catalogo: ${catalog.source}).`);
 if (pending.length) {
   console.log(`Attenzione: ${pending.length} dati segnaposto da completare in src/site.config.json:\n  ${pending.join('\n  ')}`);
 }

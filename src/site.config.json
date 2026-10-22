@@ -1,5 +1,5 @@
 {
-  "_nota": "Dati dello studio. I valori tra [parentesi quadre] sono segnaposto da sostituire prima della pubblicazione: il build segnala quelli rimasti.",
+  "_nota": "Dati generali dello studio. Servizi e professionisti si gestiscono dall'area riservata (/admin/); 'demoCatalog' serve solo per generare il sito senza database. I valori tra [parentesi quadre] sono segnaposto.",
   "siteUrl": "https://[dominio].it",
   "studioName": "Blooming",
   "studioTagline": "Studio di psicologia e coaching",
@@ -8,96 +8,6 @@
   "city": "Bologna",
   "albo": "Ordine degli Psicologi dell'Emilia-Romagna",
   "vat": "[P.IVA dello studio]",
-  "services": [
-    {
-      "key": "coaching",
-      "slug": "business-coaching",
-      "title": "Business coaching e lavoro",
-      "short": "Per chi vuole cambiare lavoro o vive difficoltà sul lavoro, e per le imprese che vogliono prendersi cura delle persone.",
-      "audience": "professionisti, lavoratori e aziende",
-      "areas": [
-        {
-          "title": "Cambiare lavoro",
-          "short": "Fare chiarezza su competenze, valori e obiettivi per scegliere la prossima tappa professionale."
-        },
-        {
-          "title": "Difficoltà sul lavoro e mobbing",
-          "short": "Conflitti, ambienti ostili, situazioni di mobbing: uno spazio per orientarsi e ritrovare strumenti."
-        },
-        {
-          "title": "Stress e ansia legati al lavoro",
-          "short": "Carichi eccessivi, pressione, rischio di burnout: riconoscere i segnali e recuperare equilibrio."
-        },
-        {
-          "title": "Consulenza per le imprese",
-          "short": "Benessere organizzativo, gestione dello stress e percorsi per team e responsabili."
-        }
-      ]
-    },
-    {
-      "key": "psicoterapia",
-      "slug": "psicoterapia",
-      "title": "Psicoterapia individuale",
-      "short": "Percorsi di psicoterapia per adulti, con professionisti di diversi orientamenti.",
-      "audience": "adulti e giovani adulti",
-      "areas": [
-        {
-          "title": "Sostegno alla genitorialità",
-          "short": "Le fatiche e i dubbi dell'essere genitori, dalla nascita all'adolescenza dei figli."
-        },
-        {
-          "title": "Ansia",
-          "short": "Quando preoccupazioni, tensione o attacchi di panico iniziano a limitare la vita quotidiana."
-        },
-        {
-          "title": "Depressione",
-          "short": "Tristezza persistente, perdita di energia e di interesse: non affrontarle da soli."
-        }
-      ]
-    }
-  ],
-  "team": [
-    {
-      "name": "Dott.ssa Elsa Salvati",
-      "role": "Psicologa · Business coach",
-      "services": [
-        "coaching"
-      ],
-      "focus": "Business coaching individuale e consulenza per le imprese.",
-      "albo": "[n. Albo]",
-      "photo": "elsa-salvati"
-    },
-    {
-      "name": "[Nome e cognome]",
-      "role": "Psicologa psicoterapeuta",
-      "services": [
-        "psicoterapia"
-      ],
-      "focus": "Orientamento [es. cognitivo-comportamentale]. [Aree principali].",
-      "albo": "[n. Albo]",
-      "photo": ""
-    },
-    {
-      "name": "[Nome e cognome]",
-      "role": "Psicologo psicoterapeuta",
-      "services": [
-        "psicoterapia"
-      ],
-      "focus": "Orientamento [es. sistemico-relazionale]. [Aree principali].",
-      "albo": "[n. Albo]",
-      "photo": ""
-    },
-    {
-      "name": "[Nome e cognome]",
-      "role": "Psicologa · Business coach",
-      "services": [
-        "coaching"
-      ],
-      "focus": "[Ambiti di coaching e consulenza].",
-      "albo": "[n. Albo]",
-      "photo": ""
-    }
-  ],
   "studio": {
     "address": "[Via e numero civico], [CAP] Bologna",
     "neighbourhood": "[quartiere]",
@@ -107,9 +17,6 @@
     "mapsUrl": "https://www.google.com/maps/search/?api=1&query=[indirizzo]+Bologna"
   },
   "fees": {
-    "psicoterapia": "€[tariffa]",
-    "coaching": "€[tariffa]",
-    "aziende": "Preventivo su misura",
     "sessionMinutes": 50,
     "cancellation": "[Politica di cancellazione, es.: gli appuntamenti si possono annullare o spostare senza costi fino a 24 ore prima.]"
   },
@@ -124,5 +31,125 @@
     "alt": "Ritratto della Dott.ssa Elsa Salvati nel suo studio",
     "width": 800,
     "height": 1067
+  },
+  "demoCatalog": {
+    "categories": [
+      {
+        "slug": "coaching",
+        "name": "Coaching",
+        "intro": "Percorsi per la vita professionale: scelte di carriera, difficoltà e stress sul lavoro, consulenza per le imprese.",
+        "services": [
+          {
+            "id": "1",
+            "slug": "business-coaching-individuale",
+            "name": "Business coaching individuale",
+            "description": "Per chi vuole cambiare lavoro o vive difficoltà sul lavoro: conflitti, mobbing, stress e ansia legati al lavoro.",
+            "durationMinutes": 60,
+            "price": "€[tariffa]",
+            "category": "coaching",
+            "professionals": [
+              {
+                "id": "1",
+                "slug": "elsa-salvati",
+                "name": "Dott.ssa Elsa Salvati",
+                "title": "Psicologa · Business coach",
+                "bio": "",
+                "albo": "[n. Albo]",
+                "photo": "elsa-salvati",
+                "modes": [
+                  "studio",
+                  "online"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "2",
+            "slug": "consulenza-per-le-imprese",
+            "name": "Consulenza per le imprese",
+            "description": "Benessere organizzativo, gestione dello stress, percorsi per responsabili e team.",
+            "durationMinutes": 60,
+            "price": "Preventivo su misura",
+            "category": "coaching",
+            "professionals": [
+              {
+                "id": "1",
+                "slug": "elsa-salvati",
+                "name": "Dott.ssa Elsa Salvati",
+                "title": "Psicologa · Business coach",
+                "bio": "",
+                "albo": "[n. Albo]",
+                "photo": "elsa-salvati",
+                "modes": [
+                  "studio",
+                  "online"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "slug": "psicologia",
+        "name": "Psicologia",
+        "intro": "Consulenza e sostegno psicologico per affrontare momenti di difficoltà e cambiamento.",
+        "services": [
+          {
+            "id": "3",
+            "slug": "sostegno-alla-genitorialita",
+            "name": "Sostegno alla genitorialità",
+            "description": "Le fatiche e i dubbi dell'essere genitori, dalla nascita all'adolescenza dei figli.",
+            "durationMinutes": 50,
+            "price": "€[tariffa]",
+            "category": "psicologia",
+            "professionals": [
+              {
+                "id": "2",
+                "slug": "professionista-2",
+                "name": "[Nome e cognome]",
+                "title": "Psicologa",
+                "bio": "",
+                "albo": "[n. Albo]",
+                "photo": "",
+                "modes": [
+                  "studio",
+                  "online"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "slug": "psicoterapia",
+        "name": "Psicoterapia",
+        "intro": "Percorsi di psicoterapia individuale con professionisti di diversi orientamenti.",
+        "services": [
+          {
+            "id": "4",
+            "slug": "psicoterapia-individuale",
+            "name": "Psicoterapia individuale",
+            "description": "Per ansia, depressione e momenti difficili della vita, con professionisti di diversi orientamenti.",
+            "durationMinutes": 50,
+            "price": "€[tariffa]",
+            "category": "psicoterapia",
+            "professionals": [
+              {
+                "id": "3",
+                "slug": "professionista-3",
+                "name": "[Nome e cognome]",
+                "title": "Psicoterapeuta",
+                "bio": "",
+                "albo": "[n. Albo]",
+                "photo": "",
+                "modes": [
+                  "studio"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

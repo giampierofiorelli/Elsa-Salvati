@@ -17,30 +17,41 @@ scripts: booking
   <div class="wrap two-col">
     <div class="booking" id="booking" data-mode="book" aria-live="polite">
       <div class="booking-step" data-step="pick">
-        <h2>1. Servizio, modalità e orario</h2>
-        <p class="label" id="svc-label">Servizio</p>
-        <div class="seg seg-wrap" role="group" aria-labelledby="svc-label" data-service-group>{{@serviceButtons}}</div>
-        <p class="hint">Non sai quale scegliere? Indica quello che ti sembra più vicino: nel primo colloquio lo capiamo insieme.</p>
-        <p class="label" id="mode-label">Modalità</p>
-        <div class="seg" role="group" aria-labelledby="mode-label">
-          <button type="button" data-mode-btn="studio" aria-pressed="true">In studio</button>
-          <button type="button" data-mode-btn="online" aria-pressed="false">Online</button>
+        <h2>1. Cosa cerchi</h2>
+        <p class="label" id="cat-label">Area</p>
+        <div class="seg seg-wrap" role="group" aria-labelledby="cat-label" data-categories><div class="skeleton" aria-hidden="true"></div></div>
+
+        <div data-service-box hidden>
+          <p class="label" id="svc-label">Servizio</p>
+          <div class="choice-list" role="group" aria-labelledby="svc-label" data-services></div>
         </div>
-        <p class="label" id="days-label">Giorno</p>
-        <div class="days" role="group" aria-labelledby="days-label" data-days>
-          <div class="skeleton" aria-hidden="true"></div>
+
+        <div data-pro-box hidden>
+          <p class="label" id="pro-label">Professionista</p>
+          <div class="pro-list" role="group" aria-labelledby="pro-label" data-pros></div>
         </div>
-        <p class="label" id="times-label">Orario</p>
-        <div class="times" role="group" aria-labelledby="times-label" data-times></div>
-        <div data-empty hidden>
-          <p class="note">Al momento non ci sono orari liberi per questa modalità nelle prossime settimane. Puoi provare l'altra modalità oppure <a href="#ricontatto">chiedermi di ricontattarti</a>.</p>
+
+        <div data-mode-box hidden>
+          <p class="label" id="mode-label">Modalità</p>
+          <div class="seg" role="group" aria-labelledby="mode-label" data-modes></div>
         </div>
-        <dl class="summary" data-summary hidden></dl>
-        <button class="btn btn-primary" type="button" data-next disabled>Continua con i tuoi recapiti</button>
+
+        <div data-slot-box hidden>
+          <h2>2. Giorno e orario</h2>
+          <p class="label" id="days-label">Giorno</p>
+          <div class="days" role="group" aria-labelledby="days-label" data-days></div>
+          <p class="label" id="times-label">Orario</p>
+          <div class="times" role="group" aria-labelledby="times-label" data-times></div>
+          <div data-empty hidden>
+            <p class="note">Al momento non ci sono orari liberi con questa scelta nelle prossime settimane. Prova un'altra modalità o un altro professionista, oppure <a href="#ricontatto">chiedici di ricontattarti</a>.</p>
+          </div>
+          <dl class="summary" data-summary hidden></dl>
+          <button class="btn btn-primary" type="button" data-next disabled>Continua con i tuoi recapiti</button>
+        </div>
       </div>
 
       <form class="booking-step" data-step="details" hidden novalidate>
-        <h2>2. I tuoi recapiti</h2>
+        <h2>3. I tuoi recapiti</h2>
         <dl class="summary" data-summary-2></dl>
         <div class="field">
           <label for="b-name">Nome e cognome</label>
@@ -83,7 +94,7 @@ scripts: booking
       <h2 class="h3">Il primo colloquio</h2>
       <dl class="summary">
         <dt>Durata</dt><dd>{{fees.sessionMinutes}} minuti</dd>
-        <dt>Tariffa</dt><dd>Psicoterapia {{fees.psicoterapia}} · Coaching {{fees.coaching}}</dd>
+        <dt>Tariffa</dt><dd>Secondo il servizio</dd>
         <dt>Studio</dt><dd>{{studio.address}}</dd>
       </dl>
       <p>{{fees.cancellation}}</p>
@@ -112,12 +123,16 @@ scripts: booking
         <span class="hint">Indica almeno un recapito tra email e telefono.</span>
       </div>
       <div class="field">
-        <label for="r-service">Servizio</label>
-        <select id="r-service" name="service">
+        <label for="r-category">Area</label>
+        <select id="r-category" name="category">
           <option value="da_definire">Non so ancora</option>
-          {{@serviceOptions}}
+          {{@categoryOptions}}
           <option value="aziende">Consulenza per la mia azienda</option>
         </select>
+      </div>
+      <div class="field" data-pro-field hidden>
+        <label for="r-pro">Professionista <span class="hint">(facoltativo)</span></label>
+        <select id="r-pro" name="professional"><option value="">Indifferente</option></select>
       </div>
       <div class="field">
         <label for="r-mode">Preferenza</label>

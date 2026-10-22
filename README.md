@@ -1,35 +1,26 @@
 # Blooming – Studio di psicologia e coaching (Bologna)
 
-Sito dello studio associato Blooming, con **agenda proprietaria** e **prenotazione online del primo colloquio** con conferma immediata.
+Sito dello studio associato Blooming con **prenotazione online del primo colloquio** (conferma immediata) e **agenda per ogni professionista**.
 
-Due servizi: **psicoterapia individuale** (sostegno alla genitorialità, ansia, depressione) e **business coaching e lavoro** (cambio di lavoro, difficoltà e stress sul lavoro, mobbing, consulenza per le imprese). Servizi, team e tariffe sono in `src/site.config.json`. Chi prenota sceglie il servizio; per ora l'agenda è unica per lo studio (agende separate per professionista: passo successivo).
+## Come è organizzato
 
-- Sito statico, mobile-first, palette *Deep Teal & Mint*, ispirazione [Q Psychology](https://www.qpsychology.com.au/).
-- Nessun cookie di profilazione, nessun tracciamento, font ospitati sul sito (nessun dato a Google).
-- Agenda unica: prenotazioni dal sito, appuntamenti inseriti a mano, sedute ricorrenti, blocchi e ferie.
-- Hosting gratuito su **Netlify**; database **Supabase** (PostgreSQL) in regione UE, piano gratuito.
+- **Tre aree**: Coaching, Psicologia, Psicoterapia. Ogni area contiene **servizi** (es. “Business coaching individuale”, “Sostegno alla genitorialità”, “Psicoterapia individuale”), ognuno con durata, tariffa e descrizione.
+- **Professionisti**: ognuno offre uno o più servizi, e per ogni servizio sceglie se lavorare **in studio**, **online** o entrambi. Ha i propri orari e la propria agenda.
+- **Prenotazione**: chi visita il sito sceglie area → servizio → professionista (se ce n'è uno solo è già selezionato, ma viene sempre mostrato chi è) → modalità disponibili per quel professionista → giorno e ora.
+- **Area riservata** (`/admin/`):
+  - **professionista**: vede e modifica solo la propria agenda, i propri orari, il proprio profilo e le modalità dei propri servizi;
+  - **amministratore**: gestisce servizi, professionisti e account, e vede tutte le agende (filtro “Agenda di”).
+- **Accesso**: email + password + codice di un'app di autenticazione. L'amministratore crea l'account e ottiene un **link di attivazione** (valido 7 giorni, utilizzabile una volta); chi lo apre sceglie la password e collega l'app **inquadrando un QR code** (o toccando “Aggiungi all'app” dal telefono).
 
-## Cosa fa
-
-| Per i pazienti | Per lo studio (`/admin/`) |
-|---|---|
-| Vede solo gli orari realmente liberi (studio / online) | Vista settimanale e a elenco, anche da telefono |
-| Prenota in meno di un minuto: solo nome ed email | Aggiunge sedute, anche ricorrenti (ogni N settimane) |
-| Riceve conferma e promemoria via email, senza dati clinici | Sposta o annulla un singolo incontro o la serie |
-| Annulla o sposta da un link personale | Blocca ore, giornate o ferie |
-| Se non trova un orario, chiede di essere ricontattato | Imposta le fasce orarie prenotabili online |
-| | Riceve le richieste di ricontatto |
-| | Calendario sul telefono (feed iCal con titoli neutri) |
-| | Scarica una copia di sicurezza dell'agenda |
+Servizi e professionisti stanno nel database: le prenotazioni li usano subito; le pagine del sito (Servizi, Team) si rigenerano a ogni pubblicazione o con il pulsante “Aggiorna le pagine del sito” (richiede `BUILD_HOOK_URL`, un *build hook* creato su Netlify in *Site configuration → Build & deploy → Build hooks*).
 
 ### Garanzie tecniche
 
-- **Niente doppie prenotazioni**: il database rifiuta due appuntamenti sovrapposti anche se confermati nello stesso istante (vincolo di esclusione PostgreSQL + lock transazionale; testato con prenotazioni simultanee).
-- La disponibilità viene **ricontrollata al momento della conferma**, non solo quando si mostra l'orario.
-- Nome, email, telefono e note sono **cifrati** (AES-256-GCM) prima di essere salvati.
-- Accesso all'agenda con **password + codice dell'app di autenticazione** (2FA), sessione di 8 ore, blocco dopo tentativi falliti.
-- **Cancellazione automatica** dei recapiti dopo il periodo impostato (predefinito 24 mesi; richieste di ricontatto 6 mesi).
-- Il sito non chiede mai il motivo della richiesta.
+- **Niente doppie prenotazioni per lo stesso professionista**: il database rifiuta impegni sovrapposti dello stesso professionista anche se confermati nello stesso istante (vincolo di esclusione PostgreSQL con `btree_gist` + lock transazionale). Professionisti diversi possono avere appuntamenti alla stessa ora.
+- La disponibilità viene **ricontrollata alla conferma**; la durata dello slot è quella del servizio.
+- Nome, email, telefono e note dei pazienti sono **cifrati** (AES-256-GCM); anche il segreto dell'app di autenticazione è cifrato.
+- Ogni codice dell'app vale una sola volta; blocco dopo tentativi falliti; sessione di 8 ore; un account disattivato perde subito l'accesso.
+- **Cancellazione automatica** dei recapiti dopo il periodo impostato. Il sito non chiede mai il motivo della richiesta.
 
 ## Prima della pubblicazione
 
@@ -48,7 +39,8 @@ Due servizi: **psicoterapia individuale** (sostegno alla genitorialità, ansia, 
    | Variabile | Valore |
    |---|---|
    | `DATABASE_URL` | stringa di Supabase (pooler, porta 6543) |
-   | `ADMIN_PASSWORD_HASH`, `ADMIN_TOTP_SECRET`, `SESSION_SECRET`, `DATA_KEY`, `ICAL_TOKEN` | dallo script del passo 2 |
+   | `SESSION_SECRET`, `DATA_KEY` | dallo script del passo 2 |
+   | `BUILD_HOOK_URL` | facoltativo: build hook di Netlify per il pulsante “Aggiorna le pagine del sito” |
    | `SITE_URL` | es. `https://www.elsasalvati.it` |
    | `NOTIFY_EMAIL` | email dove ricevere gli avvisi di nuove prenotazioni |
    | `EMAIL_PROVIDER` | `brevo` (oppure `resend`) |
@@ -60,8 +52,9 @@ Due servizi: **psicoterapia individuale** (sostegno alla genitorialità, ansia, 
    - l'indirizzo del pooler di Supabase va copiato esattamente dal pannello (*Connect*): per alcuni progetti è `aws-0-…`, per altri `aws-1-…`. Con quello sbagliato l'errore è “tenant/user not found”;
    - per una diagnosi temporanea si può impostare `DEBUG_ERRORS=true`: l'API mostra la causa tecnica degli errori. Va rimossa subito dopo.
 
-5. Apri `https://<sito>/admin/`, accedi, imposta **Orari** (fasce prenotabili online) e **Impostazioni** (durate, anticipo minimo, cancellazione).
-6. Su Google Business Profile collega il link `https://<sito>/prenota/`.
+5. Crea il primo amministratore: `DATABASE_URL=... SITE_URL=https://<sito> node scripts/create-admin.mjs email@esempio.it "Nome Cognome"` e apri il link stampato per attivare l'accesso.
+6. Nell'area riservata: crea i **servizi**, i **professionisti** (con servizi e modalità) e i loro **account**; ogni professionista imposta i propri **orari**.
+7. Su Google Business Profile collega il link `https://<sito>/prenota/`.
 
 ## Sviluppo
 

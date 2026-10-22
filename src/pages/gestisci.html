@@ -29,10 +29,7 @@ scripts: booking
 
       <div class="booking-step" data-step="pick" hidden>
         <h2>Scegli il nuovo orario</h2>
-        <div class="seg" role="group" aria-label="Modalità del colloquio">
-          <button type="button" data-mode-btn="studio" aria-pressed="true">In studio</button>
-          <button type="button" data-mode-btn="online" aria-pressed="false">Online</button>
-        </div>
+        <div class="seg" role="group" aria-label="Modalità del colloquio" data-modes></div>
         <p class="label" id="days-label">Giorno</p>
         <div class="days" role="group" aria-labelledby="days-label" data-days></div>
         <p class="label" id="times-label">Orario</p>

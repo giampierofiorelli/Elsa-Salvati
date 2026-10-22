@@ -51,12 +51,16 @@ scripts: booking
         <span class="hint">Indica almeno un recapito tra email e telefono.</span>
       </div>
       <div class="field">
-        <label for="r-service">Servizio</label>
-        <select id="r-service" name="service">
+        <label for="r-category">Area</label>
+        <select id="r-category" name="category">
           <option value="da_definire">Non so ancora</option>
-          {{@serviceOptions}}
+          {{@categoryOptions}}
           <option value="aziende">Consulenza per la mia azienda</option>
         </select>
+      </div>
+      <div class="field" data-pro-field hidden>
+        <label for="r-pro">Professionista <span class="hint">(facoltativo)</span></label>
+        <select id="r-pro" name="professional"><option value="">Indifferente</option></select>
       </div>
       <div class="field">
         <label for="r-mode">Preferenza</label>

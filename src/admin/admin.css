@@ -100,3 +100,30 @@ code { background: var(--paper); border: 1px solid var(--line); padding: 8px 10p
   .toolbar-nav strong { font-size: .95rem; }
 }
 .login-logo { width: auto; height: 64px; }
+
+/* v2: più professionisti, catalogo, account, attivazione */
+.pro-switch { display: flex; align-items: center; gap: 8px; }
+.pro-switch select { min-height: 42px; padding: 6px 12px; width: auto; }
+.section-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 1.2em 0 .6em; }
+.section-toolbar h2, .section-toolbar h3 { margin: 0; }
+.row-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 8px; }
+.row-card p { margin: 2px 0 0; }
+.row-card .cta-row { margin: 0; }
+.row-card.inactive { opacity: .6; }
+.cat-admin { margin-bottom: 28px; }
+.cat-admin h3 { font-size: 1.3rem; }
+.offerings { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; }
+.offering { display: grid; grid-template-columns: 1fr auto auto; gap: 4px 14px; align-items: center; border-bottom: 1px solid #EEF2EF; padding: 6px 0; }
+.offering .check { margin: 0; }
+.publish-box { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.profile-form { max-width: 720px; }
+.invite-card { max-width: 520px; }
+.invite-steps { padding-left: 1.2em; }
+.invite-steps li { margin-bottom: 18px; }
+.invite-steps .hint { display: block; margin-top: 4px; }
+.qr { width: 220px; max-width: 100%; margin: 12px 0; background: #fff; border-radius: 12px; padding: 6px; border: 1px solid var(--line); }
+.qr svg { width: 100%; height: auto; display: block; }
+.qr-small { width: 170px; }
+.invite-share code { display: block; margin: 8px 0 12px; }
+.dlg textarea { min-height: 90px; }
+.pick-hint { margin-top: 12px; }

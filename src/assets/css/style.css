@@ -338,3 +338,40 @@ img { height: auto; }
 .hero-art img { position: relative; width: 62%; height: auto; filter: drop-shadow(0 18px 30px rgba(24, 59, 56, .12)); }
 @media (max-width: 899px) { .hero-visual { max-width: 340px; aspect-ratio: 1 / 1; } }
 @media (max-width: 480px) { .brand-city { display: none; } }
+
+/* Prenotazione a passi */
+.choice-list { display: grid; gap: 10px; margin-bottom: 22px; }
+@media (min-width: 600px) { .choice-list { grid-template-columns: 1fr 1fr; } }
+.choice { text-align: left; border: 1.5px solid var(--line); background: var(--ivory); border-radius: 14px; padding: 14px 16px; cursor: pointer; font: inherit; color: var(--ink); display: flex; flex-direction: column; gap: 2px; }
+.choice span { font-size: .88rem; color: var(--muted); }
+.choice[aria-pressed="true"] { border-color: var(--teal); background: var(--mint-soft); box-shadow: inset 0 0 0 1px var(--teal); }
+.pro-list { display: grid; gap: 10px; margin-bottom: 22px; }
+.pro { display: flex; align-items: center; gap: 14px; text-align: left; border: 1.5px solid var(--line); background: var(--ivory); border-radius: 16px; padding: 10px 14px; cursor: pointer; font: inherit; color: var(--ink); }
+.pro[aria-pressed="true"] { border-color: var(--teal); background: var(--mint-soft); box-shadow: inset 0 0 0 1px var(--teal); }
+.pro-photo { width: 56px; height: 56px; border-radius: 50%; overflow: hidden; flex: none; background: var(--mint-soft); display: grid; place-items: center; }
+.pro-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
+.pro-photo img.pro-logo { width: 70%; height: auto; object-fit: contain; }
+.pro-text { display: flex; flex-direction: column; line-height: 1.35; }
+.pro-text span { font-size: .88rem; color: var(--muted); }
+.pro-text .pro-modes { color: var(--teal); font-weight: 500; }
+[data-slot-box] h2 { margin-top: 10px; }
+
+/* Servizi per area */
+.cat-block { padding: 28px 0 8px; border-top: 1px solid var(--line); }
+.cat-block:first-child { border-top: 0; padding-top: 0; }
+.cat-head { margin-bottom: 22px; }
+.svc-grid { display: grid; gap: 16px; }
+@media (min-width: 760px) { .svc-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .svc-grid { grid-template-columns: repeat(3, 1fr); } }
+.svc-card a { display: flex; flex-direction: column; height: 100%; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; color: var(--ink); text-decoration: none; transition: transform .2s, box-shadow .2s; }
+.svc-card a:hover { transform: translateY(-3px); box-shadow: 0 22px 40px -28px rgba(24, 59, 56, .45); }
+.svc-card p { color: var(--muted); font-size: .96rem; }
+.svc-card .svc-meta { margin-bottom: .4em; font-size: .9rem; color: var(--ink); }
+.svc-card .svc-pros { flex: 1; font-size: .9rem; }
+.tag { display: inline-block; font-size: .75rem; padding: 3px 10px; border-radius: 999px; background: var(--mint); color: var(--ink); }
+.tag-online { background: #E5E9F5; }
+.person-services { margin: 0 0 10px; }
+.person-services li { font-size: .92rem; padding: 2px 0; }
+.person .btn { margin-top: 8px; }
+.service-areas a { color: var(--ink); text-decoration: none; }
+.service-areas a:hover { text-decoration: underline; }
