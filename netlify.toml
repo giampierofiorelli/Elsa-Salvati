@@ -36,3 +36,7 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=604800"
+
+# Preview deploys are never indexed.
+[context.deploy-preview.environment]
+  SITE_DEMO = "true"

@@ -10,6 +10,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = join(root, 'src');
 const out = join(root, 'dist');
 const config = JSON.parse(readFileSync(join(src, 'site.config.json'), 'utf8'));
+// Preview mode (SITE_DEMO=true): visible banner, not indexed by search engines.
+const demo = process.env.SITE_DEMO === 'true';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const isPlaceholder = (s) => typeof s === 'string' && /\[[^\]]+\]/.test(s);
@@ -111,7 +113,8 @@ function page(meta, body, path) {
   const nav = meta.nav || '';
   return render(layout, { pageTitle: meta.title, pageDescription: meta.description || '' })
     .replace('<!--canonical-->', canonical)
-    .replace('<!--robots-->', meta.noindex === 'true' ? '<meta name="robots" content="noindex, nofollow">' : '')
+    .replace('<!--robots-->', meta.noindex === 'true' || demo ? '<meta name="robots" content="noindex, nofollow">' : '')
+    .replace('<!--demo-->', demo ? '<div class="demo-banner" role="note">Anteprima dimostrativa: testi e dati tra [parentesi] sono provvisori, gli appuntamenti sono di prova.</div>' : '')
     .replace('<!--jsonld-->', path === '/' ? `<script type="application/ld+json">${jsonLd()}</script>` : '')
     .replace('<!--scripts-->', scripts)
     .replace(/<a ([^>]*)data-nav="([\w-]+)"/g, (all, attrs, key) => (key === nav ? `<a ${attrs}aria-current="page"` : `<a ${attrs}`))
@@ -160,7 +163,7 @@ for (const file of walk(join(src, 'pages')).filter((f) => f.endsWith('.html'))) 
 cpSync(join(src, 'admin'), join(out, 'admin'), { recursive: true });
 
 const base = isPlaceholder(config.siteUrl) ? '' : config.siteUrl.replace(/\/$/, '');
-write('robots.txt', `User-agent: *\nDisallow: /admin/\nDisallow: /prenota/gestisci/\n${base ? `Sitemap: ${base}/sitemap.xml\n` : ''}`);
+write('robots.txt', demo ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nDisallow: /admin/\nDisallow: /prenota/gestisci/\n${base ? `Sitemap: ${base}/sitemap.xml\n` : ''}`);
 if (base) {
   write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.sort().map((u) => `  <url><loc>${base}${u}</loc></url>`).join('\n')}\n</urlset>\n`);
 }
