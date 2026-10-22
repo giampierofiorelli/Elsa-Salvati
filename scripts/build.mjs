@@ -5,6 +5,7 @@
 import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = join(root, 'src');
@@ -165,6 +166,16 @@ for (const file of walk(join(src, 'pages')).filter((f) => f.endsWith('.html'))) 
 
 // Admin app: standalone page, not indexed.
 cpSync(join(src, 'admin'), join(out, 'admin'), { recursive: true });
+
+// Cache busting: assets are cached for a week, so every CSS/JS reference gets
+// ?v=<content hash>. A changed file gets a new URL and phones fetch it at once.
+const versioned = ['/assets/css/style.css', '/assets/js/site.js', '/assets/js/booking.js', '/admin/admin.css', '/admin/admin.js'];
+const hashes = Object.fromEntries(versioned.map((u) => [u, createHash('sha256').update(readFileSync(join(out, u))).digest('hex').slice(0, 10)]));
+for (const file of walk(out).filter((f) => f.endsWith('.html'))) {
+  let html = readFileSync(file, 'utf8');
+  for (const [u, h] of Object.entries(hashes)) html = html.replaceAll(`"${u}"`, `"${u}?v=${h}"`);
+  writeFileSync(file, html);
+}
 
 const base = isPlaceholder(config.siteUrl) ? '' : config.siteUrl.replace(/\/$/, '');
 write('robots.txt', demo ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nDisallow: /admin/\nDisallow: /prenota/gestisci/\n${base ? `Sitemap: ${base}/sitemap.xml\n` : ''}`);
