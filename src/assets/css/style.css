@@ -289,3 +289,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); outline: 
 .hero-visual img { object-fit: cover; object-position: 50% 22%; }
 img { height: auto; }
 .hero-visual img { height: 100%; }
+
+/* Logo Blooming */
+.brand { gap: 10px; }
+.brand-icon { width: auto; height: 46px; flex: none; }
+.brand-word { width: auto; height: 30px; margin-bottom: 1px; }
+.brand-text > span { font-size: .78rem; }
+@media (min-width: 900px) { .brand-icon { height: 52px; } .brand-word { height: 34px; } }
+.footer-tagline { font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: #E2C08D; margin: -4px 0 10px; }

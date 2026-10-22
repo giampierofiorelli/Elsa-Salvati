@@ -1,6 +1,8 @@
 {
   "_nota": "Tutti i dati della professionista sono qui. I valori tra [parentesi quadre] sono segnaposto da sostituire prima della pubblicazione: il build segnala quelli rimasti.",
   "siteUrl": "https://[dominio].it",
+  "studioName": "Blooming",
+  "studioTagline": "Studio di psicologia e coaching",
   "professionalName": "Dott.ssa Elsa Salvati",
   "firstName": "Elsa",
   "title": "Psicologa",

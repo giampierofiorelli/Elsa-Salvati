@@ -12,7 +12,8 @@
 <meta property="og:title" content="{{pageTitle}}">
 <meta property="og:description" content="{{pageDescription}}">
 <meta property="og:locale" content="it_IT">
-<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/img/favicon-64.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/style.css">
@@ -25,9 +26,12 @@
 <!--demo-->
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="/">
-      <span class="brand-mark" aria-hidden="true">E</span>
-      <span class="brand-text"><strong>{{professionalName}}</strong><span>{{title}} · {{city}}</span></span>
+    <a class="brand" href="/" aria-label="{{studioName}}, {{professionalName}} – pagina iniziale">
+      <img class="brand-icon" src="/assets/img/logo-icon.webp" width="147" height="112" alt="">
+      <span class="brand-text">
+        <img class="brand-word" src="/assets/img/logo-wordmark.webp" width="300" height="72" alt="{{studioName}}">
+        <span>{{professionalName}} · {{city}}</span>
+      </span>
     </a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu">
       <span class="menu-bars" aria-hidden="true"></span><span class="sr">Menu</span>
@@ -52,7 +56,9 @@
 <footer class="site-footer">
   <div class="wrap footer-grid">
     <div>
-      <p class="footer-name">{{professionalName}}</p>
+      <p class="footer-name">{{studioName}}</p>
+      <p class="footer-tagline">{{studioTagline}}</p>
+      <p>{{professionalName}}</p>
       <p>{{titleLong}}<br>Iscritta all'{{albo}}, n. {{alboNumber}}<br>P.IVA {{vat}}</p>
     </div>
     <div>
@@ -75,7 +81,7 @@
   </div>
   <div class="wrap">
     <p class="emergency"><strong>Non è un servizio di emergenza.</strong> Questo sito, l'email, WhatsApp e il sistema di prenotazione non sono adatti alle emergenze. In caso di pericolo immediato chiama il <a href="tel:112">112</a> o il <a href="tel:118">118</a>, oppure rivolgiti al Pronto Soccorso più vicino.</p>
-    <p class="footer-small">© {{professionalName}} · Questo sito non usa cookie di profilazione né strumenti di tracciamento.</p>
+    <p class="footer-small">© {{studioName}} – {{professionalName}} · Questo sito non usa cookie di profilazione né strumenti di tracciamento.</p>
   </div>
 </footer>
 

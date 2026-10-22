@@ -99,3 +99,4 @@ code { background: var(--paper); border: 1px solid var(--line); padding: 8px 10p
   .admin-tabs button { padding: 8px 12px; font-size: .9rem; min-height: 40px; }
   .toolbar-nav strong { font-size: .95rem; }
 }
+.login-logo { width: auto; height: 64px; }
