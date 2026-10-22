@@ -127,3 +127,8 @@ code { background: var(--paper); border: 1px solid var(--line); padding: 8px 10p
 .invite-share code { display: block; margin: 8px 0 12px; }
 .dlg textarea { min-height: 90px; }
 .pick-hint { margin-top: 12px; }
+
+/* The agenda keeps compact solid buttons, without the site's arrow circle. */
+.admin .btn-primary { background: var(--teal); color: #fff; padding: 10px 20px; min-height: 44px; gap: 10px; }
+.admin .btn-primary::after { display: none; }
+.admin .btn-primary:hover { background: var(--teal-hover); color: #fff; }

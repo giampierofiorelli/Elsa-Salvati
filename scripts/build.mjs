@@ -91,19 +91,21 @@ function personCard(p, { service } = {}) {
     </li>`;
 }
 
-function serviceCard(sv) {
+const circleArrow = `<span class="circle-arrow" aria-hidden="true">${arrowRight}</span>`;
+
+// One row of the services list: name, practical details and who offers it.
+function serviceRow(sv) {
   const pros = sv.professionals.map((p) => esc(p.name)).join(', ');
   const modes = [...new Set(sv.professionals.flatMap((p) => p.modes))];
-  return `<li class="svc-card">
-      <a href="/servizi/${esc(sv.slug)}/">
-        <h3>${esc(sv.name)}</h3>
-        <p>${esc(sv.description)}</p>
-        <p class="svc-meta">${esc(sv.durationMinutes)} minuti${sv.price ? ` · ${esc(sv.price)}` : ''}</p>
-        <p class="svc-meta">${modeTags(modes)}</p>
-        ${pros ? `<p class="svc-pros">Con ${pros}</p>` : '<p class="svc-pros">Professionisti in arrivo</p>'}
-        <span class="card-more">Scopri il servizio ${arrowRight}</span>
-      </a>
-    </li>`;
+  const facts = [`${esc(sv.durationMinutes)} minuti`, sv.price ? esc(sv.price) : '', pros ? `Con ${pros}` : 'Professionisti in arrivo'].filter(Boolean).join(' · ');
+  return `<li><a class="link-row" href="/servizi/${esc(sv.slug)}/">
+      <span class="link-row-text">
+        <span class="link-row-title">${esc(sv.name)}</span>
+        <span class="link-row-sub">${facts}</span>
+        <span class="svc-meta">${modeTags(modes)}</span>
+      </span>
+      ${circleArrow}
+    </a></li>`;
 }
 
 const components = {
@@ -118,13 +120,14 @@ const components = {
         <img src="/assets/img/logo-icon.webp" alt="" width="147" height="112">
       </div>`,
   trustline: () => `<p class="trustline">Studio associato a ${esc(config.city)} · Psicologi e psicoterapeuti iscritti all'${esc(config.albo)} · In studio e online</p>`,
-  categoryCards: () => `<ul class="services" role="list">${catalog.categories.map((c) => `
-    <li class="service-card">
-      <h3>${esc(c.name)}</h3>
-      <p>${esc(c.intro)}</p>
-      <ul class="service-areas" role="list">${c.services.map((sv) => `<li><a href="/servizi/${esc(sv.slug)}/">${esc(sv.name)}</a></li>`).join('') || '<li>Servizi in arrivo</li>'}</ul>
-      <a class="btn btn-ghost btn-small" href="/servizi/#${esc(c.slug)}">Tutti i servizi di ${esc(c.name.toLowerCase())} ${arrowRight}</a>
-    </li>`).join('')}
+  categoryCards: () => `<ul class="link-list" role="list">${catalog.categories.map((c) => `
+    <li><a class="link-row" href="/servizi/#${esc(c.slug)}">
+      <span class="link-row-text">
+        <span class="link-row-title">${esc(c.name)}</span>
+        <span class="link-row-sub">${c.services.map((sv) => esc(sv.name)).join(' · ') || 'Servizi in arrivo'}</span>
+      </span>
+      ${circleArrow}
+    </a></li>`).join('')}
   </ul>`,
   servicesByCategory: () => catalog.categories.map((c) => `
     <section class="cat-block" id="${esc(c.slug)}" aria-labelledby="cat-${esc(c.slug)}">
@@ -132,7 +135,7 @@ const components = {
         <h2 id="cat-${esc(c.slug)}">${esc(c.name)}</h2>
         <p class="lead">${esc(c.intro)}</p>
       </div>
-      ${c.services.length ? `<ul class="svc-grid" role="list">${c.services.map(serviceCard).join('')}</ul>` : '<p class="hint">Servizi in arrivo.</p>'}
+      ${c.services.length ? `<ul class="link-list" role="list">${c.services.map(serviceRow).join('')}</ul>` : '<p class="hint">Servizi in arrivo.</p>'}
     </section>`).join(''),
   team: () => `<ul class="team" role="list">${catalog.professionals.map((p) => personCard(p)).join('')}</ul>`,
   serviceDetail: (ctx) => {
