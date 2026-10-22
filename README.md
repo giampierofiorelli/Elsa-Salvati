@@ -31,14 +31,14 @@ Servizi e professionisti stanno nel database: le prenotazioni li usano subito; l
 
 ## Messa online (circa 30 minuti, tutto gratuito)
 
-1. **Database** – crea un progetto su [supabase.com](https://supabase.com) scegliendo una **regione UE** (es. Frankfurt). Da *Connect → Transaction pooler* copia la stringa di connessione. Poi nell'SQL editor incolla ed esegui `db/schema.sql` (oppure `DATABASE_URL=... npm run db:setup`).
+1. **Database** – crea un progetto su [supabase.com](https://supabase.com) scegliendo una **regione UE** (es. Frankfurt). Da *Connect → Session pooler* copia la stringa di connessione (porta 5432). Poi nell'SQL editor incolla ed esegui `db/schema.sql` (oppure `DATABASE_URL=... npm run db:setup`).
 2. **Segreti** – sul tuo computer: `npm install && npm run setup:secrets`. Scegli la password dell'agenda; lo script stampa le variabili e la chiave da aggiungere all'app di autenticazione (Google Authenticator, Aegis, 1Password…). **Conserva `DATA_KEY` in un gestore di password**: senza, i recapiti non sono più leggibili.
 3. **Email** (facoltativo ma consigliato) – crea un account [Brevo](https://www.brevo.com) (server in Francia, 300 email/giorno gratis), verifica il dominio mittente e crea una chiave API.
 4. **Netlify** – *Add new site → Import from GitHub* → questo repository. Il build è già configurato (`netlify.toml`). In *Site configuration → Environment variables* aggiungi:
 
    | Variabile | Valore |
    |---|---|
-   | `DATABASE_URL` | stringa di Supabase (pooler, porta 6543) |
+   | `DATABASE_URL` | stringa di Supabase (session pooler, porta 5432; con il transaction pooler, porta 6543, le richieste dalle funzioni Netlify restavano appese) |
    | `SESSION_SECRET`, `DATA_KEY` | dallo script del passo 2 |
    | `BUILD_HOOK_URL` | facoltativo: build hook di Netlify per il pulsante “Aggiorna le pagine del sito” |
    | `SITE_URL` | es. `https://www.elsasalvati.it` |
