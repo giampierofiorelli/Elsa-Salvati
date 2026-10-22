@@ -1,0 +1,134 @@
+---
+title: Aziende e organizzazioni – {{studioName}}, {{city}}
+description: Coaching per manager, sviluppo dei team, formazione e benessere organizzativo a {{city}} e online. Partiamo da una conversazione sulle vostre esigenze.
+path: /aziende/
+nav: aziende
+scripts: booking
+---
+<section class="page-hero page-hero-biz">
+  <div class="wrap">
+    <p class="eyebrow">Aziende e organizzazioni</p>
+    <h1>Persone che stanno bene, team che funzionano.</h1>
+    <p class="lead">Lavoriamo con imprese, enti e studi professionali su leadership, team, benessere organizzativo e cambiamento. Prima di proporre qualsiasi intervento, ascoltiamo il vostro contesto.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#contatto">Parliamo delle vostre esigenze</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-sand" aria-labelledby="problemi-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Da dove partiamo</p>
+        <h2 id="problemi-title">Dai problemi concreti, non da un catalogo.</h2>
+      </div>
+    </div>
+    <ul class="biz-problems" role="list">
+      <li>Un nuovo responsabile deve guidare un team che fino a ieri era fatto di colleghi.</li>
+      <li>Nel gruppo ci sono tensioni che rallentano il lavoro e nessuno sa come affrontarle.</li>
+      <li>Stress, assenze e turnover sono in crescita e volete capire cosa sta succedendo.</li>
+      <li>State attraversando una riorganizzazione e volete accompagnare le persone nel cambiamento.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="aree-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Aree di intervento</p>
+        <h2 id="aree-title">Cosa possiamo fare insieme.</h2>
+      </div>
+    </div>
+    {{@businessAreas}}
+  </div>
+</section>
+
+<section class="section section-soft" aria-labelledby="processo-title">
+  <div class="wrap">
+    <p class="eyebrow">Come funziona</p>
+    <h2 id="processo-title">Un processo chiaro, dall'inizio alla fine.</h2>
+    <ol class="steps steps-4" role="list">
+      <li class="step">
+        <h3>Una prima conversazione</h3>
+        <p>Senza impegno: contesto, persone coinvolte, obiettivi e vincoli. Capiamo insieme se e come possiamo esservi utili.</p>
+      </li>
+      <li class="step">
+        <h3>Analisi e proposta</h3>
+        <p>Vi proponiamo un intervento scritto: obiettivi, attività, tempi, professionisti coinvolti e modalità di verifica.</p>
+      </li>
+      <li class="step">
+        <h3>L'intervento</h3>
+        <p>Coaching individuale, lavoro con i team, formazione o consulenza, in sede, nel nostro studio o online.</p>
+      </li>
+      <li class="step">
+        <h3>Verifica e continuità</h3>
+        <p>Facciamo il punto sui risultati e su cosa resta all'organizzazione, perché il cambiamento duri oltre l'intervento.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="quando-title">
+  <div class="wrap split">
+    <div>
+      <p class="eyebrow">Con trasparenza</p>
+      <h2 id="quando-title">Quando il coaching non è la risposta.</h2>
+    </div>
+    <div class="prose">
+      <p>Il coaching funziona quando c'è un obiettivo di sviluppo e la persona sceglie di lavorarci. Non è adatto a gestire un problema di prestazione già deciso, né a sostituire un sostegno psicologico quando c'è sofferenza.</p>
+      <p>Il contenuto dei percorsi individuali resta riservato: con l'organizzazione condividiamo, se concordato, solo obiettivi e andamento generale.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-white" aria-labelledby="chi-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Chi se ne occupa</p>
+        <h2 id="chi-title">I professionisti dell'area lavoro e organizzazioni.</h2>
+      </div>
+    </div>
+    {{@teamCoaching}}
+  </div>
+</section>
+
+<section class="section" id="contatto" aria-labelledby="contatto-title">
+  <div class="wrap narrow">
+    <p class="eyebrow">Parliamone</p>
+    <h2 id="contatto-title">Raccontateci di cosa avete bisogno.</h2>
+    <p>Lasciateci un recapito e due righe sul contesto: vi ricontatteremo per fissare una prima conversazione, senza impegno.</p>
+    <form class="panel" data-request-form novalidate>
+      <input type="hidden" name="category" value="aziende">
+      <input type="hidden" name="mode" value="da_definire">
+      <div class="field">
+        <label for="a-name">Nome e cognome</label>
+        <input id="a-name" name="name" type="text" autocomplete="name" required maxlength="80">
+      </div>
+      <div class="field">
+        <label for="a-org">Organizzazione <span class="hint">(facoltativo)</span></label>
+        <input id="a-org" name="organization" type="text" autocomplete="organization" maxlength="120">
+      </div>
+      <div class="field">
+        <label for="a-email">Email</label>
+        <input id="a-email" name="email" type="email" autocomplete="email" maxlength="254">
+      </div>
+      <div class="field">
+        <label for="a-phone">Telefono</label>
+        <input id="a-phone" name="phone" type="tel" autocomplete="tel" maxlength="20">
+        <span class="hint">Indicate almeno un recapito tra email e telefono.</span>
+      </div>
+      <div class="field">
+        <label for="a-msg">Di cosa avete bisogno? <span class="hint">(facoltativo)</span></label>
+        <textarea id="a-msg" name="message" maxlength="600" placeholder="es. percorso per nuovi responsabili, formazione sullo stress, clima nel team"></textarea>
+        <span class="hint">Bastano poche righe; non inserite dati personali di dipendenti o colleghi.</span>
+      </div>
+      <div class="hp" aria-hidden="true"><label for="a-website">Lascia vuoto</label><input id="a-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <label class="check"><input type="checkbox" name="privacy" required> <span>Ho letto l'<a href="/privacy/" target="_blank" rel="noopener">informativa sulla privacy</a>.</span></label>
+      <p class="status" role="status" data-request-status></p>
+      <button class="btn btn-primary" type="submit">Richiedi una conversazione</button>
+    </form>
+  </div>
+</section>

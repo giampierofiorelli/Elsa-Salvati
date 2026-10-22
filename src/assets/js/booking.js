@@ -1,4 +1,4 @@
-// Booking (/prenota/): area → service → professional → mode → day and time → details.
+// Booking (/prenota/): need → service → professional → mode → day and time → details.
 // Self-service management (/prenota/gestisci/) and call-back request forms.
 // Plain JavaScript, no dependencies.
 (function () {
@@ -164,7 +164,7 @@
   // ---------- booking ----------
 
   function initBooking(root) {
-    var state = { category: null, service: null, pro: null, mode: null };
+    var state = { services: [], service: null, pro: null, mode: null };
     var catalog;
     var picker = new SlotPicker(root, function (slot) {
       $(root, '[data-next]').disabled = !slot;
@@ -187,32 +187,58 @@
       order.slice(order.indexOf(name)).forEach(function (k) { $(root, '[data-' + k + '-box]').hidden = true; });
     }
 
-    function selectCategory(slug, preset) {
-      state.category = catalog.categories.find(function (c) { return c.slug === slug; });
-      setPressed($(root, '[data-categories]'), 'data-cat', slug);
+    // Services for a need: those of the need's categories ('*' = all).
+    function servicesFor(cats) {
+      var list = [];
+      catalog.categories.forEach(function (c) {
+        if (cats === '*' || cats.split(',').indexOf(c.slug) >= 0) {
+          c.services.forEach(function (s) { list.push({ service: s, category: c }); });
+        }
+      });
+      return list;
+    }
+
+    function selectNeed(slug, preset) {
+      var btn = $(root, '[data-need="' + slug + '"]');
+      if (!btn) return;
+      var cats = btn.getAttribute('data-cats');
+      setPressed($(root, '[data-needs]'), 'data-need', slug);
       hideFrom('service');
       var box = $(root, '[data-services]');
       box.textContent = '';
-      var bookable = state.category.services.filter(function (s) { return s.professionals.length; });
+      var bookable = servicesFor(cats).filter(function (x) { return x.service.professionals.length; });
+      state.services = bookable.map(function (x) { return x.service; });
       if (!bookable.length) {
         box.appendChild(el('p', { class: 'note', text: 'I servizi di quest\'area non sono ancora prenotabili online: chiedici di ricontattarti qui sotto.' }));
       }
-      bookable.forEach(function (s) {
+      var many = cats === '*' || cats.indexOf(',') >= 0;
+      bookable.forEach(function (x) {
+        var s = x.service;
         var b = el('button', { type: 'button', class: 'choice', 'data-svc': s.id, 'aria-pressed': 'false' }, [
           el('strong', { text: s.name }),
-          el('span', { text: s.durationMinutes + ' minuti' + (s.price ? ' · ' + s.price : '') }),
+          el('span', { text: (many ? x.category.name + ' · ' : '') + s.durationMinutes + ' minuti' + (s.price ? ' · ' + s.price : '') }),
         ]);
         b.addEventListener('click', function () { selectService(s.id); });
         box.appendChild(b);
       });
       $(root, '[data-service-box]').hidden = false;
-      var pre = preset && bookable.find(function (s) { return s.id === preset.service; });
+      var pre = preset && state.services.find(function (s) { return s.id === preset.service; });
       if (pre) selectService(pre.id, preset);
-      else if (bookable.length === 1) selectService(bookable[0].id);
+      else if (state.services.length === 1) selectService(state.services[0].id);
+    }
+
+    // The need that contains a category, for links like /prenota/?area=coaching
+    function needForCategory(slug) {
+      var found = 'tutti';
+      root.querySelectorAll('[data-need]').forEach(function (b) {
+        var cats = b.getAttribute('data-cats');
+        if (found === 'tutti' && cats !== '*' && cats.split(',').indexOf(slug) >= 0) found = b.getAttribute('data-need');
+      });
+      return found;
     }
 
     function selectService(id, preset) {
-      state.service = state.category.services.find(function (s) { return s.id === id; });
+      state.service = state.services.find(function (s) { return s.id === id; });
       setPressed($(root, '[data-services]'), 'data-svc', id);
       hideFrom('pro');
       var box = $(root, '[data-pros]');
@@ -261,28 +287,30 @@
       picker.load(function () { return api(q); });
     }
 
+    root.querySelectorAll('[data-need]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (!catalog) return;
+        selectNeed(b.getAttribute('data-need'));
+      });
+    });
+
     getCatalog().then(function (c) {
       catalog = c;
-      var box = $(root, '[data-categories]');
-      box.textContent = '';
-      c.categories.forEach(function (cat) {
-        var b = el('button', { type: 'button', 'data-cat': cat.slug, 'aria-pressed': 'false', text: cat.name });
-        b.addEventListener('click', function () { selectCategory(cat.slug); });
-        box.appendChild(b);
-      });
-      // Preselection from links like /prenota/?servizio=4&professionista=2
+      // Preselection from links like /prenota/?servizio=4&professionista=2, ?bisogno=lavoro or ?area=coaching
       var wantService = param('servizio');
       var wantPro = param('professionista');
       if (wantService) {
         var cat = c.categories.find(function (x) { return x.services.some(function (s) { return s.id === wantService; }); });
-        if (cat) selectCategory(cat.slug, { service: wantService, pro: wantPro });
+        if (cat) selectNeed(needForCategory(cat.slug), { service: wantService, pro: wantPro });
+      } else if (param('bisogno')) {
+        selectNeed(param('bisogno'));
       } else if (param('area')) {
-        selectCategory(param('area'));
+        selectNeed(needForCategory(param('area')));
       }
     }).catch(function (err) {
-      var box = $(root, '[data-categories]');
-      box.textContent = '';
-      box.appendChild(el('p', { class: 'form-error', text: err.message }));
+      var box = $(root, '[data-catalog-error]');
+      box.hidden = false;
+      box.textContent = err.message;
     });
 
     $(root, '[data-next]').addEventListener('click', function () {
@@ -464,6 +492,7 @@
         category: form.category ? form.category.value : 'da_definire',
         professional: proSelect && !proField.hidden ? proSelect.value : '',
         preference: form.preference ? form.preference.value.trim() : '',
+        organization: form.organization ? form.organization.value.trim() : '',
         message: form.message ? form.message.value.trim() : '',
         privacy: true, website: form.website.value,
       }).then(function () {

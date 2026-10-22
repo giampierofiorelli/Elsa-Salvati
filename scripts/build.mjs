@@ -108,6 +108,30 @@ function serviceRow(sv) {
     </a></li>`;
 }
 
+// Final call to action, shown at the bottom of most pages.
+function closingPanel({ photo }) {
+  return `<section class="closing-wrap" aria-labelledby="closing-title">
+    <div class="wrap">
+      <div class="cta-panel${photo ? ' has-photo' : ''}">
+        <div class="cta-panel-text">
+          <h2 id="closing-title">Fare il primo passo <span class="fade">può essere semplice.</span></h2>
+          <p>Scegli un orario libero per il primo colloquio, oppure chiedici di ricontattarti. Non serve raccontare nulla della tua situazione per prenotare.</p>
+          <div class="cta-stack">
+            <a class="btn btn-outline-light btn-wide" href="/contatti/">Fai una domanda</a>
+            <a class="btn btn-light btn-wide" href="/prenota/">Prenota un primo colloquio</a>
+          </div>
+        </div>
+        ${photo ? `<div class="cta-panel-photo">
+          <picture>
+            <source type="image/webp" srcset="/assets/img/team-480.webp 480w, /assets/img/team-800.webp 800w" sizes="(min-width: 900px) 420px, 88vw">
+            <img src="/assets/img/team-800.jpg" alt="" width="800" height="1062" loading="lazy">
+          </picture>
+        </div>` : ''}
+      </div>
+    </div>
+  </section>`;
+}
+
 const components = {
   arrow: () => arrow,
   arrowRight: () => arrowRight,
@@ -166,16 +190,42 @@ const components = {
       <a class="btn btn-primary" href="/prenota/">Verifica disponibilità ${arrow}</a>
       <a class="btn btn-ghost" href="/primo-colloquio/">Come funziona il primo colloquio</a>
     </div>`,
-  closing: () => `<section class="closing" aria-labelledby="closing-title">
-      <div class="wrap">
-        <h2 id="closing-title">Fare il primo passo può essere semplice.</h2>
-        <p>Scegli un orario libero per il primo colloquio, oppure chiedici di ricontattarti: non serve raccontare nulla della tua situazione per prenotare.</p>
-        <div class="cta-row">
-          <a class="btn btn-light" href="/prenota/">Prenota un primo colloquio ${arrow}</a>
-          <a class="btn btn-outline-light" href="/contatti/">Fai una domanda</a>
-        </div>
-      </div>
-    </section>`,
+  closing: () => closingPanel({ photo: true }),
+  closingPlain: () => closingPanel({ photo: false }),
+  doors: () => `<ul class="link-list" role="list">${config.needs.map((n) => `
+    <li><a class="link-row" href="${esc(n.href)}">
+      <span class="link-row-text">
+        <span class="link-row-title">${esc(n.door)}</span>
+        <span class="link-row-sub">${esc(n.text)}</span>
+      </span>
+      ${circleArrow}
+    </a></li>`).join('')}
+  </ul>`,
+  heroTeam: () => `<picture>
+          <source type="image/webp" srcset="/assets/img/team-480.webp 480w, /assets/img/team-800.webp 800w, /assets/img/team-1088.webp 1088w" sizes="(min-width: 900px) 460px, 92vw">
+          <img src="/assets/img/team-800.jpg" alt="Tre professionisti dello studio seduti insieme in una stanza luminosa con piante e libri" width="800" height="1062" fetchpriority="high">
+        </picture>`,
+  promoAziende: () => `<div class="promo">
+      <p class="eyebrow">Per aziende e organizzazioni</p>
+      <h2>Persone che stanno bene, <span class="fade">team che funzionano.</span></h2>
+      <p>Coaching per manager, sviluppo dei team, formazione e benessere organizzativo. Prima di proporre un intervento ascoltiamo il vostro contesto: obiettivi, persone coinvolte, vincoli.</p>
+      <a class="btn btn-light btn-wide" href="/aziende/#contatto">Parliamo delle vostre esigenze</a>
+    </div>`,
+  businessAreas: () => `<ul class="biz-areas" role="list">${config.business.areas.map((a) => `
+    <li><h3>${esc(a.name)}</h3><p>${esc(a.text)}</p></li>`).join('')}
+  </ul>`,
+  teamCoaching: () => {
+    const pros = catalog.professionals.filter((p) => p.services.some((sv) => sv.category === 'coaching'));
+    return pros.length ? `<ul class="team" role="list">${pros.map((p) => personCard(p)).join('')}</ul>` : '<p class="hint">Presto qui i professionisti dell\'area.</p>';
+  },
+  workServices: () => {
+    const cat = catalog.categories.find((c) => c.slug === 'coaching');
+    return cat && cat.services.length ? `<ul class="link-list" role="list">${cat.services.map(serviceRow).join('')}</ul>` : '';
+  },
+  needOptions: () => config.needs.map((n) => n.categories.length
+    ? `<button type="button" class="choice" data-need="${esc(n.slug)}" data-cats="${esc(n.categories.join(','))}" aria-pressed="false"><strong>${esc(n.label)}</strong><span>${esc(n.text)}</span></button>`
+    : `<a class="choice" href="${esc(n.href)}#contatto"><strong>${esc(n.label)}</strong><span>Parliamo delle vostre esigenze ${arrowRight}</span></a>`).join('')
+    + '<button type="button" class="choice" data-need="tutti" data-cats="*" aria-pressed="false"><strong>Non sono sicuro</strong><span>Vedi tutti i servizi: al primo colloquio capiamo insieme il percorso più adatto.</span></button>',
   whatsapp: () => `https://wa.me/${esc(config.contact.whatsapp)}?text=${encodeURIComponent('Buongiorno, vorrei alcune informazioni pratiche.')}`,
   categoryOptions: () => catalog.categories.map((c) => `<option value="${esc(c.slug)}">${esc(c.name)}</option>`).join(''),
 };

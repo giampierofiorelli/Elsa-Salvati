@@ -1,33 +1,63 @@
 ---
-title: {{studioFullName}} a {{city}}
-description: Studio associato a {{city}}: psicoterapia individuale e business coaching, in studio e online. Prenota un primo colloquio scegliendo un orario libero.
+title: {{studioName}} – Psicologia, lavoro e organizzazioni a {{city}}
+description: Studio associato a {{city}}: psicoterapia e sostegno psicologico, coaching professionale e consulenza alle organizzazioni. In studio e online.
 path: /
 nav: home
 ---
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
-      <p class="eyebrow">{{studioTagline}} · {{city}} e online</p>
-      <h1>Uno spazio per ritrovare il tuo <em>equilibrio</em>.</h1>
-      <p class="lead">Siamo uno studio associato di psicologi e psicoterapeuti. Ti accompagniamo nella vita personale e in quella professionale, con percorsi di coaching, psicologia e psicoterapia.</p>
-      {{@cta}}
+      <p class="eyebrow">Studio associato · {{city}} e online</p>
+      <h1>Psicologia, lavoro e <em>organizzazioni</em>.</h1>
+      <p class="lead">Uno studio di professionisti con competenze diverse, per accompagnare persone, professionisti e imprese nei momenti di difficoltà, scelta e cambiamento.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="/prenota/">Trova il percorso più adatto</a>
+        <a class="btn btn-ghost" href="/aziende/">Servizi per aziende {{@arrowRight}}</a>
+      </div>
       {{@trustline}}
     </div>
-    <div class="hero-visual">
-      {{@heroArt}}
+    <div class="hero-visual hero-photo">
+      {{@heroTeam}}
     </div>
   </div>
 </section>
 
-<section class="section section-mint" aria-labelledby="servizi-title">
+<section class="section section-mint" id="percorsi" aria-labelledby="porte-title">
   <div class="wrap">
     <div class="section-head">
       <div>
-        <p class="eyebrow">I nostri servizi</p>
-        <h2 id="servizi-title">Tre aree, un'unica cura per la persona.</h2>
+        <p class="eyebrow">Da dove partire</p>
+        <h2 id="porte-title">Per le persone. Per il lavoro. Per le organizzazioni.</h2>
       </div>
     </div>
-    {{@categoryCards}}
+    {{@doors}}
+  </div>
+</section>
+
+<section class="section" aria-labelledby="lavoro-title">
+  <div class="wrap split">
+    <div>
+      <p class="eyebrow">Il nostro modo di lavorare</p>
+      <h2 id="lavoro-title">Non tutti i problemi che nascono sul lavoro richiedono lo stesso tipo di intervento.</h2>
+    </div>
+    <div>
+      <p class="lead">Un cambiamento di carriera, una difficoltà di ruolo, un periodo di forte stress o un disagio psicologico possono richiedere competenze diverse.</p>
+      <p>Nel nostro studio lavorano professionisti con specializzazioni differenti: non devi sapere in anticipo di quale tipo di professionista hai bisogno. Al primo colloquio ti aiutiamo a individuare il percorso più appropriato e, se serve, il collega più adatto.</p>
+      <p><a class="btn btn-ghost" href="/lavoro/">Difficoltà e cambiamenti nel lavoro {{@arrowRight}}</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-white" aria-labelledby="team-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">I professionisti</p>
+        <h2 id="team-title">Competenze diverse, un modo condiviso di lavorare.</h2>
+      </div>
+      <a class="btn btn-ghost" href="/team/">Tutti i professionisti {{@arrowRight}}</a>
+    </div>
+    {{@team}}
   </div>
 </section>
 
@@ -37,31 +67,24 @@ nav: home
     <h2 id="come-title">Tre passi, senza fretta.</h2>
     <ol class="steps" role="list">
       <li class="step">
-        <h3>Scegli un orario</h3>
-        <p>Indichi il servizio che ti interessa, scegli un orario libero per il primo colloquio, in studio o online, e prenoti in meno di un minuto.</p>
+        <h3>Dici di cosa hai bisogno</h3>
+        <p>Scegli l'area che ti riguarda, il professionista e un orario libero per il primo colloquio, in studio o online. Bastano nome ed email.</p>
       </li>
       <li class="step">
         <h3>Il primo colloquio</h3>
         <p>Ci conosciamo e chiariamo insieme la tua richiesta, con i tuoi tempi. Non serve preparare nulla.</p>
       </li>
       <li class="step">
-        <h3>Il professionista giusto</h3>
-        <p>Ti proponiamo un percorso e il collega più adatto alle tue esigenze, con obiettivi, frequenza e durata indicativa.</p>
+        <h3>Il percorso giusto</h3>
+        <p>Ti proponiamo un percorso con obiettivi, frequenza e durata indicativa. Se un'altra competenza dello studio è più adatta, te lo diciamo.</p>
       </li>
     </ol>
   </div>
 </section>
 
-<section class="section section-white" aria-labelledby="team-title">
+<section class="section-tight" aria-label="Per le organizzazioni">
   <div class="wrap">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Il team</p>
-        <h2 id="team-title">Professionisti diversi, un modo condiviso di lavorare.</h2>
-      </div>
-      <a class="btn btn-ghost" href="/team/">Conosci il team {{@arrowRight}}</a>
-    </div>
-    {{@team}}
+    {{@promoAziende}}
   </div>
 </section>
 
@@ -84,8 +107,8 @@ nav: home
     <h2 id="faq-title">Le domande che ci fanno più spesso.</h2>
     <div class="faq">
       <details>
-        <summary>Che differenza c'è tra psicoterapia e business coaching?</summary>
-        <div class="answer"><p>La psicoterapia è un percorso di cura per difficoltà emotive e psicologiche, come ansia, depressione o momenti critici della vita familiare. Il business coaching si concentra sulla vita professionale: scelte di carriera, difficoltà sul lavoro, stress lavorativo. Se non sai quale fa per te, prenota un primo colloquio: lo capiamo insieme.</p></div>
+        <summary>Che differenza c'è tra coaching e psicoterapia?</summary>
+        <div class="answer"><p>Il coaching è un percorso orientato a obiettivi personali e professionali: scelte di carriera, nuovi ruoli, leadership, efficacia nel lavoro. Non diagnostica né cura difficoltà psicologiche. La psicoterapia è invece un percorso di cura per sofferenze emotive e psicologiche, come ansia o depressione. Se non sai quale fa per te, prenota un primo colloquio: lo capiamo insieme.</p></div>
       </details>
       <details>
         <summary>Devo spiegare il mio problema per prenotare?</summary>
@@ -93,7 +116,11 @@ nav: home
       </details>
       <details>
         <summary>Posso scegliere il professionista?</summary>
-        <div class="answer"><p>Sì: puoi indicarlo quando ti contattiamo o durante il primo colloquio. Altrimenti ti proponiamo noi il collega più adatto alla tua richiesta.</p></div>
+        <div class="answer"><p>Sì: quando prenoti vedi chi si occupa del servizio che hai scelto e scegli tu. Se non conosci ancora nessuno, va benissimo: al primo colloquio valutiamo insieme se è la persona più adatta.</p></div>
+      </details>
+      <details>
+        <summary>Lavorate anche con aziende?</summary>
+        <div class="answer"><p>Sì: coaching per manager, sviluppo dei team, formazione e benessere organizzativo. Per le organizzazioni partiamo sempre da una conversazione sulle vostre esigenze. <a href="/aziende/">Servizi per aziende</a>.</p></div>
       </details>
       <details>
         <summary>Posso annullare o spostare un appuntamento?</summary>
@@ -103,4 +130,4 @@ nav: home
   </div>
 </section>
 
-{{@closing}}
+{{@closingPlain}}

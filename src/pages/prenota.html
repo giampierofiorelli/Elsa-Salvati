@@ -9,7 +9,7 @@ scripts: booking
   <div class="wrap">
     <p class="eyebrow">Prenotazione</p>
     <h1>Prenota un primo colloquio.</h1>
-    <p class="lead">Scegli il servizio, la modalità e un orario libero. La conferma è immediata e ricevi un'email con il riepilogo. Non serve raccontare nulla della tua situazione.</p>
+    <p class="lead">Dicci di cosa hai bisogno, poi scegli il professionista, la modalità e un orario libero. La conferma è immediata e ricevi un'email con il riepilogo. Non serve raccontare nulla della tua situazione.</p>
   </div>
 </section>
 
@@ -17,9 +17,9 @@ scripts: booking
   <div class="wrap two-col">
     <div class="booking" id="booking" data-mode="book" aria-live="polite">
       <div class="booking-step" data-step="pick">
-        <h2>1. Cosa cerchi</h2>
-        <p class="label" id="cat-label">Area</p>
-        <div class="seg seg-wrap" role="group" aria-labelledby="cat-label" data-categories><div class="skeleton" aria-hidden="true"></div></div>
+        <h2>1. Di cosa hai bisogno?</h2>
+        <div class="choice-list need-list" role="group" aria-label="Di cosa hai bisogno" data-needs>{{@needOptions}}</div>
+        <p class="form-error" data-catalog-error hidden></p>
 
         <div data-service-box hidden>
           <p class="label" id="svc-label">Servizio</p>

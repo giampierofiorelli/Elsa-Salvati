@@ -263,12 +263,15 @@ test('professionals change modes of their services but cannot add services', opt
 test('call-back requests reach the chosen professional', opts, async () => {
   let r = await pubCall('POST', '/request', { name: 'Sara', phone: '+39 333 1234567', category: 'psicoterapia', professional: ids.marco, privacy: true });
   assert.equal(r.status, 201);
-  r = await pubCall('POST', '/request', { name: 'Azienda Srl', email: 'hr@azienda.it', category: 'aziende', privacy: true });
+  r = await pubCall('POST', '/request', { name: 'Laura Bianchi', organization: 'Azienda Srl', email: 'hr@azienda.it', category: 'aziende', privacy: true });
   assert.equal(r.status, 201);
   r = await as('marco')('GET', '/requests');
   assert.deepEqual(r.body.requests.map((x) => x.name), ['Sara']);
   r = await as('admin')('GET', '/requests');
   assert.equal(r.body.requests.length, 2);
+  const company = r.body.requests.find((x) => x.category === 'aziende');
+  assert.equal(company.organization, 'Azienda Srl');
+  assert.equal(r.body.requests.find((x) => x.name === 'Sara').organization, undefined);
 });
 
 test('deactivated accounts lose access immediately', opts, async () => {

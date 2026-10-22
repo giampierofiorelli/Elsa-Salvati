@@ -2,7 +2,7 @@
   "_nota": "Dati generali dello studio. Servizi e professionisti si gestiscono dall'area riservata (/admin/); 'demoCatalog' serve solo per generare il sito senza database. I valori tra [parentesi quadre] sono segnaposto.",
   "siteUrl": "https://[dominio].it",
   "studioName": "Blooming",
-  "studioTagline": "Studio di psicologia e coaching",
+  "studioTagline": "Psicologia · Lavoro · Organizzazioni",
   "studioFullName": "Blooming – Studio di psicologia e coaching",
   "studioLegal": "Blooming – Studio associato",
   "city": "Bologna",
@@ -110,7 +110,7 @@
                 "title": "Psicologa",
                 "bio": "",
                 "albo": "[n. Albo]",
-                "photo": "",
+                "photo": "professionista-psicologia",
                 "modes": [
                   "studio",
                   "online"
@@ -141,7 +141,7 @@
                 "title": "Psicoterapeuta",
                 "bio": "",
                 "albo": "[n. Albo]",
-                "photo": "",
+                "photo": "professionista-psicoterapia",
                 "modes": [
                   "studio"
                 ]
@@ -149,6 +149,69 @@
             ]
           }
         ]
+      }
+    ]
+  },
+  "needs": [
+    {
+      "slug": "benessere",
+      "door": "Sto cercando supporto psicologico",
+      "label": "Benessere psicologico",
+      "text": "Ansia, depressione, relazioni, genitorialità, momenti di difficoltà.",
+      "cta": "Scopri i percorsi",
+      "href": "/servizi/#psicologia",
+      "categories": [
+        "psicologia",
+        "psicoterapia"
+      ]
+    },
+    {
+      "slug": "lavoro",
+      "door": "Voglio lavorare sulla mia vita professionale",
+      "label": "Lavoro e carriera",
+      "text": "Cambio lavoro, carriera, ruolo, leadership, conflitti e difficoltà professionali.",
+      "cta": "Lavoro e coaching",
+      "href": "/lavoro/",
+      "categories": [
+        "coaching"
+      ]
+    },
+    {
+      "slug": "aziende",
+      "door": "Cerco supporto per la mia organizzazione",
+      "label": "Aziende e organizzazioni",
+      "text": "Leadership, team, formazione, benessere e cambiamento organizzativo.",
+      "cta": "Servizi per aziende",
+      "href": "/aziende/",
+      "categories": []
+    }
+  ],
+  "business": {
+    "_nota": "Aree di intervento per le organizzazioni: tenere solo quelle realmente offerte dallo studio.",
+    "areas": [
+      {
+        "name": "Coaching per manager e professionisti",
+        "text": "Percorsi individuali per chi guida persone o affronta un nuovo ruolo, maggiori responsabilità o decisioni difficili."
+      },
+      {
+        "name": "Leadership",
+        "text": "Sviluppare uno stile di guida consapevole, chiaro nelle aspettative e sostenibile nel tempo."
+      },
+      {
+        "name": "Team e relazioni",
+        "text": "Comunicazione, collaborazione e gestione dei conflitti nei gruppi di lavoro."
+      },
+      {
+        "name": "Benessere organizzativo",
+        "text": "Leggere i rischi psicosociali e progettare interventi orientati alla salute dell'organizzazione."
+      },
+      {
+        "name": "Formazione",
+        "text": "Incontri e laboratori su stress, comunicazione, cambiamento e ruolo, costruiti sul vostro contesto."
+      },
+      {
+        "name": "Consulenza organizzativa",
+        "text": "Accompagnare cambiamenti, riorganizzazioni e passaggi delicati, insieme alla direzione e alle risorse umane."
       }
     ]
   }

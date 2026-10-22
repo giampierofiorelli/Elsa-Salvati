@@ -933,7 +933,7 @@
       res.requests.forEach(function (r) {
         var when = new Date(r.createdAt).toLocaleString('it-IT', { dateStyle: 'medium', timeStyle: 'short' });
         box.appendChild(el('div', { class: 'req' + (r.handledAt ? ' handled' : '') }, [
-          el('p', {}, [el('strong', { text: r.name || '—' }), ' · ' + when]),
+          el('p', {}, [el('strong', { text: r.name || '—' }), (r.organization ? ' · ' + r.organization : '') + ' · ' + when]),
           r.email ? el('p', {}, [el('a', { href: 'mailto:' + r.email, text: r.email })]) : null,
           r.phone ? el('p', {}, [el('a', { href: 'tel:' + r.phone.replace(/\s/g, ''), text: r.phone })]) : null,
           el('p', { class: 'hint', text: 'Area: ' + (CATEGORY_LABEL[r.category] || 'Da definire')

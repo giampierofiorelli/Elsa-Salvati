@@ -101,8 +101,8 @@ async function seed() {
   };
   const pro = {
     elsa: await s.insertProfessional({ slug: 'elsa-salvati', name: 'Dott.ssa Elsa Salvati', title: 'Psicologa · Business coach', bio: 'Business coaching individuale e consulenza per le imprese.', albo: 'Ordine degli Psicologi dell\'Emilia-Romagna n. [numero]', photo: 'elsa-salvati', notify_email: 'elsa@example.it', sort: 1, active: true }),
-    giulia: await s.insertProfessional({ slug: 'giulia-rossi', name: 'Dott.ssa Giulia Rossi', title: 'Psicologa', bio: 'Sostegno alla genitorialità e consulenza psicologica.', albo: 'Ordine degli Psicologi dell\'Emilia-Romagna n. [numero]', photo: '', notify_email: '', sort: 2, active: true }),
-    marco: await s.insertProfessional({ slug: 'marco-neri', name: 'Dott. Marco Neri', title: 'Psicologo psicoterapeuta', bio: 'Orientamento cognitivo-comportamentale. Ansia e depressione.', albo: 'Ordine degli Psicologi dell\'Emilia-Romagna n. [numero]', photo: '', notify_email: '', sort: 3, active: true }),
+    giulia: await s.insertProfessional({ slug: 'giulia-rossi', name: 'Dott.ssa Giulia Rossi', title: 'Psicologa', bio: 'Sostegno alla genitorialità e consulenza psicologica.', albo: 'Ordine degli Psicologi dell\'Emilia-Romagna n. [numero]', photo: 'professionista-psicologia', notify_email: '', sort: 2, active: true }),
+    marco: await s.insertProfessional({ slug: 'marco-neri', name: 'Dott. Marco Neri', title: 'Psicologo psicoterapeuta', bio: 'Orientamento cognitivo-comportamentale. Ansia e depressione.', albo: 'Ordine degli Psicologi dell\'Emilia-Romagna n. [numero]', photo: 'professionista-psicoterapia', notify_email: '', sort: 3, active: true }),
   };
   await s.replaceOfferings(pro.elsa, [{ service_id: svc.coaching, in_studio: true, online: true }, { service_id: svc.imprese, in_studio: true, online: true }]);
   await s.replaceOfferings(pro.giulia, [{ service_id: svc.genitori, in_studio: true, online: true }]);
