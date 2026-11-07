@@ -895,3 +895,16 @@ html[data-palette]:not([data-palette="x"]) .lang-notice { background: var(--nigh
   .hero-v4-inner { grid-template-columns: minmax(0, 640px) 1fr; }
   .hero-v4-text .eyebrow { margin-bottom: 22px; }
 }
+
+/* Opening on laptops (G, 7/11): headline, text and buttons visible without
+   scrolling. Wider text column (headline on two lines), buttons side by side,
+   less space at the top, headline that shrinks a little on short screens. */
+@media (min-width: 960px) {
+  .hero-v4 { padding-top: 132px; }
+  .hero-v4-inner { grid-template-columns: minmax(0, 800px) 1fr; }
+  .hero-v4 h1 { font-size: clamp(2.6rem, min(5.4vw, 9.5vh), 4.8rem); }
+  .hero-v4-text .eyebrow { margin-bottom: 14px; }
+  .hero-v4-sub { margin-bottom: .7em; }
+  .hero-v4 .lead { max-width: 60ch; }
+  .hero-v4 .cta-row { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px; }
+}
