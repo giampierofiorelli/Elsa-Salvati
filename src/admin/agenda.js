@@ -484,6 +484,8 @@
       layoutPieces(items).forEach(function (it) {
         var hPx = Math.max(18, (it.to - it.from) * CAL_PX - 2);
         var b = evButton(it.ev, it.p, hPx < 34);
+        // Not enough room for three lines: name and time only.
+        if (hPx < 54) b.classList.add('ev-mid');
         b.style.top = ((it.from - startMin) * CAL_PX + 1) + 'px';
         b.style.height = hPx + 'px';
         var wPct = 100 / it.cols;
