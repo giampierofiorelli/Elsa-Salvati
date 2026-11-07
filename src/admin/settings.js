@@ -82,6 +82,11 @@
             api('POST', '/users/' + u.id + '/invite', {}).then(function (r) { loadUsers(); showInviteLink(u.name, r.inviteUrl); })
               .catch(function (e) { window.alert(e.message); });
           } }));
+          if (u.calendarLink) actions.appendChild(el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Revoca il link del calendario', onclick: function () {
+            if (!window.confirm('Il calendario sul telefono di ' + u.name + ' smetterà di aggiornarsi. Potrà crearne uno nuovo dal suo account. Continuare?')) return;
+            api('POST', '/users/' + u.id + '/calendar/revoke', {}).then(function () { toast('Link del calendario revocato.'); loadUsers(); })
+              .catch(function (e) { window.alert(e.message); });
+          } }));
           actions.appendChild(el('button', { type: 'button', class: 'btn btn-danger btn-small', text: u.active ? 'Disattiva' : 'Riattiva', onclick: function () {
             api('PATCH', '/users/' + u.id, { active: !u.active }).then(loadUsers).catch(function (e) { window.alert(e.message); });
           } }));
@@ -89,7 +94,7 @@
         box.appendChild(el('div', { class: 'row-card' + (u.active ? '' : ' inactive') }, [
           el('div', {}, [
             el('strong', { text: u.name }),
-            el('p', { class: 'hint', text: u.email + ' · ' + (u.role === 'admin' ? 'amministratore' : 'professionista') + (u.professionalName ? ' · ' + u.professionalName : '') + (u.role !== 'admin' && u.canEditSite ? ' · modifica il sito' : '') + ' · ' + status }),
+            el('p', { class: 'hint', text: u.email + ' · ' + (u.role === 'admin' ? 'amministratore' : (u.role === 'tecnico' ? 'tecnico' : 'professionista')) + (u.professionalName ? ' · ' + u.professionalName : '') + (u.role === 'professionista' && u.canEditSite ? ' · modifica il sito' : '') + (u.calendarLink ? ' · calendario sul telefono attivo' : '') + ' · ' + status }),
           ]),
           actions,
         ]));

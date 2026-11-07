@@ -1684,3 +1684,34 @@ test('activity log: logins (also failed, never the password), logouts, accounts 
   assert.ok(has('account disattivato', 'Registro Prova'));
   assert.ok(has('nuovo link di attivazione', 'Registro Prova'));
 });
+
+test('phone-calendar link: the admin can revoke it; a new activation always ends it for good', opts, async () => {
+  tick();
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  const u = await createEnrolledUser(deps, { email: 'ics@example.it', name: 'Calendario Prova', role: 'professionista', professionalId: ids.laura });
+  cookies.ics = cookieOf(await login(u.email, u.secret));
+  const k1 = new URL((await as('ics')('POST', '/me/calendar', {})).body.url).searchParams.get('k');
+  assert.ok(await deps.store.getUserByIcs(sha256(k1)));
+  let list = (await as('admin')('GET', '/users')).body.users;
+  assert.equal(list.find((x) => x.id === u.id).calendarLink, true);
+  assert.equal((await as('ics')('POST', `/users/${u.id}/calendar/revoke`, {})).status, 403, 'admin only');
+  assert.equal((await as('admin')('POST', `/users/${u.id}/calendar/revoke`, {})).status, 200);
+  assert.equal(await deps.store.getUserByIcs(sha256(k1)), null, 'the old link no longer works');
+  list = (await as('admin')('GET', '/users')).body.users;
+  assert.equal(list.find((x) => x.id === u.id).calendarLink, false);
+  // A new link, then a new activation: the link dies and stays dead after the person activates again.
+  tick();
+  cookies.ics = cookieOf(await login(u.email, u.secret));
+  const k2 = new URL((await as('ics')('POST', '/me/calendar', {})).body.url).searchParams.get('k');
+  const inv = await as('admin')('POST', `/users/${u.id}/invite`, {});
+  assert.equal(inv.status, 200);
+  assert.equal(await deps.store.getUserByIcs(sha256(k2)), null);
+  const token = inv.body.inviteUrl.split('#invito=')[1];
+  const info = await call(admin, 'POST', '/api/admin/invite/info', { t: token });
+  const { totpCode } = await import('../lib/crypto.mjs');
+  const acc = await call(admin, 'POST', '/api/admin/invite/accept', { t: token, password: 'una-password-nuova-lunga', code: totpCode(info.body.secret, Math.floor(clock.now.getTime() / 30000)) });
+  assert.equal(acc.status, 200, JSON.stringify(acc.body));
+  assert.equal(await deps.store.getUserByIcs(sha256(k2)), null, 'not revived by the re-activation');
+  const log = (await sql`select action, detail from audit_log order by id desc limit 20`).map((r) => `${r.action}: ${r.detail}`);
+  assert.ok(log.includes('link del calendario revocato: Calendario Prova'));
+});
