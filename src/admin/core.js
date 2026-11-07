@@ -225,6 +225,7 @@
     'sito/pagine': { title: 'Pagine', crumb: 'Sito', editor: 'page', nav: 'Pagine', icon: 'pages', perm: 'site' },
     'sito/intestazione': { title: 'Intestazione e piè di pagina', crumb: 'Sito', editor: 'global', nav: 'Intestazione e piè di pagina', icon: 'layout', perm: 'site' },
     'sito/media': { title: 'Immagini e PDF', crumb: 'Sito', editor: 'media', nav: 'Immagini e PDF', icon: 'image', perm: 'site' },
+    'sito/email': { title: 'Testi delle email', crumb: 'Sito', panel: 'email-testi', nav: 'Testi delle email', icon: 'mail', perm: 'site' },
     'studio/professioniste': { title: 'Professioniste', crumb: 'Studio', panel: 'professionisti', nav: 'Professioniste', icon: 'users', perm: 'admin' },
     'studio/servizi': { title: 'Servizi', crumb: 'Studio', panel: 'servizi', nav: 'Servizi', icon: 'grid', perm: 'admin' },
     'studio/dati': { title: 'Dati dello studio', crumb: 'Studio', editor: 'studio', nav: 'Dati dello studio', icon: 'building', perm: 'site' },
@@ -239,7 +240,7 @@
   var NAV = [
     { label: 'Agenda', items: ['agenda/calendario', 'agenda/da-accettare', 'agenda/orari', 'agenda/blocchi'] },
     { label: 'Richieste', items: ['richieste'] },
-    { label: 'Sito', perm: 'site', items: ['sito/pagine', 'sito/intestazione', 'sito/media'] },
+    { label: 'Sito', perm: 'site', items: ['sito/pagine', 'sito/intestazione', 'sito/media', 'sito/email'] },
     { label: 'Studio', perm: 'admin', items: ['studio/professioniste', 'studio/servizi', 'studio/dati'] },
     { label: 'Impostazioni', perm: 'admin', items: ['impostazioni/prenotazione', 'impostazioni/account', 'impostazioni/sicurezza', 'impostazioni/privacy', 'impostazioni/calendario'] },
     { label: 'Il mio account', perm: 'staff', items: ['profilo', 'impostazioni/calendario'] },
@@ -339,6 +340,7 @@
     if (p === 'account') job = A.loadUsers();
     if (p === 'imp-prenotazione') job = A.loadSettings();
     if (p === 'statistiche') job = A.renderStats();
+    if (p === 'email-testi') job = A.renderEmailTexts(r.arg);
     if (job && job.catch) job.catch(function () { /* the api() helper already shows the login when the session is over */ });
   }
   window.addEventListener('hashchange', onRoute);

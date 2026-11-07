@@ -1406,3 +1406,62 @@ test('statistics v2: source kept on the first meeting until the cohort matures, 
   const note = await as('admin')('PUT', '/stats/note', { month: '2026-11-01', note: 'Novembre: due settimane di ferie.' });
   assert.equal(note.status, 200);
 });
+
+test('email texts: only admins and site editors; checked, used when sending, broken ones ignored, restore; activity log', opts, async () => {
+  tick();
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  const no = await createEnrolledUser(deps, { email: 'testi.no@example.it', name: 'Senza permesso', role: 'professionista', professionalId: ids.laura });
+  const yes = await createEnrolledUser(deps, { email: 'testi.si@example.it', name: 'Redattrice', role: 'professionista', professionalId: ids.laura });
+  const users = (await as('admin')('GET', '/users')).body.users;
+  assert.equal((await as('admin')('PATCH', `/users/${users.find((u) => u.email === yes.email).id}`, { canEditSite: true })).status, 200);
+  cookies.tno = cookieOf(await login(no.email, no.secret));
+  cookies.tsi = cookieOf(await login(yes.email, yes.secret));
+  assert.equal((await as('tno')('GET', '/email-texts')).status, 403);
+  assert.equal((await as('tno')('PUT', '/email-texts/richiesta-ricevuta/it', {})).status, 403);
+  let r = await as('tsi')('GET', '/email-texts');
+  assert.equal(r.status, 200);
+  assert.ok(r.body.emails.length >= 30 && r.body.groups.length === 5);
+  const rr = r.body.emails.find((e) => e.key === 'richiesta-ricevuta');
+  assert.deepEqual(rr.overrides, {});
+  assert.ok(rr.required.includes('link'));
+
+  const body = { p: [[{ t: 'Ciao ' }, { t: '{nome}', b: true }, { t: ', grazie.' }], [{ t: '{dettagli}' }], [{ t: '{link}' }]] };
+  r = await as('tsi')('PUT', '/email-texts/richiesta-ricevuta/it', { subject: 'Abbiamo la tua richiesta', body: { p: body.p.slice(0, 2) }, button: 'Annulla' });
+  assert.equal(r.status, 400);
+  assert.match(r.body.message || r.body.error || '', /Manca il pulsante \{link\}/);
+  assert.equal((await as('tsi')('PUT', '/email-texts/nessuna/it', { subject: 'x' })).status, 404);
+  r = await as('tsi')('POST', '/email-texts/preview', { key: 'richiesta-ricevuta', lang: 'it', subject: 'Abbiamo la tua richiesta', body, button: 'Annulla' });
+  assert.equal(r.body.ok, true);
+  assert.match(r.body.html, /Ciao <strong>Anna<\/strong>, grazie\./);
+  r = await as('tsi')('POST', '/email-texts/preview', { key: 'richiesta-ricevuta', lang: 'it', subject: 'Ciao {nome}', body, button: 'Annulla' });
+  assert.equal(r.body.ok, false);
+  r = await as('tsi')('PUT', '/email-texts/richiesta-ricevuta/it', { subject: 'Abbiamo la tua richiesta – Blooming', body, button: 'Annulla' });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  r = await as('admin')('GET', '/email-texts');
+  const saved = r.body.emails.find((e) => e.key === 'richiesta-ricevuta').overrides.it;
+  assert.equal(saved.subject, 'Abbiamo la tua richiesta');
+  assert.equal(saved.valid, true);
+  assert.equal(saved.updatedBy, 'Redattrice');
+
+  const { templates } = await import('../lib/email.mjs');
+  const ev = { start_at: new Date('2026-12-01T10:00:00Z'), end_at: new Date('2026-12-01T10:30:00Z'), kind: 'primo_colloquio', mode: 'online', professional_name: 'Laura Bianchi', lang: 'it' };
+  const send = async () => {
+    await deps.mailer.send({ to: 'testi@example.it', ...templates.requestReceived({ ev, name: 'Giada', manageUrl: 'https://s/prenota/gestisci/#t=abc', tz: 'Europe/Rome', site: deps.site, lang: 'it' }) });
+    return deps.mailer.sent[deps.mailer.sent.length - 1];
+  };
+  let m = await send();
+  assert.equal(m.subject, 'Abbiamo la tua richiesta – Blooming');
+  assert.match(m.text, /^Ciao Giada, grazie\./);
+  assert.match(m.html, /<strong>Giada<\/strong>/);
+  // An override broken behind the admin's back (the link is gone): the default is sent.
+  await sql`update email_texts set body = ${sql.json({ p: [[{ t: 'Senza link' }]] })} where key = 'richiesta-ricevuta'`;
+  m = await send();
+  assert.equal(m.subject, 'Richiesta ricevuta – Blooming');
+  assert.equal((await as('admin')('GET', '/email-texts')).body.emails.find((e) => e.key === 'richiesta-ricevuta').overrides.it.valid, false);
+  // Restore the original.
+  assert.equal((await as('tsi')('DELETE', '/email-texts/richiesta-ricevuta/it')).status, 200);
+  assert.deepEqual((await as('tsi')('GET', '/email-texts')).body.emails.find((e) => e.key === 'richiesta-ricevuta').overrides, {});
+  const log = (await as('admin')('GET', '/audit')).body.entries.map((e) => `${e.action}: ${e.detail}`);
+  assert.ok(log.includes('testo email modificato: Richiesta ricevuta (IT)'));
+  assert.ok(log.includes('testo email originale ripristinato: Richiesta ricevuta (IT)'));
+});

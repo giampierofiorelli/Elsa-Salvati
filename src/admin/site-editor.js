@@ -15,6 +15,10 @@
   A.closePicker = closePicker;
   A.enterEditor = enterEditor;
   A.flushSave = flushSave;
+  // shared with email-texts.js (same rich text rules)
+  A.richToDom = function (v, b) { return richToDom(v, b); };
+  A.domToRuns = function (r, k) { return domToRuns(r, k); };
+  A.pastedHtml = function (e, m) { return pastedHtml(e, m); };
 
   // =====================================================================
   // ---------- page editor ("Sito") ----------
