@@ -854,3 +854,23 @@ body.sb-rail .sb-collapse { display: grid; width: 40px; height: 40px; color: #ff
   .stat-bars li { grid-template-columns: 1fr auto; }
   .stat-bars .stat-bar-track { grid-column: 1 / -1; grid-row: 2; }
 }
+
+/* statistiche v2: attention list, summary, intervals (calm, no coloured edges) */
+.stat-attention { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; margin: 12px 0 16px; }
+.stat-attention h2 { font-size: 1.05rem; margin: 0 0 8px; }
+.stat-attention ul { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 8px; }
+.stat-attention li { display: flex; gap: 10px; align-items: baseline; font-size: .94rem; line-height: 1.45; }
+.att-mark { flex: none; width: 1.1em; text-align: center; color: #5E7C93; font-weight: 700; }
+.stat-attention .hint { margin: 0; }
+.stat-ok { margin: 0; color: var(--muted); }
+.stat-summary { background: #F4F7FA; border: 1px solid #DCE6EE; border-radius: 12px; padding: 16px 20px; margin: 0 0 16px; }
+.stat-summary > p:first-child { margin: 0 0 4px; font-size: .98rem; line-height: 1.5; }
+.stat-summary > .hint { margin: 0 0 12px; }
+.stat-note-month { border-top: 1px solid #DCE6EE; padding-top: 12px; }
+.stat-note-month h3 { font: 600 .82rem var(--sans); color: var(--muted); margin: 0 0 4px; }
+.stat-note-text { margin: 0 0 6px; white-space: pre-line; }
+.stat-note-edit summary { cursor: pointer; font-size: .85rem; color: var(--teal); margin: 4px 0; }
+.stat-note-edit textarea { margin: 6px 0 8px; min-height: 70px; }
+.stat-ci { margin: 0; font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stat-compare { margin: 12px 0 0; font-size: .88rem; color: var(--ink); }
+.stat-sub { font: 600 .85rem var(--sans); margin: 14px 0 4px; color: var(--muted); }

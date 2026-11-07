@@ -32,11 +32,31 @@
 
   // ---------- numbers in plain words ----------
   function n(v) { return v === -1 ? 'meno di 5' : (v == null ? '—' : String(v).replace('.', ',')); }
-  // Percentages only with at least 10 cases; below, "6 su 8".
-  function share(part, whole) {
-    if (part === -1 || whole === -1) return 'meno di 5';
-    if (!whole) return '—';
-    return whole >= 10 ? Math.round(part / whole * 100) + '%' : part + ' su ' + whole;
+  // Wilson interval at 95% (Brown, Cai, DasGupta 2001): honest with few cases.
+  function wilson(k, m) {
+    var z = 1.96, p = k / m, d = 1 + z * z / m, c = p + z * z / (2 * m);
+    var h = z * Math.sqrt(p * (1 - p) / m + z * z / (4 * m * m));
+    return { p: p, lo: Math.max(0, (c - h) / d), hi: Math.min(1, (c + h) / d) };
+  }
+  var pct = function (x) { return Math.round(x * 100); };
+  // Rules (research 25, A3/B3): under 10 cases "6 su 8"; 10–29 percentage + interval, "indicativo"; 30+ percentage + interval.
+  function rate(part, whole) {
+    if (part === -1 || whole === -1) return { main: 'meno di 5', sub: '' };
+    if (!whole) return { main: '—', sub: '' };
+    if (whole < 10) return { main: part + ' su ' + whole, sub: 'dati ancora insufficienti per una percentuale: servono almeno 10 casi (ora: ' + whole + ')' };
+    var w = wilson(part, whole);
+    return { main: pct(w.p) + '%', sub: 'tra ' + pct(w.lo) + '% e ' + pct(w.hi) + '% · ' + part + ' su ' + whole + (whole < 30 ? ' · indicativo' : '') };
+  }
+  function share(part, whole) { var r = rate(part, whole); return r.main; }
+  function shareCell(part, whole) { var r = rate(part, whole); return r.sub && whole >= 10 && part !== -1 && whole !== -1 ? r.main + ' (' + r.sub.split(' · ')[0] + ')' : r.main; }
+  // Two groups: "sembra diverso" only when the intervals don't overlap; with fewer than 20 cases each, say so.
+  function compare(labelA, a, labelB, b, what) {
+    if (a.n === -1 || b.n === -1 || a.k === -1 || b.k === -1 || a.n < 20 || b.n < 20) {
+      return 'Dati ancora insufficienti per confrontare ' + labelA + ' e ' + labelB + ': servono almeno 20 casi per gruppo (ora: ' + n(a.n) + ' e ' + n(b.n) + ').';
+    }
+    var x = wilson(a.k, a.n), y = wilson(b.k, b.n);
+    if (x.hi < y.lo || y.hi < x.lo) return 'Sembra diverso: ' + what + ' ' + pct(x.p) + '% con ' + labelA + ', ' + pct(y.p) + '% con ' + labelB + '.';
+    return 'Nessuna differenza visibile con questi numeri tra ' + labelA + ' e ' + labelB + '.';
   }
   function delta(cur, prev, unit) {
     if (cur == null || prev == null || cur === -1 || prev === -1) return '';
@@ -47,9 +67,12 @@
   }
 
   function card(title, value, def, cmp) {
+    var sub = '';
+    if (value && typeof value === 'object') { sub = value.sub; value = value.main; }
     return el('article', { class: 'stat-card' }, [
       el('h3', { text: title }),
       el('p', { class: 'stat-value', text: value }),
+      sub ? el('p', { class: 'stat-ci', text: sub }) : null,
       cmp ? el('p', { class: 'stat-delta', text: cmp }) : null,
       el('p', { class: 'stat-def', text: def }),
     ]);
@@ -144,20 +167,29 @@
     var c = d.current;
     var p = d.previous;
     var who = !isAdmin() ? 'I tuoi numeri.' : (d.professional ? (String(d.professional) === String(myPro()) ? 'I tuoi numeri.' : 'I numeri della professionista scelta.') : 'Tutto lo studio.');
-    box.appendChild(el('p', { class: 'hint', text: who + (d.shared ? ' Nei dettagli, i gruppi con meno di 5 casi sono nascosti.' : '') }));
+    box.appendChild(el('p', { class: 'hint', text: who + (d.shared ? ' Nei dettagli, i gruppi con meno di 5 casi sono nascosti (anche quelli che si potrebbero ricavare per sottrazione).' : '') }));
     var rq = c.requests;
+    if (d.insights) box.appendChild(attention(d.insights.alerts));
+    box.appendChild(summary(d));
     var grid = el('div', { class: 'stat-grid' }, [
       card('Richieste di primo colloquio', n(rq.total), 'Richieste arrivate dal sito nel periodo.', delta(rq.total, p.requests.total)),
-      card('Accettate', share(rq.accepted, rq.total), 'Su tutte le richieste, quante sono state accettate. Rifiutate ' + rq.declined + ' · scadute ' + rq.expired + ' · in attesa ' + rq.waiting + '.'),
+      card('Accettate', rate(rq.accepted, rq.total), 'Su tutte le richieste, quante sono state accettate. Rifiutate ' + rq.declined + ' · scadute ' + rq.expired + ' · in attesa ' + rq.waiting + '.'),
       card('Tempo di risposta', c.response.medianHours == null ? '—' : n(c.response.medianHours) + ' ore', 'Metà delle richieste ha avuto risposta entro questo tempo. Entro 24 ore: ' + share(c.response.within24, c.response.answered) + '.', delta(c.response.medianHours, p.response.medianHours, ' ore')),
       card('Anticipo', c.lead.medianDays == null ? '—' : n(c.lead.medianDays) + ' giorni', 'Giorni tra la richiesta e il primo colloquio (valore centrale). Se cresce, l\'agenda è piena.'),
-      card('Continuità dopo il primo colloquio', share(c.continuity.yes, c.continuity.base), 'Primi colloqui seguiti da almeno una seduta entro 60 giorni. Un colloquio che non prosegue può essere un buon risultato.'),
-      card('Disdette della persona', share(c.cancellations.byPerson, c.cancellations.scheduled), 'Appuntamenti annullati dalla persona, su quelli in agenda. All\'ultimo momento: ' + c.cancellations.late + '. Orari liberati per mancata conferma: ' + c.cancellations.unconfirmed + '.'),
-      card('Assenze senza avviso', share(c.noShow.absent, c.noShow.past), 'Persone che non si sono presentate, segnate dall\'agenda con «Non si è presentata».', delta(c.noShow.absent, p.noShow.absent)),
+      (function () {
+        // Mature groups only (first meetings of at least 60 days ago, last 12 months): the period alone would undercount.
+        var T = d.insights ? d.insights.contTotal : null;
+        var k = T ? T.k : c.continuity.yes;
+        var m = T ? T.n : c.continuity.base;
+        return card('Continuità dopo il primo colloquio', rate(k, m), 'Ultimi 12 mesi: primi colloqui di almeno 60 giorni fa seguiti da almeno una seduta entro 60 giorni. Un colloquio che non prosegue può essere un buon risultato.');
+      })(),
+      card('Disdette della persona', rate(c.cancellations.byPerson, c.cancellations.scheduled), 'Appuntamenti annullati dalla persona, su quelli in agenda. All\'ultimo momento: ' + c.cancellations.late + '. Orari liberati per mancata conferma: ' + c.cancellations.unconfirmed + '.'),
+      card('Assenze senza avviso', rate(c.noShow.absent, c.noShow.past), 'Persone che non si sono presentate, segnate dall\'agenda con «Non si è presentata».', delta(c.noShow.absent, p.noShow.absent)),
       card('Occupazione dell\'agenda', c.occupancy.availableHours ? Math.round(c.occupancy.bookedHours / c.occupancy.availableHours * 100) + '%' : '—', 'Ore prenotate (' + n(c.occupancy.bookedHours) + ') sulle ore di lavoro (' + n(c.occupancy.availableHours) + '), tolti i blocchi.'),
       card('Orari liberi nelle prossime 2 settimane', n(c.freeSlots), 'Orari da primo colloquio ancora prenotabili online. Se sono tanti, può valere la pena farsi sentire (un post, un messaggio).'),
     ]);
     box.appendChild(grid);
+    if (d.insights) insights(box, d.insights);
     if (d.professional) return; // contacts, sources and the fairness check belong to the studio's totals
     var contacts = Object.keys(c.contacts).map(function (k) { return [AREA[k] || k, c.contacts[k], p.contacts[k] || 0]; });
     box.appendChild(section('Richieste di contatto', 'Moduli di contatto e organizzazioni, per area. Le richieste si cancellano dopo pochi mesi: qui restano solo i totali.', [table(['Area', 'Periodo', 'Prima'], contacts)]));
@@ -262,16 +294,129 @@
     ])]));
   }
 
+  // ---------- "Cosa richiede attenzione" ----------
+  function attention(alerts) {
+    var sec = el('section', { class: 'stat-attention', 'aria-labelledby': 'stat-att-h' }, [el('h2', { id: 'stat-att-h', text: 'Cosa richiede attenzione' })]);
+    if (!alerts.length) { sec.appendChild(el('p', { class: 'stat-ok', text: 'Niente da segnalare.' })); return sec; }
+    sec.appendChild(el('ul', { role: 'list' }, alerts.map(function (a) {
+      return el('li', { class: 'att-' + a.kind }, [el('span', { class: 'att-mark', 'aria-hidden': 'true', text: a.kind === 'idea' ? '○' : a.kind === 'trend' ? '◇' : '•' }), el('span', { text: a.text })]);
+    })));
+    sec.appendChild(el('p', { class: 'hint', text: 'Le segnalazioni partono solo da conteggi semplici o con abbastanza casi: mai da percentuali di pochi casi.' }));
+    return sec;
+  }
+
+  // ---------- summary in words (fixed, prudent rules) + note of the month ----------
+  function summary(d) {
+    var c = d.current, p = d.previous;
+    var days = Math.round((Date.parse(d.to) - Date.parse(d.from)) / 86400000) + 1;
+    var a = c.requests.total, b = p.requests.total;
+    var trend = (a + b) < 10 || Math.abs(a - b) <= 2 * Math.sqrt(a + b) ? 'una differenza nella normale oscillazione' : (a > b ? 'più del solito' : 'meno del solito');
+    var parts = ['Negli ultimi ' + days + ' giorni: ' + a + (a === 1 ? ' richiesta' : ' richieste') + ' di primo colloquio (nei ' + days + ' giorni prima ' + b + '), ' + trend + '.'];
+    if (c.response.medianHours != null) parts.push('Risposta in circa ' + n(c.response.medianHours) + ' ore (valore centrale).');
+    if (c.noShow.past) parts.push('Assenze senza avviso: ' + n(c.noShow.absent) + ' su ' + n(c.noShow.past) + ' appuntamenti.');
+    var box = el('section', { class: 'stat-summary' }, [el('p', { text: parts.join(' ') }), el('p', { class: 'hint', text: 'Il riassunto dice quando qualcosa cambia, non perché: il perché lo sa chi conosce lo studio.' })]);
+    var month = (d.to || today()).slice(0, 8) + '01';
+    var cur = (d.notes || []).find(function (x) { return x.month === month; });
+    var older = (d.notes || []).filter(function (x) { return x.month !== month && x.note; });
+    var noteBox = el('div', { class: 'stat-note-month' }, [el('h3', { text: 'Nota del mese' })]);
+    var show = el('p', { class: 'stat-note-text', text: cur && cur.note ? cur.note : 'Nessuna nota per questo mese.' });
+    noteBox.appendChild(show);
+    older.forEach(function (x) { noteBox.appendChild(el('p', { class: 'hint', text: fmtLong.format(new Date(x.month + 'T00:00:00Z')).replace(/^1 /, '') + ': ' + x.note })); });
+    if (isAdmin()) {
+      var ta = el('textarea', { maxlength: '600', rows: '3', 'aria-label': 'Nota del mese', 'data-stat-note': true });
+      ta.value = cur ? cur.note : '';
+      var save = el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Salva la nota', onclick: function () {
+        api('PUT', '/stats/note', { month: month, note: ta.value }).then(function (r) { show.textContent = r.note || 'Nessuna nota per questo mese.'; A.toast('Nota salvata.'); })
+          .catch(function (e) { A.toast(e.message, 'error'); });
+      } });
+      noteBox.appendChild(el('details', { class: 'stat-note-edit' }, [el('summary', { text: 'Scrivi o cambia la nota' }), el('p', { class: 'hint', text: 'Il contesto che i numeri non sanno: ferie, un post, un cambio di orari. Niente nomi né dati delle persone.' }), ta, save]));
+    }
+    box.appendChild(noteBox);
+    return box;
+  }
+
+  // ---------- crossings, demand × capacity, cohorts ----------
+  var LEAD = { '0-3': '0–3 giorni', '4-7': '4–7 giorni', '8-14': '8–14 giorni', '15+': 'oltre 14 giorni' };
+  var RESP = { '<4': 'entro 4 ore', '4-24': 'tra 4 e 24 ore', '>24': 'oltre 24 ore' };
+  var CONF = { '48h': 'Confermato al primo invito (48 ore prima)', '24h': 'Confermato al secondo invito (il giorno prima)', mai: 'Mai confermato', liberato: 'Orario liberato per mancata conferma' };
+  var SOURCE = { passaparola: 'Passaparola e professionisti', internet: 'Internet e social', azienda: 'Azienda', altro: 'Altro o nessuna risposta' };
+  var monthName = function (m) { return new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(m + 'T00:00:00Z')); };
+  function insights(box, I) {
+    // Demand × capacity
+    var cap = I.capacity.areas.map(function (a) {
+      var weeks = a.weeksCovered == null ? (a.freeAll ? 'nessuna richiesta di recente' : '—') : (a.weeksCovered > 8 ? 'più di 8 settimane' : 'circa ' + String(Math.max(0, Math.round(a.weeksCovered))) + (Math.round(a.weeksCovered) === 1 ? ' settimana' : ' settimane'));
+      return [a.name, String(a.rate).replace('.', ',') + ' (da ' + a.weekMin + ' a ' + a.weekMax + ')', a.free14, a.freeAll, a.leadMedian == null ? '—' : Math.round(a.leadMedian) + ' giorni', weeks];
+    });
+    box.appendChild(section('Richieste e posti, per area', 'Ritmo delle richieste delle ultime 8 settimane contro gli orari da primo colloquio ancora liberi (entro ' + ((I.capacity.areas[0] || {}).horizonDays || 60) + ' giorni). «I posti bastano per circa N settimane» se le richieste continuano a questo ritmo: è una stima, non una previsione.',
+      [table(['Area', 'Richieste a settimana', 'Liberi in 2 settimane', 'Liberi in tutto', 'Anticipo', 'I posti bastano per'], cap, { empty: 'Nessun primo colloquio prenotabile online.' })]));
+
+    // Lead time × presence and continuity (I2)
+    var lead = I.lead.map(function (r) { return [LEAD[r.band], r.n, shareCell(r.presented, r.n), r.absent, r.cancelled, r.freed, shareCell(r.cont, r.contBase)]; });
+    var first = I.lead[0], last = I.lead[3];
+    box.appendChild(section('Anticipo e presenza al primo colloquio', 'Ultimi 12 mesi. Tempo tra la richiesta e il primo colloquio, e cosa è successo. Continuità = almeno una seduta entro 60 giorni (solo colloqui di almeno 60 giorni fa).', [
+      table(['Anticipo', 'Primi colloqui', 'Presentate', 'Assenze', 'Disdette', 'Liberati', 'Continuità 60 gg'], lead.filter(function (r) { return r[1]; })),
+      el('p', { class: 'stat-compare', text: compare('meno di 4 giorni', { k: first.presented, n: first.n }, 'oltre 14 giorni', { k: last.presented, n: last.n }, 'presenza') }),
+    ]));
+
+    // Response time × outcome (I1)
+    var resp = I.resp.map(function (r) { return [RESP[r.band], r.n, shareCell(r.accepted, r.n), shareCell(r.presented, r.pastBase), shareCell(r.cont, r.contBase)]; });
+    box.appendChild(section('Tempo di risposta ed esito', 'Ultimi 12 mesi, richieste dal sito. Le richieste rifiutate perché l\'agenda era piena non contano per la presenza. Scadute senza risposta: ' + n(I.expired) + '.', [
+      table(['Risposta', 'Richieste', 'Accettate', 'Presentate', 'Continuità 60 gg'], resp.filter(function (r) { return r[1]; })),
+      el('p', { class: 'stat-compare', text: compare('risposta entro 4 ore', { k: I.resp[0].presented, n: I.resp[0].pastBase }, 'risposta oltre 4 ore', { k: (I.resp[1].presented > 0 ? I.resp[1].presented : 0) + (I.resp[2].presented > 0 ? I.resp[2].presented : 0), n: (I.resp[1].pastBase > 0 ? I.resp[1].pastBase : 0) + (I.resp[2].pastBase > 0 ? I.resp[2].pastBase : 0) }, 'presenza') }),
+    ]));
+
+    // Which invitation led to the confirmation × attendance (I6)
+    var conf = I.conf.map(function (r) { return [CONF[r.group], r.n, r.held, shareCell(r.absent, r.n), r.late]; });
+    box.appendChild(section('Conferma della presenza e assenze', 'Ultimi 12 mesi, appuntamenti per cui abbiamo chiesto di confermare. Confronto descrittivo: chi conferma subito è in media più motivato, quindi non prova che l\'email funzioni.', [
+      table(['Conferma', 'Appuntamenti', 'Svolti', 'Assenze', 'Disdette tardive'], conf.filter(function (r) { return r[1]; })),
+    ]));
+
+    // Mature cohorts
+    var coh = I.cohorts.map(function (r) {
+      var cell = function (k, mature) { return mature ? shareCell(r[k], r.presented) : 'in corso'; };
+      return [monthName(r.month), r.base, r.presented, cell('c30', r.mature30), cell('c60', r.mature60), cell('c90', r.mature90)];
+    }).filter(function (r) { return r[1]; });
+    box.appendChild(section('Continuità per mese del primo colloquio', 'Dei primi colloqui di ogni mese, quanti sono stati seguiti da una seduta entro 30, 60 e 90 giorni. «In corso» finché il tempo non è passato. Un colloquio che non prosegue può essere un buon risultato.', [
+      table(['Mese', 'Primi colloqui', 'Presentate', '30 giorni', '60 giorni', '90 giorni'], coh.reverse()),
+    ]));
+    var AREA_N = {};
+    I.capacity.areas.forEach(function (a) { AREA_N[a.slug] = a.name; });
+    var dim = function (rows, names) { return rows.map(function (r) { return [names[r.key] || AREA[r.key] || r.key, r.base, r.presented, shareCell(r.cont, r.contBase)]; }).filter(function (r) { return r[1]; }); };
+    box.appendChild(section('Continuità per area e per fonte', 'Ultimi 12 mesi. Due tabelle separate: mai area e fonte insieme. Fonte = risposta a «Come ci hai conosciuto?», raggruppata.', [
+      el('h3', { class: 'stat-sub', text: 'Per area' }),
+      table(['Area', 'Primi colloqui', 'Presentate', 'Continuità 60 gg'], dim(I.byArea, AREA_N)),
+      el('h3', { class: 'stat-sub', text: 'Per fonte' }),
+      table(['Fonte', 'Primi colloqui', 'Presentate', 'Continuità 60 gg'], dim(I.bySource, SOURCE)),
+    ]));
+  }
+
   // ---------- CSV: the figures on screen, small groups already hidden ----------
   function exportCsv() {
-    var box = $('[data-panel="statistiche"] .stat-body');
-    if (!box || !st.data) return;
+    if (!st.data) return;
+    // The export always follows the shared rules (small groups hidden), also for one's own figures.
+    var r = periodRange();
+    var q = '/stats/' + st.tab + '?export=1&from=' + r.from + '&to=' + r.to;
+    if (st.tab === 'studio' && isAdmin()) q += '&professional=' + (state.scope || 'all');
+    api('GET', q).then(function (d) {
+      var off = el('div');
+      var saved = st.data;
+      st.data = d;
+      if (st.tab === 'studio') studio(off, d); else if (st.tab === 'site') site(off, d); else email(off, d);
+      st.data = saved;
+      writeCsv(off, d);
+    }).catch(function (e) { A.toast(e.message, 'error'); });
+  }
+  function writeCsv(box, data) {
+    var stData = data;
     var lines = [['Sezione', 'Voce', 'Valore', 'Dettaglio'].join(';')];
     var q = function (s) { s = String(s == null ? '' : s).replace(/\s+/g, ' ').trim(); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
-    lines.push([q('Periodo'), q(st.data.from + ' – ' + st.data.to), '', q('confronto ' + st.data.prevFrom + ' – ' + st.data.prevTo)].join(';'));
+    lines.push([q('Periodo'), q(stData.from + ' – ' + stData.to), '', q('confronto ' + stData.prevFrom + ' – ' + stData.prevTo)].join(';'));
+    box.querySelectorAll('.stat-attention li').forEach(function (li) { lines.push([q('Cosa richiede attenzione'), q(li.textContent.replace(/^[•○◇]\s*/, '')), '', ''].join(';')); });
+    box.querySelectorAll('.stat-summary > p:first-child').forEach(function (p) { lines.push([q('Riassunto'), q(p.textContent), '', ''].join(';')); });
+    box.querySelectorAll('.stat-compare').forEach(function (p) { lines.push([q(p.closest('.stat-section').querySelector('h2').textContent), q('Confronto'), q(p.textContent), ''].join(';')); });
     box.querySelectorAll('.stat-card').forEach(function (c) {
       var sec = c.closest('.stat-section');
-      lines.push([q(sec ? sec.querySelector('h2').textContent : 'Indicatori'), q(c.querySelector('h3').textContent), q(c.querySelector('.stat-value').textContent), q((c.querySelector('.stat-delta') || {}).textContent || '')].join(';'));
+      lines.push([q(sec ? sec.querySelector('h2').textContent : 'Indicatori'), q(c.querySelector('h3').textContent), q(c.querySelector('.stat-value').textContent), q([((c.querySelector('.stat-ci') || {}).textContent || ''), ((c.querySelector('.stat-delta') || {}).textContent || '')].filter(Boolean).join(' · '))].join(';'));
     });
     box.querySelectorAll('.stat-section').forEach(function (s) {
       var title = s.querySelector('h2').textContent;
@@ -284,7 +429,7 @@
       });
     });
     var blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
-    var a = el('a', { href: URL.createObjectURL(blob), download: 'statistiche-' + st.tab + '-' + st.data.from + '-' + st.data.to + '.csv' });
+    var a = el('a', { href: URL.createObjectURL(blob), download: 'statistiche-' + st.tab + '-' + stData.from + '-' + stData.to + '.csv' });
     document.body.appendChild(a);
     a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
