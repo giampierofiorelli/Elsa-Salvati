@@ -139,6 +139,7 @@
     var tabs = [['agenda', 'Agenda'], ['richieste', 'Richieste'], ['orari', 'Orari']];
     if (myPro()) tabs.push(['profilo', 'Profilo']);
     if (isAdmin()) tabs.push(['servizi', 'Servizi'], ['professionisti', 'Professionisti'], ['account', 'Account']);
+    if (state.me.user.canEditSite) tabs.push(['sito', 'Sito']);
     tabs.push(['impostazioni', 'Impostazioni']);
     var nav = $('[data-tabs]');
     nav.textContent = '';
@@ -162,6 +163,8 @@
     if (tab === 'servizi') job = renderServices();
     if (tab === 'professionisti') job = renderPros();
     if (tab === 'account') job = loadUsers();
+    if (tab === 'sito') job = se.loaded ? null : loadSitePages();
+    if (tab === 'sito') setTimeout(fitFrame, 0);
     if (job && job.catch) job.catch(function () { /* the api() helper already shows the login when the session is over */ });
   }
 
@@ -868,11 +871,16 @@
       { name: 'name', label: 'Nome', max: 80 },
       { name: 'role', label: 'Ruolo', type: 'select', options: [['professionista', 'Professionista (vede solo la sua agenda)'], ['admin', 'Amministratore (gestisce tutto)']] },
       { name: 'professionalId', label: 'Collegato al professionista', type: 'select', options: pros },
+      { name: 'canEditSite', label: 'Può modificare il sito (testi e immagini delle pagine; gli amministratori possono sempre)', type: 'checkbox' },
     ];
     if (!u) specs.splice(1, 0, { name: 'email', label: 'Email', type: 'email' });
-    formDialog(u ? 'Modifica account' : 'Nuovo account', specs, u || { role: 'professionista' }, function (v) {
+    formDialog(u ? 'Modifica account' : 'Nuovo account', specs, u ? Object.assign({}, u, { canEditSite: u.canEditSite === true }) : { role: 'professionista', canEditSite: false }, function (v) {
       if (u) return api('PATCH', '/users/' + u.id, v).then(loadUsers);
+      var canEdit = v.canEditSite;
+      delete v.canEditSite;
       return api('POST', '/users', v).then(function (r) {
+        return canEdit && r.id ? api('PATCH', '/users/' + r.id, { canEditSite: true }).then(function () { return r; }) : r;
+      }).then(function (r) {
         loadUsers();
         setTimeout(function () { showInviteLink(v.name, r.inviteUrl); }, 50);
       });
@@ -902,7 +910,7 @@
         box.appendChild(el('div', { class: 'row-card' + (u.active ? '' : ' inactive') }, [
           el('div', {}, [
             el('strong', { text: u.name }),
-            el('p', { class: 'hint', text: u.email + ' · ' + (u.role === 'admin' ? 'amministratore' : 'professionista') + (u.professionalName ? ' · ' + u.professionalName : '') + ' · ' + status }),
+            el('p', { class: 'hint', text: u.email + ' · ' + (u.role === 'admin' ? 'amministratore' : 'professionista') + (u.professionalName ? ' · ' + u.professionalName : '') + (u.role !== 'admin' && u.canEditSite ? ' · modifica il sito' : '') + ' · ' + status }),
           ]),
           actions,
         ]));
@@ -1021,6 +1029,1275 @@
       });
     });
   }
+
+  // =====================================================================
+  // ---------- page editor ("Sito") ----------
+  // Pages are lists of blocks. Every change is saved as a draft after a short pause;
+  // "Pubblica" puts the draft online. Text is kept as data (bold, italic, links only).
+  // =====================================================================
+  var PAGE_NAMES = {
+    index: 'Home', servizi: 'Come possiamo aiutarti', lavoro: 'Orientamento e carriera', coaching: 'Coaching',
+    sostegno: 'Sostegno psicologico', psicoterapia: 'Psicoterapia', differenze: 'Le differenze', team: 'Team',
+    'costi-e-faq': 'Tariffe e prenotazioni', aziende: 'Aziende', contatti: 'Contatti', prenota: 'Prenotazione',
+    privacy: 'Privacy', cookie: 'Cookie',
+  };
+  var PAGE_ORDER = ['index', 'servizi', 'lavoro', 'coaching', 'sostegno', 'psicoterapia', 'differenze', 'team', 'costi-e-faq', 'aziende', 'contatti', 'prenota'];
+  var BG_LABEL = { light: 'Chiaro', soft: 'Tenue (menta)', dark: 'Scuro' };
+  var STYLE_LABEL = { primary: 'Principale', ghost: 'Secondario', light: 'Chiaro (su fondo scuro)', 'outline-light': 'Bordato (su fondo scuro)' };
+  var KIND_NAMES = { p: 'Paragrafo', lead: 'Paragrafo in evidenza', stat: 'Dato con fonte', arrow: 'Link con freccia' };
+  var VERSION_KIND = { pubblicazione: 'Pubblicata', ripristino: 'Ripristino', iniziale: 'Versione iniziale' };
+  var LANG_NAME = { it: 'Italiano', en: 'Inglese' };
+
+  var se = {
+    pages: [], page: null, draft: null, expected: null, library: {}, linkTargets: [], pros: [],
+    selected: -1, dirty: false, saving: false, again: false, timer: null, previewTimer: null,
+    device: 'desktop', refOpen: false, refPage: null, loaded: false, tab: 'blocks',
+    // Header, footer and studio details ("globals"): mode 'global', scope it | en | studio.
+    mode: 'page', globals: null, gscope: null, gdata: null, gexpected: null, gpreview: null,
+  };
+  var GLOBAL_NAMES = { it: 'Intestazione e piè di pagina', en: 'Intestazione e piè di pagina', studio: 'Dati dello studio' };
+
+  function pageName(key) { return PAGE_NAMES[key] || key; }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function timeNow() { return new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); }
+  function pathOf(key, lang) {
+    var p = se.pages.find(function (x) { return x.key === key && x.lang === lang; });
+    return p ? p.path : null;
+  }
+  function safeHref(h) {
+    return typeof h === 'string' && (/^\/(?!\/)[a-z0-9\-/]*(#[a-z0-9-]+)?(\?[a-z0-9=&_-]+)?$/i.test(h) || /^https?:\/\/[a-z0-9.-]+\.[a-z]{2,}/i.test(h) || /^mailto:[^\s<>"'?&]+@/i.test(h) || /^tel:\+?[0-9 ]{6,20}$/.test(h));
+  }
+  function isExternalOk(h) { return /^https?:\/\/[a-z0-9.-]+\.[a-z]{2,}(?::\d+)?(\/[^\s<>"']*)?$/i.test(h) || /^mailto:[^\s<>"'?&]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(h) || /^tel:\+?[0-9 ]{6,20}$/.test(h); }
+
+  // ---------- rich text: editable DOM <-> { p: [[{ t, b, i, href }]] } ----------
+  function richToDom(value, box) {
+    box.textContent = '';
+    var paras = value && value.p && value.p.length ? value.p : [[]];
+    paras.forEach(function (para) {
+      var p = el('p');
+      para.forEach(function (r) {
+        var node = document.createTextNode(r.t);
+        if (r.i) { var em = el('em'); em.appendChild(node); node = em; }
+        if (r.b) { var st = el('strong'); st.appendChild(node); node = st; }
+        if (r.href && safeHref(r.href)) { var a = el('a', { href: r.href }); a.appendChild(node); node = a; }
+        p.appendChild(node);
+      });
+      if (!p.childNodes.length) p.appendChild(el('br'));
+      box.appendChild(p);
+    });
+  }
+
+  function isBoldEl(n) {
+    if (n.nodeName === 'B' || n.nodeName === 'STRONG') return true;
+    var w = n.style && n.style.fontWeight;
+    return w === 'bold' || w === 'bolder' || Number(w) >= 600;
+  }
+  function isItalicEl(n) { return n.nodeName === 'I' || n.nodeName === 'EM' || (n.style && n.style.fontStyle === 'italic'); }
+  var BLOCK_TAGS = { P: 1, DIV: 1, LI: 1, H1: 1, H2: 1, H3: 1, H4: 1, H5: 1, H6: 1, BLOCKQUOTE: 1, TR: 1, SECTION: 1, ARTICLE: 1, UL: 1, OL: 1, TABLE: 1 };
+
+  // Walks any DOM (the editor's, or pasted HTML) and keeps only text with bold, italic and, if asked, links.
+  function domToRuns(root, keepLinks) {
+    var paras = [[]];
+    function br() { if (paras[paras.length - 1].length) paras.push([]); }
+    function walk(n, fmt) {
+      if (n.nodeType === 3) {
+        var t = n.nodeValue.replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '').replace(/\s+/g, ' ');
+        if (t) {
+          var r = { t: t };
+          if (fmt.b) r.b = true;
+          if (fmt.i) r.i = true;
+          if (fmt.href) r.href = fmt.href;
+          paras[paras.length - 1].push(r);
+        }
+        return;
+      }
+      if (n.nodeType !== 1) return;
+      var tag = n.nodeName;
+      if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TEMPLATE' || tag === 'HEAD' || tag === 'META' || tag === 'TITLE' || tag === 'IMG' || tag === 'SVG' || tag === 'IFRAME' || tag === 'OBJECT') return;
+      if (tag === 'BR') { br(); return; }
+      var f = { b: fmt.b || isBoldEl(n), i: fmt.i || isItalicEl(n), href: fmt.href };
+      if (keepLinks && tag === 'A') { var h = n.getAttribute('href'); if (safeHref(h)) f.href = h; }
+      var block = BLOCK_TAGS[tag];
+      if (block) br();
+      for (var c = n.firstChild; c; c = c.nextSibling) walk(c, f);
+      if (block) br();
+    }
+    walk(root, {});
+    // Merge runs with the same format, trim each paragraph, drop empty ones.
+    return paras.map(function (para) {
+      var out = [];
+      para.forEach(function (r) {
+        var prev = out[out.length - 1];
+        if (prev && !!prev.b === !!r.b && !!prev.i === !!r.i && prev.href === r.href) prev.t += r.t;
+        else out.push(Object.assign({}, r));
+      });
+      if (out.length) { out[0].t = out[0].t.replace(/^ /, ''); out[out.length - 1].t = out[out.length - 1].t.replace(/ $/, ''); }
+      return out.filter(function (r) { return r.t; });
+    }).filter(function (p) { return p.length; });
+  }
+
+  function escText(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  // Paste: only the text, with bold and italic. Links, styles, images and scripts are dropped.
+  function pastedHtml(e, multiline) {
+    var cd = e.clipboardData || window.clipboardData;
+    if (!cd) return null;
+    var html = cd.getData('text/html');
+    var paras;
+    if (html) {
+      var doc = new DOMParser().parseFromString(html, 'text/html');
+      paras = domToRuns(doc.body, false);
+    } else {
+      paras = String(cd.getData('text/plain') || '').split(/\r?\n/).map(function (l) { return l.replace(/\s+/g, ' ').trim(); })
+        .filter(Boolean).map(function (t) { return [{ t: t }]; });
+    }
+    var parts = paras.map(function (para) {
+      return para.map(function (r) {
+        var s = escText(r.t);
+        if (r.i) s = '<i>' + s + '</i>';
+        if (r.b) s = '<b>' + s + '</b>';
+        return s;
+      }).join('');
+    });
+    return parts.join(multiline ? '<br>' : ' ');
+  }
+
+  var savedRange = null;
+  function rememberSelection(box) {
+    var sel = window.getSelection();
+    if (sel.rangeCount && box.contains(sel.getRangeAt(0).commonAncestorContainer)) savedRange = sel.getRangeAt(0).cloneRange();
+  }
+  function restoreSelection() {
+    if (!savedRange) return;
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(savedRange);
+  }
+
+  function richEditor(value, opts, onChange) {
+    var multiline = opts.multiline !== false;
+    var box = el('div', { class: 'rte-box', contenteditable: 'true', role: 'textbox', 'aria-multiline': multiline ? 'true' : 'false', 'aria-label': opts.label || 'Testo', spellcheck: 'true' });
+    richToDom(value, box);
+    var counter = opts.max ? el('span', { class: 'se-count' }) : null;
+    function update() {
+      var model = { p: domToRuns(box, true) };
+      if (!multiline && model.p.length > 1) model.p = [model.p.reduce(function (a, p) { return a.concat(a.length ? [{ t: ' ' }] : [], p); }, [])];
+      if (counter) {
+        var n = model.p.reduce(function (s, p) { return s + p.reduce(function (t, r) { return t + r.t.length; }, 0); }, 0);
+        counter.textContent = n + ' / ' + opts.max;
+        counter.classList.toggle('over', n > opts.max);
+      }
+      onChange(model);
+    }
+    function cmd(name, arg) { box.focus(); restoreSelection(); document.execCommand(name, false, arg); update(); }
+    function link() {
+      rememberSelection(box);
+      var sel = window.getSelection();
+      if (!savedRange || savedRange.collapsed) { window.alert('Seleziona prima le parole da trasformare in link.'); return; }
+      linkDialog(function (href) { cmd('createLink', href); });
+      void sel;
+    }
+    var bar = el('div', { class: 'rte-bar', role: 'toolbar', 'aria-label': 'Formato del testo' }, [
+      el('button', { type: 'button', class: 'rte-btn', title: 'Grassetto (Ctrl/Cmd+B)', 'aria-label': 'Grassetto', onmousedown: function (e) { e.preventDefault(); }, onclick: function () { cmd('bold'); } }, [el('strong', { text: 'B' })]),
+      el('button', { type: 'button', class: 'rte-btn', title: 'Corsivo (Ctrl/Cmd+I)', 'aria-label': 'Corsivo', onmousedown: function (e) { e.preventDefault(); }, onclick: function () { cmd('italic'); } }, [el('em', { text: 'I' })]),
+      el('button', { type: 'button', class: 'rte-btn', title: 'Link (Ctrl/Cmd+K)', 'aria-label': 'Aggiungi link', onmousedown: function (e) { e.preventDefault(); }, onclick: link, text: 'Link' }),
+      el('button', { type: 'button', class: 'rte-btn', title: 'Togli il link', 'aria-label': 'Togli il link', onmousedown: function (e) { e.preventDefault(); }, onclick: function () { cmd('unlink'); }, text: 'Togli link' }),
+    ]);
+    box.addEventListener('input', update);
+    box.addEventListener('keyup', function () { rememberSelection(box); });
+    box.addEventListener('mouseup', function () { rememberSelection(box); });
+    box.addEventListener('keydown', function (e) {
+      var mod = e.ctrlKey || e.metaKey;
+      if (mod && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); link(); }
+      if (e.key === 'Enter' && !multiline) e.preventDefault();
+      if (mod && /^[uU]$/.test(e.key)) e.preventDefault(); // no underline
+    });
+    box.addEventListener('paste', function (e) {
+      e.preventDefault();
+      var html = pastedHtml(e, multiline);
+      if (html) document.execCommand('insertHTML', false, html);
+      // The browser may add inline styles while inserting: remove them so only bold and italic stay.
+      Array.prototype.forEach.call(box.querySelectorAll('[style],[class],[color],[face]'), function (n) {
+        n.removeAttribute('style'); n.removeAttribute('class'); n.removeAttribute('color'); n.removeAttribute('face');
+      });
+      Array.prototype.forEach.call(box.querySelectorAll('span,font'), function (n) {
+        while (n.firstChild) n.parentNode.insertBefore(n.firstChild, n);
+        n.parentNode.removeChild(n);
+      });
+      update();
+    });
+    box.addEventListener('drop', function (e) { e.preventDefault(); });
+    if (counter) { var n0 = (value && value.p || []).reduce(function (s, p) { return s + p.reduce(function (t, r) { return t + r.t.length; }, 0); }, 0); counter.textContent = n0 + ' / ' + opts.max; }
+    return el('div', { class: 'rte' }, [bar, box, counter]);
+  }
+
+  // Link inside a text: a page of the site (same tab) or an outside address (new tab, decided by the site).
+  function linkDialog(onPick) {
+    var lang = se.page.lang;
+    var own = se.pages.filter(function (p) { return p.lang === lang; });
+    var dlg = el('dialog', { class: 'dlg' });
+    var sel = el('select', { id: 'ld-page' }, own.map(function (p) { return el('option', { value: p.path, text: pageName(p.key) + ' (' + p.path + ')' }); }));
+    var url = el('input', { id: 'ld-url', type: 'url', placeholder: 'https://…', maxlength: 500 });
+    var kindPage = el('input', { type: 'radio', name: 'ld-kind', value: 'page', checked: true });
+    var kindUrl = el('input', { type: 'radio', name: 'ld-kind', value: 'url' });
+    var err = el('p', { class: 'status form-error', role: 'alert' });
+    var form = el('form', { class: 'dlg-inner', method: 'dialog' }, [
+      el('div', { class: 'dlg-head' }, [el('h2', { text: 'Aggiungi un link' })]),
+      el('label', { class: 'check' }, [kindPage, el('span', { text: 'Pagina del sito (si apre nella stessa scheda)' })]),
+      el('div', { class: 'field' }, [el('label', { for: 'ld-page', text: 'Pagina' }), sel]),
+      el('label', { class: 'check' }, [kindUrl, el('span', { text: 'Indirizzo esterno (si apre in una nuova scheda)' })]),
+      el('div', { class: 'field' }, [el('label', { for: 'ld-url', text: 'Indirizzo (https://…, mailto:… o tel:…)' }), url]),
+      err,
+      el('div', { class: 'cta-row dlg-actions' }, [
+        el('button', { type: 'submit', class: 'btn btn-primary btn-small', text: 'Aggiungi' }),
+        el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Annulla', onclick: function () { dlg.close(); } }),
+      ]),
+    ]);
+    url.addEventListener('focus', function () { kindUrl.checked = true; });
+    sel.addEventListener('focus', function () { kindPage.checked = true; });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var href;
+      if (kindUrl.checked) {
+        href = url.value.trim();
+        if (/^www\./i.test(href)) href = 'https://' + href;
+        if (!isExternalOk(href)) { err.textContent = 'Scrivi un indirizzo completo, che inizi con https://, mailto: o tel:'; return; }
+      } else href = sel.value;
+      dlg.close();
+      onPick(href);
+    });
+    dlg.appendChild(form);
+    dlg.addEventListener('close', function () { dlg.remove(); });
+    document.body.appendChild(dlg);
+    dlg.showModal();
+  }
+
+  // ---------- small form pieces ----------
+  var uid = 0;
+  function nextId() { uid += 1; return 'se-' + uid; }
+
+  function textInput(label, value, max, onChange, opts) {
+    opts = opts || {};
+    var id = nextId();
+    var input = el(opts.area ? 'textarea' : 'input', { id: id, type: opts.area ? null : (opts.type || 'text'), maxlength: max || 200, rows: opts.area ? 3 : null, placeholder: opts.placeholder || null });
+    input.value = value || '';
+    var counter = max ? el('span', { class: 'se-count' }) : null;
+    function count() {
+      if (!counter) return;
+      var n = input.value.length;
+      counter.textContent = n + ' / ' + (opts.recommended ? opts.recommended + ' consigliati' : max);
+      counter.classList.toggle('over', opts.recommended ? n > opts.recommended : n >= max);
+    }
+    count();
+    input.addEventListener('input', function () { count(); onChange(input.value); });
+    return el('div', { class: 'field se-field' }, [el('label', { for: id, text: label + (opts.required ? ' *' : '') }), input, counter, opts.hint ? el('span', { class: 'hint', text: opts.hint }) : null]);
+  }
+
+  function selectInput(label, options, value, onChange) {
+    var id = nextId();
+    var s = el('select', { id: id }, options.map(function (o) { return el('option', { value: o[0], text: o[1] }); }));
+    s.value = value;
+    if (s.value !== value && options[0]) s.value = options[0][0];
+    s.addEventListener('change', function () { onChange(s.value); });
+    return el('div', { class: 'field se-field' }, [el('label', { for: id, text: label }), s]);
+  }
+
+  function checkInput(label, value, onChange) {
+    var c = el('input', { type: 'checkbox' });
+    c.checked = !!value;
+    c.addEventListener('change', function () { onChange(c.checked); });
+    return el('label', { class: 'check se-check' }, [c, el('span', { text: label })]);
+  }
+
+  function moveItem(arr, i, d) {
+    var j = i + d;
+    if (j < 0 || j >= arr.length) return false;
+    var x = arr[i]; arr[i] = arr[j]; arr[j] = x;
+    return true;
+  }
+
+  function itemTools(arr, i, rerender, opts) {
+    opts = opts || {};
+    var label = opts.label || 'voce';
+    return el('div', { class: 'se-tools' }, [
+      el('button', { type: 'button', class: 'se-icon', 'aria-label': 'Sposta su ' + label + ' ' + (i + 1), title: 'Sposta su', disabled: i === 0, onclick: function () { if (moveItem(arr, i, -1)) { changed(); rerender(); } }, text: '↑' }),
+      el('button', { type: 'button', class: 'se-icon', 'aria-label': 'Sposta giù ' + label + ' ' + (i + 1), title: 'Sposta giù', disabled: i === arr.length - 1, onclick: function () { if (moveItem(arr, i, 1)) { changed(); rerender(); } }, text: '↓' }),
+      opts.noRemove ? null : el('button', { type: 'button', class: 'se-icon se-danger', 'aria-label': 'Elimina ' + label + ' ' + (i + 1), title: 'Elimina', onclick: function () {
+        if (opts.min !== undefined && arr.length <= opts.min) { window.alert('Servono almeno ' + opts.min + ' elementi.'); return; }
+        if (!window.confirm('Eliminare questo elemento?')) return;
+        arr.splice(i, 1); changed(); rerender();
+      }, text: '✕' }),
+    ]);
+  }
+
+  // Where a button or link goes: page of the site, place in this page, booking, outside address.
+  function targetEditor(to, onChange) {
+    to = to || { kind: 'page', key: '' };
+    var wrap = el('div', { class: 'se-target' });
+    function render() {
+      wrap.textContent = '';
+      wrap.appendChild(selectInput('Destinazione', [['page', 'Pagina del sito'], ['anchor', 'Punto di questa pagina'], ['book', 'Prenotazione'], ['url', 'Indirizzo esterno']], to.kind, function (k) {
+        to = k === 'page' ? { kind: 'page', key: (se.linkTargets[0] || {}).key || '' } : k === 'anchor' ? { kind: 'anchor', anchor: '' } : k === 'book' ? { kind: 'book' } : { kind: 'url', href: 'https://' };
+        onChange(to); render();
+      }));
+      if (to.kind === 'page') {
+        var lang = se.page.lang;
+        var opts = se.linkTargets.map(function (t) {
+          var here = t[lang];
+          return [t.key, pageName(t.key) + (here ? '' : ' (manca in ' + (lang === 'en' ? 'inglese' : 'italiano') + ')')];
+        });
+        if (to.key && !opts.some(function (o) { return o[0] === to.key; })) opts.push([to.key, to.key]);
+        wrap.appendChild(selectInput('Pagina', opts, to.key, function (v) { to.key = v; onChange(to); }));
+        wrap.appendChild(textInput('Punto della pagina (facoltativo, es. come-funziona)', to.anchor || '', 40, function (v) {
+          v = v.trim().replace(/^#/, ''); if (v) to.anchor = v; else delete to.anchor; onChange(to);
+        }));
+      } else if (to.kind === 'anchor') {
+        wrap.appendChild(textInput('Nome del punto (es. contatto)', to.anchor || '', 40, function (v) { to.anchor = v.trim().replace(/^#/, ''); onChange(to); }));
+      } else if (to.kind === 'book') {
+        wrap.appendChild(selectInput('Con la professionista già scelta', [['', 'Nessuna (sceglie chi prenota)']].concat(se.pros.map(function (p) { return [p.slug, p.name]; })), to.pro || '', function (v) {
+          if (v) to.pro = v; else delete to.pro; onChange(to);
+        }));
+      } else {
+        var hint = el('span', { class: 'hint' });
+        var f = textInput('Indirizzo (si apre in una nuova scheda)', to.href || '', 500, function (v) {
+          to.href = v.trim(); hint.textContent = isExternalOk(to.href) ? '' : 'Deve iniziare con https://, mailto: o tel:'; onChange(to);
+        }, { type: 'url' });
+        f.appendChild(hint);
+        wrap.appendChild(f);
+      }
+    }
+    render();
+    return wrap;
+  }
+
+  // A link or a button. Optional ones can be switched off.
+  function linkEditor(value, opts, onChange) {
+    var box = el('div', { class: 'se-link' });
+    function render() {
+      box.textContent = '';
+      if (opts.optional) {
+        box.appendChild(checkInput(opts.label, !!value, function (on) {
+          value = on ? { label: '', to: { kind: 'page', key: (se.linkTargets[0] || {}).key || '' } } : null;
+          if (value && opts.styles) value.style = opts.styles[0];
+          onChange(value); render();
+        }));
+        if (!value) return;
+      } else if (opts.label) box.appendChild(el('p', { class: 'se-sub', text: opts.label }));
+      box.appendChild(textInput('Testo', value.label, 120, function (v) { value.label = v; onChange(value); }, { required: true }));
+      box.appendChild(targetEditor(value.to, function (to) { value.to = to; onChange(value); }));
+      if (opts.styles && opts.styles.length > 1) {
+        box.appendChild(selectInput('Stile', opts.styles.map(function (s) { return [s, STYLE_LABEL[s] || s]; }), value.style || opts.styles[0], function (s) { value.style = s; onChange(value); }));
+      }
+    }
+    render();
+    return box;
+  }
+
+  function listEditor(arr, opts, renderItem) {
+    var box = el('div', { class: 'se-list' });
+    function render() {
+      box.textContent = '';
+      arr.forEach(function (item, i) {
+        var card = el('div', { class: 'se-item' }, [
+          el('div', { class: 'se-item-head' }, [el('strong', { text: (opts.itemLabel || 'Voce') + ' ' + (i + 1) }), itemTools(arr, i, render, { label: (opts.itemLabel || 'voce').toLowerCase(), min: opts.min })]),
+        ]);
+        card.appendChild(renderItem(item, i, function (v) { arr[i] = v; }));
+        box.appendChild(card);
+      });
+      if (arr.length < (opts.max || 12)) {
+        box.appendChild(el('button', { type: 'button', class: 'btn btn-ghost btn-small se-add', text: '+ Aggiungi ' + (opts.itemLabel || 'voce').toLowerCase(), onclick: function () { arr.push(opts.make()); changed(); render(); } }));
+      }
+    }
+    render();
+    return box;
+  }
+
+  // ---------- default values for new blocks and items ----------
+  function emptyValue(f) {
+    switch (f.type) {
+      case 'text': return f.required ? 'Testo da scrivere' : '';
+      case 'note': case 'anchor': return '';
+      case 'rich': return f.required ? { p: [[{ t: 'Testo da scrivere' }]] } : { p: [] };
+      case 'flow': case 'links': case 'buttons': case 'textlist': return [];
+      case 'select': return f.options[0][0];
+      case 'bool': return false;
+      case 'link': case 'button': case 'image': return null;
+      case 'list': { var out = []; for (var i = 0; i < (f.min || 0); i++) out.push(emptyData(f.fields)); return out; }
+      default: return null;
+    }
+  }
+  function emptyData(fields) { var d = {}; fields.forEach(function (f) { d[f.name] = emptyValue(f); }); return d; }
+
+  // ---------- images: resized in the browser, checked again by the server ----------
+  function imageUrl(id, w) { return id.indexOf('static-') === 0 ? '/assets/img/' + id.slice(7) + '-' + w + '.webp' : '/media/' + id + '-' + w + '.webp'; }
+
+  function resizeTo(img, width, type, quality) {
+    var w = Math.min(width, img.naturalWidth);
+    var h = Math.round(img.naturalHeight * w / img.naturalWidth);
+    var c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    var ctx = c.getContext('2d');
+    if (type === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); }
+    ctx.drawImage(img, 0, 0, w, h);
+    return new Promise(function (resolve, reject) {
+      c.toBlob(function (b) {
+        if (!b || b.type !== type) { reject(new Error('Questo browser non riesce a preparare l\'immagine. Prova con Chrome, Edge o Firefox aggiornati.')); return; }
+        if (b.size > 1400000 && quality > 0.5) { resolve(resizeTo(img, width, type, quality - 0.15)); return; }
+        var fr = new FileReader();
+        fr.onload = function () { resolve({ data: String(fr.result).split(',')[1], w: w, h: h }); };
+        fr.onerror = function () { reject(new Error('Lettura dell\'immagine non riuscita')); };
+        fr.readAsDataURL(b);
+      }, type, quality);
+    });
+  }
+
+  function uploadImage(file) {
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return Promise.reject(new Error('Usa una foto JPG, PNG o WebP.'));
+    if (file.size > 25 * 1024 * 1024) return Promise.reject(new Error('La foto è troppo grande (massimo 25 MB).'));
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      var url = URL.createObjectURL(file);
+      img.onload = function () { URL.revokeObjectURL(url); resolve(img); };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('Il file non sembra un\'immagine valida.')); };
+      img.src = url;
+    }).then(function (img) {
+      if (img.naturalWidth < 300 || img.naturalHeight < 300) throw new Error('La foto è troppo piccola: serve almeno 300 × 300 pixel.');
+      return Promise.all([resizeTo(img, 480, 'image/webp', 0.82), resizeTo(img, 800, 'image/webp', 0.82), resizeTo(img, 800, 'image/jpeg', 0.85)]);
+    }).then(function (v) {
+      return api('POST', '/site/images', { '480.webp': v[0].data, '800.webp': v[1].data, '800.jpg': v[2].data });
+    });
+  }
+
+  function imageEditor(value, onChange) {
+    var box = el('div', { class: 'se-image' });
+    function render() {
+      box.textContent = '';
+      var status = el('p', { class: 'status', role: 'status' });
+      var file = el('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', class: 'se-file', 'aria-label': 'Scegli una foto' });
+      file.addEventListener('change', function () {
+        if (!file.files[0]) return;
+        status.className = 'status'; status.textContent = 'Preparo e carico la foto…';
+        uploadImage(file.files[0]).then(function (r) {
+          value = { id: r.id, w: r.w, h: r.h, alt: value ? value.alt : '', decorative: value ? !!value.decorative : false };
+          onChange(value); render();
+        }).catch(function (e) { status.className = 'status form-error'; status.textContent = e.message; });
+      });
+      if (value && value.id) {
+        box.appendChild(el('img', { class: 'se-thumb', src: imageUrl(value.id, 480), alt: '' }));
+        box.appendChild(textInput('Descrizione per chi non vede l\'immagine (testo alternativo)', value.alt, 200, function (v) { value.alt = v; onChange(value); }, { required: !value.decorative, hint: 'Per esempio: «Elsa Salvati sorride, seduta alla scrivania».' }));
+        box.appendChild(checkInput('Immagine decorativa (non serve descriverla)', value.decorative, function (on) { value.decorative = on; onChange(value); render(); }));
+        box.appendChild(el('div', { class: 'cta-row' }, [
+          el('label', { class: 'btn btn-ghost btn-small se-file-label' }, ['Cambia foto', file]),
+          el('button', { type: 'button', class: 'btn btn-danger btn-small', text: 'Togli la foto', onclick: function () { if (window.confirm('Togliere la foto da questo blocco?')) { value = null; onChange(null); render(); } } }),
+        ]));
+      } else {
+        box.appendChild(el('label', { class: 'btn btn-ghost btn-small se-file-label' }, ['Scegli una foto', file]));
+        box.appendChild(el('p', { class: 'hint', text: 'JPG, PNG o WebP. La foto viene ridimensionata prima del caricamento.' }));
+      }
+      box.appendChild(status);
+    }
+    render();
+    return box;
+  }
+
+  // ---------- one field of a block, generated from the library ----------
+  function fieldEditor(f, data, lang) {
+    var set = function (v) { data[f.name] = v; changed(); };
+    var v = data[f.name];
+    switch (f.type) {
+      case 'text': return textInput(f.label, v, f.max, set, { required: f.required });
+      case 'note': return textInput(f.label, v, f.max || 1500, set, { area: true, hint: 'Visibile solo qui e nell\'anteprima, mai sul sito pubblicato.' });
+      case 'anchor': return textInput(f.label, v, 40, function (x) { set(x.trim().replace(/^#/, '').toLowerCase()); }, { hint: 'Solo lettere minuscole, numeri e trattini.' });
+      case 'select': return selectInput(f.label, f.options, v, set);
+      case 'bool': return checkInput(f.label, v, set);
+      case 'rich': return el('div', { class: 'field se-field' }, [el('span', { class: 'label', text: f.label + (f.required ? ' *' : '') }), richEditor(v, { multiline: f.multiline !== false, max: f.max, label: f.label }, set)]);
+      case 'image': return el('div', { class: 'field se-field' }, [el('span', { class: 'label', text: f.label }), imageEditor(v, set)]);
+      case 'link': return linkEditor(v, { optional: true, label: f.label }, set);
+      case 'button': return linkEditor(v, { optional: true, label: f.label, styles: f.styles }, set);
+      case 'links': case 'buttons': {
+        if (!Array.isArray(v)) { v = []; data[f.name] = v; }
+        var isBtn = f.type === 'buttons';
+        return el('div', { class: 'field se-field' }, [el('span', { class: 'label', text: f.label }), listEditor(v, {
+          itemLabel: isBtn ? 'Pulsante' : 'Link', max: f.max || 3,
+          make: function () { var x = { label: '', to: { kind: 'page', key: (se.linkTargets[0] || {}).key || '' } }; if (isBtn) x.style = (f.styles || ['primary'])[0]; return x; },
+        }, function (item) { return linkEditor(item, { styles: isBtn ? f.styles : null }, function () { changed(); }); })]);
+      }
+      case 'textlist': {
+        if (!Array.isArray(v)) { v = []; data[f.name] = v; }
+        return el('div', { class: 'field se-field' }, [el('span', { class: 'label', text: f.label }), listEditor(v, { itemLabel: 'Punto', max: f.max || 6, make: function () { return ''; } },
+          function (item, i) { return textInput('Testo', item, f.itemMax || 200, function (x) { v[i] = x; changed(); }); })]);
+      }
+      case 'flow': {
+        if (!Array.isArray(v)) { v = []; data[f.name] = v; }
+        return el('div', { class: 'field se-field' }, [el('span', { class: 'label', text: f.label }), flowEditor(v, f)]);
+      }
+      case 'list': {
+        if (!Array.isArray(v)) { v = []; data[f.name] = v; }
+        return el('div', { class: 'field se-field' }, [el('span', { class: 'label', text: f.label }), listEditor(v, {
+          itemLabel: f.itemLabel || 'Voce', max: f.max, min: f.min, make: function () { return emptyData(f.fields); },
+        }, function (item) {
+          var wrap = el('div', { class: 'se-fields' });
+          f.fields.forEach(function (sub) { wrap.appendChild(fieldEditor(sub, item, lang)); });
+          return wrap;
+        })]);
+      }
+      default: return el('p', { class: 'hint', text: f.label });
+    }
+  }
+
+  // Paragraphs, highlighted paragraphs, figures with a source and arrow links, in any order.
+  function flowEditor(arr, f) {
+    var kinds = f.kinds || ['p', 'lead', 'stat', 'arrow'];
+    var box = el('div', { class: 'se-list' });
+    function render() {
+      box.textContent = '';
+      arr.forEach(function (elx, i) {
+        var card = el('div', { class: 'se-item' }, [el('div', { class: 'se-item-head' }, [el('strong', { text: KIND_NAMES[elx.kind] || elx.kind }), itemTools(arr, i, render, { label: 'elemento' })])]);
+        if (elx.kind === 'arrow') {
+          if (!elx.link) elx.link = { label: '', to: { kind: 'page', key: (se.linkTargets[0] || {}).key || '' } };
+          card.appendChild(linkEditor(elx.link, {}, function () { changed(); }));
+        } else {
+          card.appendChild(richEditor(elx.text, { multiline: true, max: 1500, label: KIND_NAMES[elx.kind] }, function (m) { elx.text = m; changed(); }));
+          if (elx.kind === 'stat') card.appendChild(textInput('Fonte (es. Censis-Eudaimon, 2026)', elx.source, 120, function (x) { elx.source = x; changed(); }));
+        }
+        box.appendChild(card);
+      });
+      if (arr.length < (f.max || 10)) {
+        box.appendChild(el('div', { class: 'se-addrow' }, kinds.map(function (k) {
+          return el('button', { type: 'button', class: 'btn btn-ghost btn-small se-add', text: '+ ' + KIND_NAMES[k], onclick: function () {
+            arr.push(k === 'arrow' ? { kind: 'arrow', link: { label: '', to: { kind: 'page', key: (se.linkTargets[0] || {}).key || '' } } } : k === 'stat' ? { kind: 'stat', text: { p: [] }, source: '' } : { kind: k, text: { p: [] } });
+            changed(); render();
+          } });
+        })));
+      }
+    }
+    render();
+    return box;
+  }
+
+  // ---------- page list ----------
+  function siteGroups() {
+    var groups = {};
+    se.pages.forEach(function (p) { (groups[p.key] = groups[p.key] || {})[p.lang] = p; });
+    return Object.keys(groups).sort(function (a, b) {
+      var ia = PAGE_ORDER.indexOf(a); var ib = PAGE_ORDER.indexOf(b);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
+    }).map(function (k) { return { key: k, it: groups[k].it, en: groups[k].en }; });
+  }
+
+  function renderPageList() {
+    var box = $('[data-se-pages]');
+    box.textContent = '';
+    // Parts shared by every page: header and footer (per language) and the studio's details.
+    var gl = el('ul', { class: 'se-pagelist se-globallist', role: 'list' });
+    var scopes = se.globals ? se.globals.scopes : null;
+    function gBtn(scope, text, aria) {
+      var current = se.mode === 'global' && se.gscope === scope;
+      var changes = scopes && scopes[scope] && scopes[scope].hasChanges;
+      return el('button', {
+        type: 'button', class: 'se-lang' + (current ? ' current' : ''), 'aria-current': current ? 'page' : null, disabled: !scopes,
+        'aria-label': aria + (changes ? ', modifiche non pubblicate' : ''), title: scopes ? '' : 'Non ancora disponibile',
+        onclick: function () { openGlobal(scope); },
+      }, [text, changes ? el('span', { class: 'se-dot', 'aria-hidden': 'true' }) : null]);
+    }
+    gl.appendChild(el('li', { class: 'se-pageitem' }, [el('span', { class: 'se-pagename', text: 'Intestazione e piè di pagina' }),
+      el('span', { class: 'se-langs' }, [gBtn('it', 'IT', 'Intestazione e piè di pagina, italiano'), gBtn('en', 'EN', 'Intestazione e piè di pagina, inglese')])]));
+    gl.appendChild(el('li', { class: 'se-pageitem' }, [el('span', { class: 'se-pagename', text: 'Dati dello studio' }),
+      el('span', { class: 'se-langs' }, [gBtn('studio', 'Apri', 'Dati dello studio')])]));
+    box.appendChild(el('h2', { class: 'se-h', text: 'Tutto il sito' }));
+    box.appendChild(gl);
+    box.appendChild(el('h2', { class: 'se-h', text: 'Pagine' }));
+    var ul = el('ul', { class: 'se-pagelist', role: 'list' });
+    siteGroups().forEach(function (g) {
+      var langs = el('span', { class: 'se-langs' });
+      ['it', 'en'].forEach(function (l) {
+        var p = g[l];
+        if (!p) return;
+        var current = se.mode === 'page' && se.page && se.page.id === p.id;
+        langs.appendChild(el('button', {
+          type: 'button', class: 'se-lang' + (current ? ' current' : ''), 'aria-current': current ? 'page' : null,
+          'aria-label': pageName(g.key) + ', ' + LANG_NAME[l] + (p.hasChanges ? ', modifiche non pubblicate' : ''),
+          title: p.hasChanges ? 'Modifiche non pubblicate' : 'Pubblicata',
+          onclick: function () { openSitePage(p.id); },
+        }, [l.toUpperCase(), p.hasChanges ? el('span', { class: 'se-dot', 'aria-hidden': 'true' }) : null]));
+      });
+      ul.appendChild(el('li', { class: 'se-pageitem' }, [el('span', { class: 'se-pagename', text: pageName(g.key) }), langs]));
+    });
+    box.appendChild(ul);
+    box.appendChild(el('p', { class: 'hint se-legend' }, [el('span', { class: 'se-dot', 'aria-hidden': 'true' }), ' modifiche non ancora pubblicate']));
+    // Phones: a simple select.
+    var sel = $('[data-se-pagesel]');
+    sel.textContent = '';
+    sel.appendChild(el('option', { value: '', text: 'Scegli la pagina…' }));
+    if (scopes) {
+      sel.appendChild(el('option', { value: 'g:it', text: 'Intestazione e piè di pagina · IT' }));
+      sel.appendChild(el('option', { value: 'g:en', text: 'Intestazione e piè di pagina · EN' }));
+      sel.appendChild(el('option', { value: 'g:studio', text: 'Dati dello studio' }));
+    }
+    siteGroups().forEach(function (g) {
+      ['it', 'en'].forEach(function (l) { if (g[l]) sel.appendChild(el('option', { value: g[l].id, text: pageName(g.key) + ' · ' + l.toUpperCase() + (g[l].hasChanges ? ' •' : '') })); });
+    });
+    sel.value = se.mode === 'global' ? 'g:' + se.gscope : (se.page ? se.page.id : '');
+  }
+
+  function loadGlobals() {
+    return api('GET', '/site/globals').then(function (res) { se.globals = res; }).catch(function () { se.globals = null; });
+  }
+
+  function loadSitePages() {
+    return Promise.all([api('GET', '/site/pages'), loadGlobals()]).then(function (all) {
+      var res = all[0];
+      se.pages = res.pages;
+      se.loaded = true;
+      renderPageList();
+      if (!se.page) {
+        var home = se.pages.find(function (p) { return p.key === 'index' && p.lang === 'it'; }) || se.pages[0];
+        if (home) return openSitePage(home.id);
+      }
+    }).catch(function (e) { showBanner(e.message); });
+  }
+
+  function openSitePage(id) {
+    return flushSave().then(function () {
+      return api('GET', '/site/pages/' + id);
+    }).then(function (res) {
+      se.mode = 'page';
+      se.page = res.page;
+      se.draft = clone(res.page.draft);
+      if (!se.draft.seo || typeof se.draft.seo !== 'object') se.draft.seo = { image: null, noindex: false };
+      se.expected = res.page.draftUpdatedAt;
+      se.linkTargets = res.linkTargets || [];
+      se.pros = res.professionals || [];
+      se.library = {};
+      (res.library || []).forEach(function (b) { se.library[b.type] = b; });
+      se.selected = -1;
+      se.dirty = false;
+      se.refPage = null;
+      hideBanner();
+      setStatus(res.page.draftUpdatedBy ? 'Ultima modifica: ' + res.page.draftUpdatedBy + ', ' + new Date(res.page.draftUpdatedAt).toLocaleString('it-IT', { dateStyle: 'short', timeStyle: 'short' }) : '');
+      renderEditor();
+      renderPageList();
+      if (se.refOpen) loadReference();
+      schedulePreview(0);
+    }).catch(function (e) { showBanner(e.message); });
+  }
+
+  // ---------- editor ----------
+  function setStatus(t, cls) {
+    var s = $('[data-se-status]');
+    s.textContent = t;
+    s.className = 'se-status' + (cls ? ' ' + cls : '');
+  }
+  function showBanner(msg, action) {
+    var b = $('[data-se-banner]');
+    b.textContent = '';
+    b.appendChild(el('span', { text: msg }));
+    if (action) b.appendChild(el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: action.label, onclick: action.run }));
+    b.hidden = false;
+  }
+  function hideBanner() { $('[data-se-banner]').hidden = true; }
+
+  function updateBadge() {
+    var badge = $('[data-se-badge]');
+    if (se.mode === 'global') {
+      var s = se.globals && se.globals.scopes[se.gscope];
+      var ch = se.dirty || (s && s.hasChanges);
+      badge.textContent = ch ? 'Modifiche non pubblicate' : 'Pubblicato';
+      badge.className = 'se-badge' + (ch ? ' changes' : ' ok');
+      return;
+    }
+    var p = se.page;
+    var changes = p && (se.dirty || p.hasChanges);
+    badge.textContent = changes ? 'Modifiche non pubblicate' : 'Pubblicata';
+    badge.className = 'se-badge' + (changes ? ' changes' : ' ok');
+  }
+
+  function blockSummary(b) {
+    var d = b.data || {};
+    var t = d.title || d.eyebrow || d.descriptor || '';
+    if (!t && d.items && d.items[0]) t = d.items[0].title || d.items[0].q || d.items[0].term || '';
+    if (typeof t === 'object' && t && t.p) t = t.p.map(function (p) { return p.map(function (r) { return r.t; }).join(''); }).join(' ');
+    return String(t || '');
+  }
+
+  function setTab(tab) {
+    se.tab = tab;
+    $$('[data-se-tab]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-se-tab') === tab)); });
+    $('[data-se-tab-blocks]').hidden = tab !== 'blocks';
+    $('[data-se-tab-seo]').hidden = tab !== 'seo';
+    if (tab === 'seo') renderSeo();
+  }
+
+  function renderEditor() {
+    var p = se.page;
+    var global = se.mode === 'global';
+    $('[data-se-empty]').hidden = !!(p || global);
+    $('[data-se-editor]').hidden = !(p || global);
+    $('[data-se-tabs]').hidden = global;
+    $('[data-se-history]').hidden = global;
+    $('[data-se-ref]').hidden = global;
+    $('[data-se-tab-global]').hidden = !global;
+    if (global) { $('[data-se-tab-blocks]').hidden = true; $('[data-se-tab-seo]').hidden = true; renderGlobalEditor(); return; }
+    if (!p) return;
+    setTab(se.tab);
+    $('[data-se-title]').textContent = pageName(p.key);
+    $('[data-se-path]').textContent = p.path;
+    var other = se.pages.find(function (x) { return x.key === p.key && x.lang !== p.lang; });
+    var sw = $('[data-se-langswitch]');
+    sw.textContent = '';
+    ['it', 'en'].forEach(function (l) {
+      var target = l === p.lang ? p : (other && other.lang === l ? other : null);
+      sw.appendChild(el('button', { type: 'button', 'aria-pressed': String(l === p.lang), disabled: !target, title: target ? '' : 'Questa pagina non esiste in ' + LANG_NAME[l].toLowerCase(),
+        text: LANG_NAME[l], onclick: function () { if (target && target.id !== p.id) openSitePage(target.id); } }));
+    });
+    $('[data-se-ref]').disabled = !other;
+    updateBadge();
+    renderBlocks();
+  }
+
+  // ---------- SEO and sharing ----------
+  function renderSeo() {
+    var box = $('[data-se-tab-seo]');
+    box.textContent = '';
+    var seo = se.draft.seo;
+    var domain = location.host;
+    var gTitle = el('span', { class: 'se-g-title' });
+    var gDesc = el('span', { class: 'se-g-desc' });
+    var cTitle = el('strong');
+    var cDesc = el('span', { class: 'hint' });
+    var cImg = el('div', { class: 'se-card-img' });
+    function cut(s, n) { s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+    function refresh() {
+      gTitle.textContent = cut(se.draft.title || pageName(se.page.key), 62);
+      gDesc.textContent = cut(se.draft.description || 'Google sceglierà un pezzo di testo della pagina.', 158);
+      cTitle.textContent = cut(se.draft.title, 80);
+      cDesc.textContent = cut(se.draft.description, 120);
+      cImg.textContent = '';
+      if (seo.image && seo.image.id) cImg.appendChild(el('img', { src: imageUrl(seo.image.id, 800), alt: '' }));
+      else cImg.appendChild(el('span', { class: 'hint', text: 'Nessuna immagine: i social useranno quella predefinita del sito.' }));
+    }
+    box.appendChild(el('p', { class: 'hint', text: 'Come la pagina compare su Google e quando qualcuno la condivide. L\'indirizzo ' + se.page.path + ' non si cambia da qui.' }));
+    box.appendChild(textInput('Titolo per Google', se.draft.title, 120, function (v) { se.draft.title = v; refresh(); changed(); }, { recommended: 60, required: true, hint: 'Compare nella scheda del browser e nei risultati di Google. Meglio sotto i 60 caratteri.' }));
+    box.appendChild(textInput('Descrizione', se.draft.description, 300, function (v) { se.draft.description = v; refresh(); changed(); }, { area: true, recommended: 155, hint: 'Una o due frasi su cosa trova chi apre la pagina.' }));
+    box.appendChild(el('p', { class: 'se-sub', text: 'Anteprima su Google' }));
+    box.appendChild(el('div', { class: 'se-google', 'aria-label': 'Anteprima del risultato su Google' }, [
+      el('span', { class: 'se-g-url', text: domain + se.page.path }), gTitle, gDesc,
+    ]));
+    box.appendChild(el('div', { class: 'field se-field' }, [el('span', { class: 'label', text: 'Immagine per la condivisione sui social' }),
+      imageEditor(seo.image, function (v) { seo.image = v; refresh(); changed(); })]));
+    box.appendChild(el('p', { class: 'se-sub', text: 'Anteprima della condivisione' }));
+    box.appendChild(el('div', { class: 'se-card' }, [cImg, el('div', { class: 'se-card-text' }, [el('span', { class: 'se-g-url', text: domain }), cTitle, cDesc])]));
+    var warn = el('p', { class: 'status form-error', role: 'status' });
+    function warnNoindex() { warn.textContent = seo.noindex ? 'Attenzione: con questa scelta la pagina sparisce da Google e dagli altri motori di ricerca.' : ''; }
+    box.appendChild(checkInput('Non mostrare nei motori di ricerca', seo.noindex, function (on) { seo.noindex = on; warnNoindex(); changed(); }));
+    box.appendChild(warn);
+    warnNoindex();
+    refresh();
+  }
+
+  // ---------- header, footer and studio details ----------
+  function openGlobal(scope) {
+    return flushSave().then(function () { return loadGlobals(); }).then(function () {
+      if (!se.globals || !se.globals.scopes[scope]) { showBanner('Questa parte non è ancora disponibile.'); return null; }
+      var s = se.globals.scopes[scope];
+      se.mode = 'global';
+      se.gscope = scope;
+      se.gdata = clone(s.draft || {});
+      se.gexpected = s.draftUpdatedAt;
+      se.linkTargets = se.globals.linkTargets || se.linkTargets;
+      se.pros = se.globals.professionals || se.pros;
+      se.dirty = false;
+      hideBanner();
+      setStatus('');
+      // The preview shows a page of that language (the last one opened, else the home) with these header and footer.
+      var lang = scope === 'en' ? 'en' : 'it';
+      var target = se.page && se.page.lang === lang ? se.page : (se.pages.find(function (p) { return p.key === 'index' && p.lang === lang; }) || se.pages.find(function (p) { return p.lang === lang; }));
+      renderEditor();
+      renderPageList();
+      if (!target) return null;
+      return api('GET', '/site/pages/' + target.id).then(function (res) {
+        se.gpreview = { id: res.page.id, draft: res.page.draft };
+        schedulePreview(0);
+      });
+    }).catch(function (e) { showBanner(e.message); });
+  }
+
+  function renderGlobalEditor() {
+    var scope = se.gscope;
+    var studio = scope === 'studio';
+    $('[data-se-title]').textContent = GLOBAL_NAMES[scope];
+    $('[data-se-path]').textContent = studio ? 'Usati in tutte le pagine' : 'Tutte le pagine in ' + LANG_NAME[scope].toLowerCase();
+    var sw = $('[data-se-langswitch]');
+    sw.textContent = '';
+    if (!studio) {
+      ['it', 'en'].forEach(function (l) {
+        sw.appendChild(el('button', { type: 'button', 'aria-pressed': String(l === scope), text: LANG_NAME[l], onclick: function () { if (l !== scope) openGlobal(l); } }));
+      });
+    }
+    var s = se.globals.scopes[scope];
+    var badge = $('[data-se-badge]');
+    var changes = se.dirty || s.hasChanges;
+    badge.textContent = changes ? 'Modifiche non pubblicate' : 'Pubblicato';
+    badge.className = 'se-badge' + (changes ? ' changes' : ' ok');
+    var box = $('[data-se-tab-global]');
+    box.textContent = '';
+    box.appendChild(el('p', { class: 'hint', text: studio
+      ? 'Telefono, email e WhatsApp compaiono in automatico nelle pagine e nel piè di pagina: cambiandoli qui cambiano ovunque.'
+      : 'Il menu in alto e il piè di pagina sono uguali in tutte le pagine di questa lingua. L\'ordine delle voci è l\'ordine del menu.' }));
+    var schema = se.globals.schema || {};
+    var sections = studio ? [['studio', 'Dati dello studio']] : [['header', 'Intestazione (menu in alto)'], ['footer', 'Piè di pagina']];
+    sections.forEach(function (sec) {
+      var data = studio ? se.gdata : (se.gdata[sec[0]] = se.gdata[sec[0]] || {});
+      var fields = schema[sec[0]] || [];
+      var part = el('details', { class: 'se-global-part', open: true }, [el('summary', { text: sec[1] })]);
+      var wrap = el('div', { class: 'se-fields' });
+      fields.forEach(function (f) {
+        if (data[f.name] === undefined) data[f.name] = emptyValue(f);
+        wrap.appendChild(fieldEditor(f, data, scope === 'en' ? 'en' : 'it'));
+      });
+      if (!fields.length) wrap.appendChild(el('p', { class: 'hint', text: 'Nessun campo.' }));
+      part.appendChild(wrap);
+      box.appendChild(part);
+    });
+  }
+
+  function renderBlocks() {
+    var box = $('[data-se-blocks]');
+    box.textContent = '';
+    var blocks = se.draft.blocks;
+    blocks.forEach(function (b, i) {
+      var def = se.library[b.type] || { label: b.type, fields: [], bg: ['light'] };
+      var open = se.selected === i;
+      var locked = def.fixed || def.special;
+      var head = el('div', { class: 'se-block-head' }, [
+        el('button', { type: 'button', class: 'se-block-pick', 'aria-expanded': String(open), onclick: function () { selectBlock(open ? -1 : i); } }, [
+          el('span', { class: 'se-block-n', text: String(i + 1) }),
+          el('span', { class: 'se-block-text' }, [el('strong', { text: def.label }), el('span', { class: 'hint', text: blockSummary(b) || (def.special ? 'Parte fissa del sito' : '') })]),
+        ]),
+        el('div', { class: 'se-tools' }, [
+          el('button', { type: 'button', class: 'se-icon', title: 'Sposta su', 'aria-label': 'Sposta su il blocco ' + (i + 1), disabled: i === 0, onclick: function () { moveBlock(i, -1); }, text: '↑' }),
+          el('button', { type: 'button', class: 'se-icon', title: 'Sposta giù', 'aria-label': 'Sposta giù il blocco ' + (i + 1), disabled: i === blocks.length - 1, onclick: function () { moveBlock(i, 1); }, text: '↓' }),
+          locked || def.once ? null : el('button', { type: 'button', class: 'se-icon', title: 'Duplica', 'aria-label': 'Duplica il blocco ' + (i + 1), onclick: function () { duplicateBlock(i); }, text: '⧉' }),
+          locked ? null : el('button', { type: 'button', class: 'se-icon se-danger', title: 'Elimina', 'aria-label': 'Elimina il blocco ' + (i + 1), onclick: function () { deleteBlock(i); }, text: '✕' }),
+        ]),
+      ]);
+      var item = el('li', { class: 'se-block' + (open ? ' open' : '') + (b.__error ? ' error' : ''), 'data-se-block': String(i) }, [head]);
+      if (open) item.appendChild(inspector(b, def));
+      box.appendChild(item);
+    });
+    if (!blocks.length) box.appendChild(el('li', { class: 'empty', text: 'Nessun blocco. Aggiungine uno.' }));
+  }
+
+  function inspector(b, def) {
+    var box = el('div', { class: 'se-inspector' });
+    if (def.help) box.appendChild(el('p', { class: 'hint', text: def.help }));
+    if (b.__error) box.appendChild(el('p', { class: 'status form-error', role: 'alert', text: b.__error }));
+    var fields = el('div', { class: 'se-fields' });
+    def.fields.forEach(function (f) {
+      if (!b.data) b.data = {};
+      if (b.data[f.name] === undefined) b.data[f.name] = emptyValue(f);
+      fields.appendChild(fieldEditor(f, b.data, se.page.lang));
+    });
+    if (!def.fields.length) fields.appendChild(el('p', { class: 'hint', text: 'Questo blocco non ha testi da modificare qui: si può solo spostare.' }));
+    box.appendChild(fields);
+    var settings = el('details', { class: 'se-settings' }, [el('summary', { text: 'Impostazioni del blocco' })]);
+    if (def.bg && def.bg.length > 1) settings.appendChild(selectInput('Sfondo', def.bg.map(function (x) { return [x, BG_LABEL[x] || x]; }), b.bg || def.bg[0], function (v) { b.bg = v; changed(); }));
+    if (def.numbered) settings.appendChild(checkInput('Numero nell\'occhiello (01 · …)', b.numbered !== false, function (on) { if (on) delete b.numbered; else b.numbered = false; changed(); }));
+    settings.appendChild(textInput('Ancora (per link come #come-funziona)', b.anchor || '', 40, function (v) { v = v.trim().replace(/^#/, '').toLowerCase(); if (v) b.anchor = v; else delete b.anchor; changed(); }, { hint: 'Facoltativa. Solo lettere minuscole, numeri e trattini.' }));
+    settings.appendChild(textInput('Nota interna', b.note || '', 1500, function (v) { if (v.trim()) b.note = v; else delete b.note; changed(); }, { area: true, hint: 'Visibile solo qui e nell\'anteprima, mai sul sito pubblicato.' }));
+    var otherLang = se.page.lang === 'it' ? 'en' : 'it';
+    if (se.pages.some(function (x) { return x.key === se.page.key && x.lang === otherLang; }) && !def.once) {
+      settings.appendChild(el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Copia questo blocco nella versione ' + (otherLang === 'en' ? 'inglese' : 'italiana'), onclick: function () { copyToOther(b); } }));
+    }
+    box.appendChild(settings);
+    return box;
+  }
+
+  function selectBlock(i) {
+    se.selected = i;
+    renderBlocks();
+    if (i >= 0) {
+      var li = $('[data-se-block="' + i + '"]');
+      if (li && li.scrollIntoView) li.scrollIntoView({ block: 'nearest' });
+      scrollPreviewTo(i);
+    }
+  }
+  function moveBlock(i, d) {
+    if (!moveItem(se.draft.blocks, i, d)) return;
+    if (se.selected === i) se.selected = i + d; else if (se.selected === i + d) se.selected = i;
+    changed(); renderBlocks();
+  }
+  function duplicateBlock(i) {
+    var c = clone(se.draft.blocks[i]);
+    delete c.id; delete c.__error;
+    se.draft.blocks.splice(i + 1, 0, c);
+    se.selected = i + 1;
+    changed(); renderBlocks();
+  }
+  function deleteBlock(i) {
+    var def = se.library[se.draft.blocks[i].type] || {};
+    if (!window.confirm('Eliminare il blocco «' + (def.label || '') + '»? Puoi recuperarlo dallo Storico finché non pubblichi.')) return;
+    se.draft.blocks.splice(i, 1);
+    se.selected = -1;
+    changed(); renderBlocks();
+  }
+
+  function addBlockDialog() {
+    var dlg = el('dialog', { class: 'dlg se-library' });
+    var list = el('ul', { class: 'se-libgrid', role: 'list' });
+    Object.keys(se.library).forEach(function (type) {
+      var def = se.library[type];
+      var present = se.draft.blocks.some(function (b) { return b.type === type; });
+      var disabled = (def.once && present) || type === 'home-hero' && se.page.key !== 'index';
+      list.appendChild(el('li', {}, [el('button', { type: 'button', class: 'se-libitem', disabled: disabled, onclick: function () {
+        var b = { type: type, bg: def.bg[0], data: emptyData(def.fields) };
+        var at = se.selected >= 0 ? se.selected + 1 : se.draft.blocks.length;
+        se.draft.blocks.splice(at, 0, b);
+        se.selected = at;
+        dlg.close();
+        changed(); renderBlocks(); scrollPreviewTo(at);
+      } }, [el('strong', { text: def.label }), el('span', { class: 'hint', text: disabled && present ? 'Già presente in questa pagina' : def.help })])]));
+    });
+    dlg.appendChild(el('div', { class: 'dlg-inner' }, [
+      el('div', { class: 'dlg-head' }, [el('h2', { text: 'Aggiungi un blocco' }), el('button', { type: 'button', class: 'round', 'aria-label': 'Chiudi', text: '×', onclick: function () { dlg.close(); } })]),
+      el('p', { class: 'hint', text: se.selected >= 0 ? 'Il blocco verrà aggiunto dopo quello selezionato.' : 'Il blocco verrà aggiunto in fondo alla pagina.' }),
+      list,
+    ]));
+    dlg.addEventListener('close', function () { dlg.remove(); });
+    document.body.appendChild(dlg);
+    dlg.showModal();
+  }
+
+  function copyToOther(b) {
+    var other = se.pages.find(function (x) { return x.key === se.page.key && x.lang !== se.page.lang; });
+    if (!other) return;
+    var copy = clone(b);
+    delete copy.id; delete copy.__error;
+    api('GET', '/site/pages/' + other.id).then(function (res) {
+      var d = res.page.draft;
+      return api('PUT', '/site/pages/' + other.id, { title: d.title, description: d.description, blocks: d.blocks.concat([copy]), expected: res.page.draftUpdatedAt });
+    }).then(function () {
+      setStatus('Blocco copiato in fondo alla versione ' + (other.lang === 'en' ? 'inglese' : 'italiana') + ': va tradotto.', 'ok');
+      other.hasChanges = true;
+      renderPageList();
+    }).catch(function (e) { showBanner('Copia non riuscita: ' + e.message); });
+  }
+
+  // ---------- reference: the other language, read only ----------
+  function loadReference() {
+    var box = $('[data-se-refbox]');
+    var other = se.pages.find(function (x) { return x.key === se.page.key && x.lang !== se.page.lang; });
+    box.textContent = '';
+    if (!other) { box.hidden = true; return; }
+    box.hidden = false;
+    box.appendChild(el('p', { class: 'se-sub', text: 'Riferimento: versione ' + (other.lang === 'en' ? 'inglese' : 'italiana') + ' (sola lettura)' }));
+    api('GET', '/site/pages/' + other.id).then(function (res) {
+      var ol = el('ol', { class: 'se-reflist' });
+      res.page.draft.blocks.forEach(function (b) {
+        var def = se.library[b.type] || { label: b.type };
+        ol.appendChild(el('li', {}, [el('strong', { text: def.label }), el('span', { class: 'hint', text: blockSummary(b) })]));
+      });
+      box.appendChild(ol);
+    }).catch(function (e) { box.appendChild(el('p', { class: 'form-error', text: e.message })); });
+  }
+
+  // ---------- saving ----------
+  function changed() {
+    se.dirty = true;
+    setStatus('Modifiche da salvare…');
+    updateBadge();
+    clearTimeout(se.timer);
+    se.timer = setTimeout(saveDraft, 1500);
+    schedulePreview(900);
+  }
+
+  function payload() {
+    return {
+      title: se.draft.title, description: se.draft.description, seo: se.draft.seo,
+      blocks: se.draft.blocks.map(function (b) { var c = Object.assign({}, b); delete c.__error; return c; }),
+    };
+  }
+
+  function saveGlobal() {
+    var scope = se.gscope;
+    se.dirty = false;
+    setStatus('Salvataggio…');
+    se.saving = api('PUT', '/site/globals/' + scope, { data: se.gdata, expected: se.gexpected }).then(function (res) {
+      if (se.mode !== 'global' || se.gscope !== scope) return;
+      se.gexpected = res.draftUpdatedAt;
+      var s = se.globals.scopes[scope];
+      s.draftUpdatedAt = res.draftUpdatedAt;
+      if (!s.hasChanges) { s.hasChanges = true; renderPageList(); }
+      hideBanner();
+      setStatus(se.dirty ? 'Modifiche da salvare…' : 'Bozza salvata alle ' + timeNow(), se.dirty ? '' : 'ok');
+      updateBadge();
+    }).catch(function (e) {
+      se.dirty = true;
+      if (e.data && e.data.error === 'conflict') {
+        setStatus('Non salvato', 'error');
+        showBanner(e.message, { label: 'Ricarica', run: function () { se.dirty = false; openGlobal(scope); } });
+        return;
+      }
+      setStatus('Non salvato: ' + e.message, 'error');
+      showBanner('La bozza non è stata salvata: ' + e.message);
+    }).then(function () {
+      se.saving = false;
+      if (se.again) { se.again = false; if (se.dirty) return saveDraft(); }
+    });
+    return se.saving;
+  }
+
+  function saveDraft() {
+    clearTimeout(se.timer);
+    if (!se.dirty) return Promise.resolve();
+    if (se.saving) { se.again = true; return se.saving; }
+    if (se.mode === 'global') return saveGlobal();
+    if (!se.page) return Promise.resolve();
+    var pageId = se.page.id;
+    var body = payload();
+    body.expected = se.expected;
+    se.dirty = false;
+    setStatus('Salvataggio…');
+    se.saving = api('PUT', '/site/pages/' + pageId, body).then(function (res) {
+      if (!se.page || se.page.id !== pageId) return;
+      se.expected = res.draftUpdatedAt;
+      // Keep the ids the server gave to new blocks.
+      (res.draft.blocks || []).forEach(function (sb, i) { if (se.draft.blocks[i]) se.draft.blocks[i].id = sb.id; });
+      var hadError = se.draft.blocks.some(function (b) { return b.__error; });
+      se.draft.blocks.forEach(function (b) { delete b.__error; });
+      se.page.hasChanges = true;
+      var listed = se.pages.find(function (p) { return p.id === pageId; });
+      if (listed && !listed.hasChanges) { listed.hasChanges = true; renderPageList(); }
+      hideBanner();
+      if (hadError) renderBlocks();
+      setStatus(se.dirty ? 'Modifiche da salvare…' : 'Bozza salvata alle ' + timeNow(), se.dirty ? '' : 'ok');
+      updateBadge();
+    }).catch(function (e) {
+      se.dirty = true;
+      if (e.data && e.data.error === 'conflict') {
+        setStatus('Non salvato', 'error');
+        showBanner(e.message, { label: 'Ricarica la pagina', run: function () { se.dirty = false; openSitePage(pageId); } });
+        return;
+      }
+      var m = /^Blocco (\d+)/.exec(e.message || '');
+      if (m && se.draft.blocks[Number(m[1]) - 1]) {
+        var idx = Number(m[1]) - 1;
+        se.draft.blocks[idx].__error = e.message.replace(/^Blocco \d+ \([^)]*\)\s*–?\s*/, '');
+        if (se.selected !== idx) se.selected = idx;
+        renderBlocks();
+      }
+      setStatus('Non salvato: ' + e.message, 'error');
+      showBanner('La bozza non è stata salvata: ' + e.message);
+    }).then(function () {
+      se.saving = false;
+      if (se.again) { se.again = false; if (se.dirty) return saveDraft(); }
+    });
+    return se.saving;
+  }
+
+  function flushSave() {
+    clearTimeout(se.timer);
+    if (se.saving) return se.saving.then(flushSave);
+    if (se.dirty) return saveDraft();
+    return Promise.resolve();
+  }
+
+  // ---------- preview: the server's HTML, without scripts, in a sandboxed frame ----------
+  function schedulePreview(ms) {
+    clearTimeout(se.previewTimer);
+    se.previewTimer = setTimeout(renderPreview, ms === undefined ? 900 : ms);
+  }
+
+  function renderPreview() {
+    var body;
+    if (se.mode === 'global') {
+      if (!se.gpreview) return;
+      var d = se.gpreview.draft;
+      body = { pageId: se.gpreview.id, title: d.title, description: d.description, seo: d.seo, blocks: d.blocks };
+      if (se.gscope === 'studio') body.studio = se.gdata;
+      else body.globals = { header: se.gdata.header, footer: se.gdata.footer };
+    } else {
+      if (!se.page) return;
+      body = payload();
+      body.pageId = se.page.id;
+    }
+    var frames = $$('[data-se-frame]');
+    api('POST', '/site/preview', body).then(function (res) {
+      var html = String(res.html)
+        .replace(/<script\b[\s\S]*?<\/script\s*>/gi, '')
+        .replace(/<html([^>]*)>/i, function (all, attrs) { return /class=/.test(attrs) ? all.replace(/class="/, 'class="is-staging is-preview ') : '<html' + attrs + ' class="is-staging is-preview">'; });
+      frames.forEach(function (f) {
+        var y = 0;
+        try { y = f.contentWindow ? f.contentWindow.scrollY : 0; } catch (e) { y = 0; }
+        f.onload = function () {
+          try { f.contentWindow.scrollTo(0, y); } catch (e2) { /* ignore */ }
+          // Clicking links inside the preview does nothing: it is only a picture of the page.
+          try { f.contentDocument.addEventListener('click', function (ev) { if (ev.target.closest && ev.target.closest('a,button')) ev.preventDefault(); }, true); } catch (e3) { /* ignore */ }
+          fitFrame();
+        };
+        f.srcdoc = html;
+      });
+      $('[data-se-preview-msg]').textContent = '';
+    }).catch(function (e) { $('[data-se-preview-msg]').textContent = 'Anteprima non aggiornata: ' + e.message; });
+  }
+
+  function scrollPreviewTo(i) {
+    $$('[data-se-frame]').forEach(function (f) {
+      try {
+        var main = f.contentDocument.querySelector('main') || f.contentDocument.body;
+        var secs = Array.prototype.filter.call(main.children, function (n) { return n.nodeName === 'SECTION'; });
+        if (secs[i]) secs[i].scrollIntoView({ block: 'start' });
+      } catch (e) { /* not loaded yet */ }
+    });
+  }
+
+  function fitFrame() {
+    var wrap = $('[data-se-framewrap]');
+    var f = $('[data-se-frame]', wrap);
+    if (!wrap || !f) return;
+    if (se.device === 'phone') {
+      f.style.width = '390px'; f.style.transform = 'none'; f.style.height = '100%';
+      wrap.classList.add('phone');
+    } else {
+      wrap.classList.remove('phone');
+      var scale = Math.min(1, wrap.clientWidth / 1280);
+      f.style.width = '1280px';
+      f.style.transform = 'scale(' + scale + ')';
+      f.style.height = (wrap.clientHeight / scale) + 'px';
+    }
+  }
+
+  // ---------- publish and history ----------
+  function publishGlobalDialog() {
+    flushSave().then(function () {
+      if (se.dirty) return;
+      var scope = se.gscope;
+      var dlg = el('dialog', { class: 'dlg' });
+      var err = el('p', { class: 'status form-error', role: 'alert' });
+      dlg.appendChild(el('div', { class: 'dlg-inner' }, [
+        el('div', { class: 'dlg-head' }, [el('h2', { text: 'Pubblica: ' + GLOBAL_NAMES[scope] })]),
+        el('p', { class: 'se-warn', text: 'Cambia tutte le pagine del sito' + (scope === 'studio' ? '.' : ' in ' + LANG_NAME[scope].toLowerCase() + '.') }),
+        el('p', { class: 'hint', text: 'Controlla l\'anteprima prima di confermare.' }),
+        err,
+        el('div', { class: 'cta-row dlg-actions' }, [
+          el('button', { type: 'button', class: 'btn btn-primary btn-small', text: 'Pubblica su tutto il sito', onclick: function (e) {
+            e.target.disabled = true;
+            api('POST', '/site/globals/' + scope + '/publish', {}).then(function () {
+              dlg.close();
+              if (se.globals.scopes[scope]) se.globals.scopes[scope].hasChanges = false;
+              renderPageList(); updateBadge();
+              setStatus('Pubblicato alle ' + timeNow() + '.', 'ok');
+            }).catch(function (e2) { e.target.disabled = false; err.textContent = e2.message; });
+          } }),
+          el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Annulla', onclick: function () { dlg.close(); } }),
+        ]),
+      ]));
+      dlg.addEventListener('close', function () { dlg.remove(); });
+      document.body.appendChild(dlg);
+      dlg.showModal();
+    });
+  }
+
+  function publishDialog() {
+    if (se.mode === 'global') { publishGlobalDialog(); return; }
+    flushSave().then(function () {
+      if (se.dirty) return;
+      var dlg = el('dialog', { class: 'dlg' });
+      var err = el('p', { class: 'status form-error', role: 'alert' });
+      dlg.appendChild(el('div', { class: 'dlg-inner' }, [
+        el('div', { class: 'dlg-head' }, [el('h2', { text: 'Pubblica la pagina' })]),
+        el('p', { text: '«' + pageName(se.page.key) + '» in ' + LANG_NAME[se.page.lang].toLowerCase() + ' andrà online così come la vedi nell\'anteprima.' }),
+        el('p', { class: 'hint', text: 'Le note interne non vengono pubblicate. Potrai tornare a una versione precedente dallo Storico.' }),
+        err,
+        el('div', { class: 'cta-row dlg-actions' }, [
+          el('button', { type: 'button', class: 'btn btn-primary btn-small', text: 'Pubblica adesso', onclick: function (e) {
+            e.target.disabled = true;
+            api('POST', '/site/pages/' + se.page.id + '/publish', {}).then(function (r) {
+              dlg.close();
+              se.page.hasChanges = false;
+              var listed = se.pages.find(function (p) { return p.id === se.page.id; });
+              if (listed) listed.hasChanges = false;
+              renderPageList(); updateBadge();
+              setStatus(r.purged === false ? 'Pubblicata. Potrebbe servire qualche minuto prima di vederla online.' : 'Pubblicata alle ' + timeNow() + '.', 'ok');
+            }).catch(function (e2) { e.target.disabled = false; err.textContent = e2.message; });
+          } }),
+          el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Annulla', onclick: function () { dlg.close(); } }),
+        ]),
+      ]));
+      dlg.addEventListener('close', function () { dlg.remove(); });
+      document.body.appendChild(dlg);
+      dlg.showModal();
+    });
+  }
+
+  function historyDialog() {
+    var dlg = el('dialog', { class: 'dlg' });
+    var list = el('ul', { class: 'se-history', role: 'list' }, [el('li', { class: 'hint', text: 'Caricamento…' })]);
+    dlg.appendChild(el('div', { class: 'dlg-inner' }, [
+      el('div', { class: 'dlg-head' }, [el('h2', { text: 'Storico della pagina' }), el('button', { type: 'button', class: 'round', 'aria-label': 'Chiudi', text: '×', onclick: function () { dlg.close(); } })]),
+      el('p', { class: 'hint', text: 'Ogni pubblicazione resta qui. «Ripristina come bozza» rimette quella versione nell\'editor: va poi pubblicata.' }),
+      list,
+    ]));
+    dlg.addEventListener('close', function () { dlg.remove(); });
+    document.body.appendChild(dlg);
+    dlg.showModal();
+    flushSave().then(function () { return api('GET', '/site/pages/' + se.page.id + '/versions'); }).then(function (res) {
+      list.textContent = '';
+      if (!res.versions.length) list.appendChild(el('li', { class: 'hint', text: 'Nessuna versione.' }));
+      res.versions.forEach(function (v) {
+        list.appendChild(el('li', { class: 'row-card' }, [
+          el('div', {}, [
+            el('strong', { text: VERSION_KIND[v.kind] || v.kind }),
+            el('p', { class: 'hint', text: new Date(v.createdAt).toLocaleString('it-IT', { dateStyle: 'medium', timeStyle: 'short' }) + (v.by ? ' · ' + v.by : '') }),
+          ]),
+          el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Ripristina come bozza', onclick: function () {
+            if (!window.confirm('Sostituire la bozza attuale con questa versione? Le modifiche non pubblicate andranno perse.')) return;
+            api('POST', '/site/pages/' + se.page.id + '/versions/' + v.id + '/restore', {}).then(function () {
+              dlg.close();
+              openSitePage(se.page.id).then(function () { setStatus('Versione ripristinata come bozza. Controlla l\'anteprima e pubblica.', 'ok'); });
+            }).catch(function (e) { window.alert(e.message); });
+          } }),
+        ]));
+      });
+    }).catch(function (e) { list.textContent = ''; list.appendChild(el('li', { class: 'form-error', text: e.message })); });
+  }
+
+  // ---------- wiring ----------
+  (function wireSiteEditor() {
+    var root = $('[data-panel="sito"]');
+    if (!root) return;
+    $('[data-se-pagesel]').addEventListener('change', function (e) {
+      var v = e.target.value;
+      if (!v) return;
+      if (v.indexOf('g:') === 0) openGlobal(v.slice(2)); else openSitePage(v);
+    });
+    $$('[data-se-tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.getAttribute('data-se-tab')); }); });
+    $('[data-se-add]').addEventListener('click', addBlockDialog);
+    $('[data-se-publish]').addEventListener('click', publishDialog);
+    $('[data-se-history]').addEventListener('click', historyDialog);
+    $('[data-se-ref]').addEventListener('click', function (e) {
+      se.refOpen = !se.refOpen;
+      e.currentTarget.setAttribute('aria-pressed', String(se.refOpen));
+      if (se.refOpen) loadReference(); else $('[data-se-refbox]').hidden = true;
+    });
+    $$('[data-se-device]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        se.device = b.getAttribute('data-se-device');
+        $$('[data-se-device]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+        fitFrame();
+      });
+    });
+    $('[data-se-openpreview]').addEventListener('click', function () {
+      var dlg = $('[data-se-fullpreview]');
+      dlg.showModal();
+      schedulePreview(0);
+    });
+    $('[data-se-closepreview]').addEventListener('click', function () { $('[data-se-fullpreview]').close(); });
+    window.addEventListener('resize', fitFrame);
+    window.addEventListener('beforeunload', function (e) {
+      if (se.dirty || se.saving) { e.preventDefault(); e.returnValue = ''; }
+    });
+  })();
 
   // ---------- boot ----------
   var invite = (location.hash.match(/invito=([\w-]+)/) || [])[1];

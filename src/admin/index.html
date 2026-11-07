@@ -160,6 +160,71 @@
     <div data-users></div>
   </section>
 
+  <section data-panel="sito" class="admin-panel site-panel" hidden>
+    <div class="se">
+      <aside class="se-pages" data-se-pages aria-label="Pagine del sito"></aside>
+      <div class="se-pagesel field">
+        <label for="se-pagesel">Pagina</label>
+        <select id="se-pagesel" data-se-pagesel></select>
+      </div>
+      <div class="se-main">
+        <p class="empty" data-se-empty>Scegli una pagina da modificare.</p>
+        <div data-se-editor hidden>
+          <div class="se-bar">
+            <div class="se-bar-title">
+              <h2 data-se-title></h2>
+              <p class="hint" data-se-path></p>
+            </div>
+            <div class="seg se-langswitch" role="group" aria-label="Lingua" data-se-langswitch></div>
+            <span class="se-badge" data-se-badge></span>
+            <div class="se-bar-actions">
+              <button type="button" class="btn btn-ghost btn-small se-openpreview" data-se-openpreview>Anteprima</button>
+              <button type="button" class="btn btn-ghost btn-small" data-se-history>Storico</button>
+              <button type="button" class="btn btn-primary btn-small" data-se-publish>Pubblica</button>
+            </div>
+            <p class="se-status" role="status" aria-live="polite" data-se-status></p>
+          </div>
+          <div class="se-banner" role="alert" data-se-banner hidden></div>
+          <div class="se-work">
+            <div class="se-preview">
+              <div class="seg se-device" role="group" aria-label="Dimensione dell'anteprima">
+                <button type="button" data-se-device="desktop" aria-pressed="true">Computer</button>
+                <button type="button" data-se-device="phone" aria-pressed="false">Telefono</button>
+              </div>
+              <div class="se-framewrap" data-se-framewrap>
+                <iframe class="se-frame" data-se-frame title="Anteprima della pagina" sandbox="allow-same-origin"></iframe>
+              </div>
+              <p class="hint" data-se-preview-msg></p>
+            </div>
+            <div class="se-side">
+              <div class="seg se-tabs" role="group" aria-label="Sezioni della pagina" data-se-tabs>
+                <button type="button" data-se-tab="blocks" aria-pressed="true">Blocchi</button>
+                <button type="button" data-se-tab="seo" aria-pressed="false">SEO e condivisione</button>
+              </div>
+              <div data-se-tab-blocks>
+                <div class="se-side-tools">
+                  <button type="button" class="btn btn-ghost btn-small" data-se-ref aria-pressed="false">Riferimento altra lingua</button>
+                </div>
+                <div class="se-refbox" data-se-refbox hidden></div>
+                <ol class="se-blocks" data-se-blocks></ol>
+                <button type="button" class="btn btn-primary btn-small se-addblock" data-se-add>+ Aggiungi blocco</button>
+              </div>
+              <div class="se-seo" data-se-tab-seo hidden></div>
+              <div class="se-global" data-se-tab-global hidden></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <dialog class="dlg se-fullpreview" data-se-fullpreview>
+      <div class="se-fullbar">
+        <strong>Anteprima</strong>
+        <button type="button" class="round" data-se-closepreview aria-label="Chiudi l'anteprima">×</button>
+      </div>
+      <iframe class="se-frame se-frame-full" data-se-frame title="Anteprima della pagina a schermo intero" sandbox="allow-same-origin"></iframe>
+    </dialog>
+  </section>
+
   <section data-panel="impostazioni" class="admin-panel" hidden>
     <div data-settings-admin>
       <h2>Impostazioni della prenotazione</h2>
