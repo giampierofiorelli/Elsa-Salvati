@@ -708,3 +708,4 @@ main > section:first-child:not(.hero-v4) { padding-top: calc(var(--section) + 70
 /* "Menu" as a plain word, no box (as in the reference). */
 .hdr-toggle { border: 0; padding: 8px 2px 8px 6px; min-width: 0; font: 500 .95rem var(--sans); text-transform: none; letter-spacing: 0; color: var(--night); }
 @media (max-width: 699px) { .hdr-toggle { min-width: 0; padding: 8px 0 8px 6px; font-size: .92rem; } }
+.nowrap { white-space: nowrap; }
