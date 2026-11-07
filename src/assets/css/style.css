@@ -822,3 +822,26 @@ main .eyebrow + h2, main .eyebrow + h1 { margin-top: 0; }
   .site main .row-links a:hover::after, .site main .link-arrow:hover::after,
   .site main a.btn:is(.btn-ghost, .btn-outline-light):not([target="_blank"]):hover::after { transform: translateX(3px); }
 }
+
+/* ---------- Palette trial (staging only, G 7/11) ----------
+   Each option comes from the logo. Switch with the panel at the bottom left
+   (shown only on staging) or ?palette=a|b|c|d. A = current. */
+html[data-palette="b"] { /* slate of the wordmark + apricot of the petals */
+  --night: #29465A; --night-2: #355569; --teal: #29465A; --teal-hover: #355569; --ink: #24394A;
+  --gold: #F4BE96; --sage: #F4BE96; --ochre: #F4BE96;
+}
+html[data-palette="c"] { /* deep sage of the leaves + rose of the petals */
+  --night: #1D3A35; --night-2: #284B45; --teal: #1D3A35; --teal-hover: #284B45; --ink: #1F3330;
+  --gold: #F2AEB8; --sage: #F2AEB8; --ochre: #F2AEB8;
+}
+html[data-palette="d"] { /* petrol of the leaves + warm gold of the Ψ */
+  --night: #173F45; --night-2: #22525A; --teal: #173F45; --teal-hover: #22525A; --ink: #1B3439;
+  --gold: #E2B05C; --sage: #E2B05C; --ochre: #E2B05C;
+}
+.palette-panel { position: fixed; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 200; display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 999px; background: rgba(255, 253, 249, .96); box-shadow: 0 6px 24px -8px rgba(0, 0, 0, .35); font: 500 .78rem/1 var(--sans); color: #1F2F3A; }
+.palette-panel span { padding: 0 4px 0 6px; }
+.palette-panel button { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; font: 600 .78rem/1 var(--sans); color: #fff; }
+.palette-panel button[aria-pressed="true"] { border-color: #1F2F3A; box-shadow: 0 0 0 2px #fff inset; }
+@media (max-width: 699px) { .palette-panel { bottom: calc(84px + env(safe-area-inset-bottom)); } }
+/* The dark header follows the palette's dark colour. */
+.site-header.hdr.on-dark { background: color-mix(in srgb, var(--night) 92%, transparent); }

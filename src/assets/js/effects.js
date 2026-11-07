@@ -120,6 +120,15 @@
   if (!desktop) return;
 
   // ---------- dot grid on dark sections ----------
+  // Dot colour follows the accent colour (--gold), also when the palette changes.
+  var accent = '203,173,133';
+  function readAccent() {
+    var v = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim();
+    var m = /^#([0-9a-f]{6})$/i.exec(v);
+    if (m) accent = [0, 2, 4].map(function (i) { return parseInt(m[1].substr(i, 2), 16); }).join(',');
+  }
+  readAccent();
+  window.addEventListener('bl-palette', readAccent);
   function dots(section) {
     var canvas = document.createElement('canvas');
     canvas.className = 'dot-grid';
@@ -148,7 +157,7 @@
           var d = Math.hypot(xx - mx, yy - my);
           var k = Math.max(0, 1 - d / 160);
           var s = 1.2 + k * 2.8;
-          ctx.fillStyle = k > 0.02 ? 'rgba(203,173,133,' + (0.25 + k * 0.6) + ')' : 'rgba(250,246,240,0.08)';
+          ctx.fillStyle = k > 0.02 ? 'rgba(' + accent + ',' + (0.25 + k * 0.6) + ')' : 'rgba(250,246,240,0.08)';
           ctx.fillRect(xx - s / 2, yy - s / 2, s, s);
         }
       }

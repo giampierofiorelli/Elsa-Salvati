@@ -113,3 +113,34 @@
   }
   window.addEventListener('resize', fit);
 })();
+
+// Palette trial (staging only): a small panel to switch between the colour
+// options; the choice is kept in this browser. Never shown on the live site.
+(function () {
+  var host = location.hostname;
+  if (!/staging--|localhost|127\.0\.0\.1/.test(host)) return;
+  var opts = [['a', 'Attuale', '#1F2F3A', '#CBAD85'], ['b', 'Ardesia e albicocca', '#29465A', '#F4BE96'],
+    ['c', 'Salvia e rosa', '#1D3A35', '#F2AEB8'], ['d', 'Petrolio e oro', '#173F45', '#E2B05C']];
+  var q = new URLSearchParams(location.search).get('palette');
+  var cur = 'a';
+  try { cur = q || localStorage.getItem('bl-palette') || 'a'; } catch (e) { cur = q || 'a'; }
+  function apply(p) {
+    document.documentElement.setAttribute('data-palette', p);
+    try { localStorage.setItem('bl-palette', p); } catch (e) {}
+    panel.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.p === p ? 'true' : 'false'); });
+    window.dispatchEvent(new Event('bl-palette'));
+  }
+  var panel = document.createElement('div');
+  panel.className = 'palette-panel';
+  panel.innerHTML = '<span>Colori</span>';
+  opts.forEach(function (o) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.dataset.p = o[0]; b.textContent = o[0].toUpperCase();
+    b.title = o[1]; b.setAttribute('aria-label', 'Colori ' + o[0].toUpperCase() + ': ' + o[1]);
+    b.style.background = 'linear-gradient(135deg, ' + o[2] + ' 55%, ' + o[3] + ' 55%)';
+    b.addEventListener('click', function () { apply(o[0]); });
+    panel.appendChild(b);
+  });
+  document.body.appendChild(panel);
+  apply(cur);
+})();
