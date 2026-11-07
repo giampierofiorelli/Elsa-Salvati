@@ -531,6 +531,8 @@
 
   function initManage(root) {
     var token = (location.hash.match(/t=([\w-]+)/) || [])[1];
+    // Which email the link came from (a fixed type such as "conferma"): counted with the action, nothing else.
+    var fromEmail = (location.hash.match(/[#&]e=([a-z0-9-]{1,32})/) || [])[1] || '';
     if (token && history.replaceState) history.replaceState(null, '', location.pathname);
     var loading = $(root, '[data-manage-loading]');
     var invalid = $(root, '[data-invalid]');
@@ -609,7 +611,7 @@
       if (confirmBtn) {
         confirmBtn.addEventListener('click', function () {
           confirmBtn.disabled = true;
-          api('/manage/confirm', { t: token }).then(function () {
+          api('/manage/confirm', { t: token, e: fromEmail }).then(function () {
             confirmBtn.hidden = true;
             note.textContent = T.confirmedByYou;
           }).catch(function (err) {
@@ -628,7 +630,7 @@
 
       $(root, '[data-cancel]').addEventListener('click', function () {
         if (!window.confirm(b.pending ? T.reallyCancelRequest : (b.lateCancel ? T.reallyCantCome : T.reallyCancel))) return;
-        api('/manage/cancel', { t: token }).then(function () {
+        api('/manage/cancel', { t: token, e: fromEmail }).then(function () {
           if (b.pending) done(T.cancelRequestDone, T.cancelRequestDoneText);
           else if (b.lateCancel) done(T.cantComeDone, T.cantComeDoneText);
           else done(T.cancelDone, (!b.canMove && T.cancelDoneTextSession) || T.cancelDoneText);
@@ -642,7 +644,7 @@
       $(root, '[data-next]').addEventListener('click', function () {
         var btn = this;
         btn.disabled = true;
-        api('/manage/reschedule', { t: token, start: picker.slot.start, mode: mode }).then(function (r) {
+        api('/manage/reschedule', { t: token, start: picker.slot.start, mode: mode, e: fromEmail }).then(function (r) {
           token = (r.manageUrl.match(/t=([\w-]+)/) || [])[1];
           done(T.moveDone, T.moveDoneText, r.booking);
         }).catch(function (err) {

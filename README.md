@@ -43,7 +43,7 @@ Servizi e professionisti stanno nel database: le prenotazioni li usano subito; l
    | `BUILD_HOOK_URL` | facoltativo: build hook di Netlify per il pulsante “Aggiorna le pagine del sito” |
    | `SITE_URL` | es. `https://www.elsasalvati.it` |
    | `NOTIFY_EMAIL` | email dove ricevere gli avvisi di nuove prenotazioni |
-   | `EMAIL_PROVIDER` | `brevo` (oppure `resend`) |
+   | `EMAIL_PROVIDER` | `brevo` |
    | `EMAIL_API_KEY`, `EMAIL_FROM`, `EMAIL_FROM_NAME` | dal provider email |
    | `ICS_INCLUDE_INITIALS` | facoltativo: `true` per mostrare le iniziali nel calendario del telefono |
 

@@ -1247,3 +1247,46 @@ test('statistics: "non presentata" after the time only, with undo; source and co
   const again = await sql`select n from stats_monthly where month = '2026-03-01' and metric = 'continuita-si'`;
   assert.equal(again[0].n, 1, 'frozen counters are never overwritten');
 });
+
+test('statistics: emails counted per type and language; Brevo webhook needs the token and never stores addresses; actions from links', opts, async () => {
+  const day = (await sql`select to_char((${clock.now}::timestamptz at time zone 'Europe/Rome')::date, 'YYYY-MM-DD') as d`)[0].d;
+  const before = await sql`select coalesce(sum(sent), 0)::int as n from stats_email_daily where email_type = 'richiesta-ricevuta' and lang = 'en'`;
+  // A booking sends "richiesta ricevuta" to the person (counted) with the type on the manage link.
+  const services = (await pubCall('GET', '/catalog')).body;
+  assert.ok(services);
+  const sentBefore = deps.mailer.sent.length;
+  await deps.mailer.send({ to: 'x@example.it', subject: 's', text: 't', html: 'h', type: 'richiesta-ricevuta', lang: 'en' });
+  assert.equal(deps.mailer.sent.length, sentBefore + 1);
+  const after = await sql`select coalesce(sum(sent), 0)::int as n from stats_email_daily where email_type = 'richiesta-ricevuta' and lang = 'en'`;
+  assert.equal(after[0].n, before[0].n + 1);
+  const { templates } = await import('../lib/email.mjs');
+  const t = templates.reminderConfirm({ ev: { start_at: new Date(), kind: 'seduta', mode: 'online', professional_name: 'X' }, name: 'A', manageUrl: 'https://s/prenota/gestisci/#t=abc', tz: 'Europe/Rome', site: deps.site, lang: 'it', nudge: true });
+  assert.equal(t.type, 'conferma-2');
+  assert.match(t.text, /#t=abc&e=conferma-2/);
+
+  // Webhook: refused without the token or with a wrong one.
+  deps.env.BREVO_WEBHOOK_TOKEN = 'segreto-di-prova-123';
+  let r = await pubCall('POST', '/hooks/brevo', { event: 'delivered', email: 'persona@example.it', tags: ['conferma'] });
+  assert.equal(r.status, 401);
+  r = await call(pub, 'POST', '/api/public/hooks/brevo?token=sbagliato', { event: 'delivered' });
+  assert.equal(r.status, 401);
+  r = await call(pub, 'POST', '/api/public/hooks/brevo?token=segreto-di-prova-123', [
+    { event: 'delivered', email: 'persona@example.it', tags: ['conferma', 'lang-it'] },
+    { event: 'hard_bounce', email: 'persona@example.it', tags: ['conferma', 'lang-it'] },
+    { event: 'opened', email: 'persona@example.it', tags: ['conferma'] },
+    { event: 'spam', email: 'p2@example.it', tag: 'accettata' },
+  ]);
+  assert.equal(r.status, 200);
+  assert.equal(r.body.counted, 3, 'opens are ignored');
+  const rows = await sql`select email_type, lang, delivered, hard_bounce, spam from stats_email_daily where day = ${day}::date and email_type in ('conferma', 'accettata') order by email_type`;
+  assert.deepEqual(rows.map((x) => [x.email_type, x.lang, x.delivered, x.hard_bounce, x.spam]), [['accettata', '', 0, 0, 1], ['conferma', 'it', 1, 1, 0]]);
+  const dump = JSON.stringify(await sql`select * from stats_email_daily`) + JSON.stringify(await sql`select * from stats_email_actions_daily`);
+  assert.doesNotMatch(dump, /@/, 'no address anywhere in the counters');
+
+  // An unknown email type sent back from a link is ignored; a known one is counted with the action.
+  const { createStats } = await import('../lib/stats.mjs');
+  await createStats(sql).bumpEmailAction(clock.now, 'conferma', 'conferma');
+  await createStats(sql).bumpEmailAction(clock.now, '<x>', 'conferma');
+  const acts = await sql`select email_type, action, n from stats_email_actions_daily`;
+  assert.deepEqual(acts.map((x) => [x.email_type, x.action, x.n]), [['conferma', 'conferma', 1]]);
+});

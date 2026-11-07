@@ -13,6 +13,7 @@ import postgres from 'postgres';
 import { createStore } from '../lib/db.mjs';
 import { createVault, hashPassword, base32Encode, totpCode, randomToken, sha256 } from '../lib/crypto.mjs';
 import { createMailer } from '../lib/email.mjs';
+import { createStats } from '../lib/stats.mjs';
 import { createPublicApi } from '../lib/public-api.mjs';
 import { createAdminApi } from '../lib/admin-api.mjs';
 import { loadCatalog } from '../lib/public-api.mjs';
@@ -44,7 +45,7 @@ const sql = postgres(env.DATABASE_URL || 'postgres://postgres@127.0.0.1:54329/ag
 });
 await sql.unsafe(readFileSync(new URL('../db/schema.sql', import.meta.url), 'utf8'));
 
-const deps = { store: createStore(sql), mediaStore: createMediaStore(sql), vault: createVault(env.DATA_KEY), mailer: createMailer(env), site: siteFromEnv(env), env };
+const deps = { store: createStore(sql), mediaStore: createMediaStore(sql), vault: createVault(env.DATA_KEY), mailer: createMailer(env, globalThis.fetch, createStats(sql)), site: siteFromEnv(env), env };
 const pub = createPublicApi(deps);
 // Page editor: starting content and templates from the repository files.
 const kit = withCatalog(readKitFiles(join(dirname(fileURLToPath(import.meta.url)), '..')), () => loadCatalog(deps.store));

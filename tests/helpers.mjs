@@ -9,6 +9,7 @@ import { createMediaStore } from '../lib/media-store.mjs';
 import { createVault, hashPassword, base32Encode } from '../lib/crypto.mjs';
 export { totpCode } from '../lib/crypto.mjs';
 import { createMailer } from '../lib/email.mjs';
+import { createStats } from '../lib/stats.mjs';
 
 export const DB_URL = process.env.TEST_DATABASE_URL || 'postgres://postgres@127.0.0.1:54329/agenda_test';
 
@@ -38,7 +39,7 @@ export function testDeps(sql, clock) {
     store: createStore(sql),
     mediaStore: createMediaStore(sql),
     vault: createVault(env.DATA_KEY),
-    mailer: createMailer(env),
+    mailer: createMailer(env, globalThis.fetch, createStats(sql)),
     site: {
       siteUrl: 'https://studio.example.it',
       professionalName: 'Dott.ssa Elsa Salvati',
