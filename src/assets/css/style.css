@@ -680,7 +680,6 @@ main > section:first-child:not(.hero-v4) { padding-top: calc(var(--section) + 70
   .hero-v4 h1 { font-size: clamp(2.1rem, 9.4vw, 2.6rem); }
   .hero-v4-sub { font-size: 1.2rem; }
   .hero-v4 .cta-row { flex-direction: column; align-items: stretch; gap: 12px; }
-  .hero-v4 .btn-ghost { justify-content: center; }
   .giant-word { font-size: 25vw; margin: 0; padding: 0 16px .08em; }
   h2 { font-size: clamp(1.75rem, 7.4vw, 2.2rem); }
   .h-wide { max-width: none; }
@@ -692,8 +691,7 @@ main > section:first-child:not(.hero-v4) { padding-top: calc(var(--section) + 70
 }
 .hdr-toggle { min-width: 68px; text-align: center; letter-spacing: .04em; }
 @media (max-width: 699px) {
-  .hero-v4 .cta-row .btn-ghost { justify-content: center; }
-  .hero-v4 .cta-row .btn-primary { font-size: .95rem; padding-left: 20px; text-align: left; }
+  .hero-v4 .cta-row .btn-primary { font-size: .95rem; }
   .hdr-toggle { min-width: 62px; }
 }
 /* Giant word fully inside the opening (no negative margin: the "g" must not be cut). */
@@ -790,3 +788,14 @@ main .eyebrow + h2, main .eyebrow + h1 { margin-top: 0; }
 /* Header "Prenota": same rounded shape as every other button on the site. */
 .hdr-cta { border-radius: 999px; padding-left: 16px; padding-right: 14px; }
 @media (max-width: 699px) { .hdr-cta { padding-left: 14px; padding-right: 12px; } }
+
+/* Phones: one alignment for every button (consistency within a group).
+   Text always starts on the left, at the same 24px inset; anything that takes
+   you somewhere ends with an arrow on the right (a circle on primary buttons,
+   a plain arrow on outlined ones). Buttons that act in place (Indietro,
+   Annulla, downloads) have no arrow. */
+@media (max-width: 699px) {
+  .site main .btn { justify-content: space-between; text-align: left; padding-left: 24px; }
+  .site main .btn:not(.btn-primary):not(.btn-light) { padding-right: 22px; }
+  .site main a.btn:is(.btn-ghost, .btn-outline-light):not([download]):not(:has(svg))::after { content: "→"; font-size: 1.05rem; line-height: 1; flex: none; }
+}
