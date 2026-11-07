@@ -1,4 +1,5 @@
-// Checks that every visible button on the public pages is full width on a phone.
+// Checks that every visible button and secondary link (.row-links a, .link-arrow)
+// on the public pages is full width on a phone.
 // Usage: serve dist (e.g. `cd dist && python3 -m http.server 8890`), then
 //   NODE_PATH=$(npm root -g) node scripts/check-buttons.mjs http://localhost:8890
 // Exits with code 1 if a button is narrower than the space it sits in.
@@ -18,7 +19,7 @@ for (const path of pages) {
   const res = await page.goto(base + path);
   if (!res || res.status() >= 400) { console.log(path, 'skipped (' + (res && res.status()) + ')'); continue; }
   await page.waitForTimeout(500);
-  const narrow = await page.evaluate(() => [...document.querySelectorAll('main .btn')]
+  const narrow = await page.evaluate(() => [...document.querySelectorAll('main .btn, main .row-links a, main .link-arrow')]
     .filter((el) => el.offsetParent && !el.closest('[hidden]'))
     .map((el) => {
       const parent = el.parentElement, cs = getComputedStyle(parent);

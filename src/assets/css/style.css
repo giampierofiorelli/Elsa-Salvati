@@ -768,3 +768,25 @@ main .eyebrow + h2, main .eyebrow + h1 { margin-top: 0; }
   .site main .btn-primary, .site main .btn-light { justify-content: space-between; text-align: left; }
   .site main .cta-row { flex-direction: column; align-items: stretch; gap: 12px; }
 }
+
+/* ---------- Secondary links on phones: same as secondary buttons ----------
+   Every secondary link (links under the rows, "link-arrow") becomes a full-width
+   outlined button on phones: text on the left, arrow on the right, 52px tall,
+   stacked. On desktop they stay underlined links with the rolling text. */
+@media (max-width: 699px) {
+  .site main .row-links { flex-direction: column; align-items: stretch; gap: 12px; }
+  .site main .row-links a, .site main .link-arrow {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    width: 100%; min-height: 52px; padding: 0 22px 0 24px;
+    border: 1.5px solid rgba(31, 47, 58, .3); border-radius: 999px;
+    font-size: 1rem; font-weight: 500; color: var(--night); text-decoration: none;
+    -webkit-tap-highlight-color: transparent; transition: background .15s, border-color .15s, color .15s;
+  }
+  .site main .link-arrow { margin-top: 4px; }
+  .site main .row-links a::after, .site main .link-arrow::after { content: "→"; font-size: 1.05rem; line-height: 1; }
+  .site main .row-links a:active, .site main .link-arrow:active { background: var(--night); border-color: var(--night); color: var(--ivory); }
+}
+
+/* Header "Prenota": same rounded shape as every other button on the site. */
+.hdr-cta { border-radius: 999px; padding-left: 16px; padding-right: 14px; }
+@media (max-width: 699px) { .hdr-cta { padding-left: 14px; padding-right: 12px; } }
