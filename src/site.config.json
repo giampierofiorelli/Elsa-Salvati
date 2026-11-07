@@ -190,7 +190,9 @@
       "text": "Leadership, team, formazione, benessere e cambiamento organizzativo.",
       "cta": "Servizi per aziende",
       "href": "/aziende/",
-      "categories": [],
+      "categories": [
+        "aziende"
+      ],
       "labelEn": "For organisations",
       "textEn": "Teams, managers, HR processes and training."
     }

@@ -339,6 +339,19 @@ create table if not exists media_files (
 alter table media enable row level security;
 alter table media_files enable row level security;
 
+-- Conferma della presenza: secondo invito e motivo dell'annullamento (orario liberato per mancata conferma,
+-- disdetta all'ultimo momento).
+alter table events add column if not exists confirm_nudge_sent_at timestamptz;
+alter table events add column if not exists cancel_reason text check (cancel_reason in ('non_confermato', 'tardivo'));
+
+-- Area per chi non sa ancora che aiuto cercare: il primo colloquio con «Aiutami a scegliere».
+insert into categories (slug, name, name_en, intro, sort) values
+  ('aziende', 'Per la tua organizzazione', 'For your organisation', 'Un primo colloquio per capire di cosa ha bisogno la vostra organizzazione.', 4)
+on conflict (slug) do nothing;
+insert into categories (slug, name, name_en, intro, sort) values
+  ('da-scegliere', 'Non lo so ancora', 'Not sure yet', 'Un primo colloquio per capire insieme da dove partire.', 9)
+on conflict (slug) do nothing;
+
 -- Il sito usa solo la connessione diretta al database: i ruoli pubblici di Supabase non devono leggere nulla.
 do $$ begin
   if exists (select 1 from pg_roles where rolname = 'anon') and exists (select 1 from pg_roles where rolname = 'authenticated') then

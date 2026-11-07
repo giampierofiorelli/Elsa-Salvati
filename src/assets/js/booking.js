@@ -29,6 +29,9 @@
       requestTitle: 'Richiesta inviata.',
       requestText: 'La professionista la conferma il prima possibile: riceverai un\'email quando sarà approvata. Fino ad allora l\'orario resta riservato per te. Se non trovi l\'email, controlla nella cartella spam.',
       cancelRequestBtn: 'Annulla la richiesta',
+      cantComeBtn: 'Non riesco a venire',
+      lateNote: 'Mancano poche ore: se non riesci a venire, diccelo comunque qui, così la professionista lo sa subito. Per le sedute a pagamento, le disdette all\'ultimo momento si concordano con lei.',
+      reallyCantCome: 'Confermi che non riesci a venire? L\'appuntamento verrà annullato e la professionista avvisata.',
       pending: 'In attesa di approvazione', declined: 'Non confermato',
       pendingNote: 'La tua richiesta aspetta l\'approvazione della professionista: riceverai un\'email. Se l\'orario non va più bene, puoi annullarla.',
       reallyCancelRequest: 'Vuoi davvero annullare la richiesta?',
@@ -59,6 +62,9 @@
       requestTitle: 'Request sent.',
       requestText: 'The psychologist will confirm it as soon as she can: you\'ll get an email once it\'s approved. Until then, the time is held for you. If you can\'t find the email, check your spam folder.',
       cancelRequestBtn: 'Cancel the request',
+      cantComeBtn: 'I can\'t make it',
+      lateNote: 'It\'s only a few hours away: if you can\'t make it, please still tell us here, so your psychologist knows straight away. For paid sessions, last-minute cancellations are agreed with her.',
+      reallyCantCome: 'Are you sure you can\'t make it? The appointment will be cancelled and your psychologist told.',
       pending: 'Waiting for approval', declined: 'Not confirmed',
       pendingNote: 'Your request is waiting for the psychologist\'s approval: you\'ll get an email. If the time no longer suits you, you can cancel it.',
       reallyCancelRequest: 'Do you really want to cancel the request?',
@@ -293,11 +299,17 @@
       var box = $(root, '[data-services]');
       box.textContent = '';
       var bookable = servicesFor(cats).filter(function (x) { return x.service.professionals.length; });
+      // "Non lo so ancora" opens the shared first meeting; if that area doesn't exist yet, show everything.
+      if (!bookable.length && cats === 'da-scegliere') {
+        cats = '*';
+        bookable = servicesFor(cats).filter(function (x) { return x.service.professionals.length; });
+      }
       state.services = bookable.map(function (x) { return x.service; });
       if (!bookable.length) {
         box.appendChild(el('p', { class: 'note', text: T.notBookable }));
       }
       var many = cats === '*' || cats.indexOf(',') >= 0;
+      if (cats === 'da-scegliere') many = false;
       bookable.forEach(function (x) {
         var s = x.service;
         var b = el('button', { type: 'button', class: 'choice', 'data-svc': s.id, 'aria-pressed': 'false' }, [
@@ -579,11 +591,14 @@
         // nothing happens just by opening the link (email scanners open links on their own).
         if (b.needsConfirmation && confirmBtn) confirmBtn.hidden = false;
         if (!b.canMove) moveBtn.hidden = true;
-        if (!b.canChange) { moveBtn.hidden = true; cancelBtn.hidden = true; }
+        if (!b.canChange) moveBtn.hidden = true;
+        // Telling us you can't come is possible until the start (late ones are flagged to the professional).
+        cancelBtn.hidden = !b.canCancel;
+        cancelBtn.textContent = T.cantComeBtn;
         var parts = [];
         if (b.needsConfirmation) parts.push(T.confirmAsk);
         else if (b.confirmedAt) parts.push(T.confirmedByYou);
-        parts.push(!b.canChange ? T.tooLate(b.cancelHours) : (b.canMove ? T.canChange(b.cancelHours) : T.cannotMove(b.cancelHours)));
+        parts.push(b.lateCancel ? T.lateNote : (b.canMove ? T.canChange(b.cancelHours) : T.cannotMove(b.cancelHours)));
         note.textContent = parts.join(' ');
         if (moveBtn.hidden && cancelBtn.hidden && (!confirmBtn || confirmBtn.hidden)) $(root, '[data-actions]').hidden = true;
       }
@@ -610,7 +625,7 @@
       });
 
       $(root, '[data-cancel]').addEventListener('click', function () {
-        if (!window.confirm(b.pending ? T.reallyCancelRequest : T.reallyCancel)) return;
+        if (!window.confirm(b.pending ? T.reallyCancelRequest : (b.lateCancel ? T.reallyCantCome : T.reallyCancel))) return;
         api('/manage/cancel', { t: token }).then(function () {
           if (b.pending) done(T.cancelRequestDone, T.cancelRequestDoneText);
           else done(T.cancelDone, T.cancelDoneText);

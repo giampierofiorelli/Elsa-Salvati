@@ -68,7 +68,7 @@ test('login needs email, password and a fresh authenticator code', opts, async (
 
 test('admin builds the catalogue: services in three areas and professionals', opts, async () => {
   const cat = await as('admin')('GET', '/catalog');
-  assert.deepEqual(cat.body.categories.map((c) => c.slug), ['carriera', 'coaching', 'psicologia', 'psicoterapia']);
+  assert.deepEqual(cat.body.categories.map((c) => c.slug), ['carriera', 'coaching', 'psicologia', 'psicoterapia', 'aziende', 'da-scegliere']);
   const catId = Object.fromEntries(cat.body.categories.map((c) => [c.slug, c.id]));
 
   const mk = async (body) => {
@@ -808,7 +808,7 @@ test('a first meeting booked online is a request: it holds the time until the pr
   assert.equal(r.body.booking.pending, true);
   const t1 = new URL(r.body.manageUrl).hash.slice(3);
   assert.match(mailsTo('richiesta1@example.it', since)[0].subject, /Abbiamo ricevuto la tua richiesta/);
-  assert.ok(deps.mailer.sent.slice(since).some((m) => /Nuova richiesta di primo colloquio da approvare/.test(m.subject)), 'the professional is asked to approve');
+  assert.ok(deps.mailer.sent.slice(since).some((m) => /nuova richiesta di primo colloquio da accettare/.test(m.subject)), 'the professional is asked to approve');
   // The time is held while the request waits.
   assert.equal((await book('altra@example.it', '2026-11-30T08:00:00.000Z')).status, 409);
   // The person sees a request (cancel only).
@@ -852,9 +852,12 @@ test('a first meeting booked online is a request: it holds the time until the pr
   assert.equal((await book('richiesta4@example.it', '2026-11-30T09:00:00.000Z')).status, 201);
 });
 
+const setWorkdays = async (days) => deps.store.saveSettings({ ...(await deps.store.getSettings()), approvalWorkdays: days });
+
 test('requests not approved in time expire; reminders never go to requests', opts, async () => {
   clock.now = new Date('2026-11-26T09:00:00Z');
   const { svc, anna } = await annaAndService();
+  await setWorkdays([1, 2, 3, 4, 5, 6, 7]); // Sunday counts as a working day here
   const since = deps.mailer.sent.length;
   let r = await pubCall('POST', '/book', { start: '2026-12-07T08:00:00.000Z', mode: 'online', service: svc.id, professional: anna, lang: 'en', name: 'Late Request', email: 'scade@example.it', privacy: true });
   assert.equal(r.status, 201, JSON.stringify(r.body));
@@ -871,6 +874,7 @@ test('requests not approved in time expire; reminders never go to requests', opt
   assert.match(last.text, /wasn't confirmed in time/);
   const [row] = await sql`select status, cancelled_by from events where start_at = '2026-12-07T08:00:00Z' and professional_id = ${anna}`;
   assert.deepEqual([row.status, row.cancelled_by], ['rifiutato', 'sistema']);
+  await setWorkdays([1, 2, 3, 4, 5]);
 });
 
 test('appointments set by the professional: email to the person, confirmation the day before, no moving', opts, async () => {
@@ -973,6 +977,7 @@ test('times too close to the approval deadline cannot be requested; a late appro
   const { svc, anna } = await annaAndService();
   // Booked on Thursday 10 December for Monday 14 December, 10:00 Rome.
   clock.now = new Date('2026-12-10T09:00:00Z');
+  await setWorkdays([1, 2, 3, 4, 5, 6, 7]); // Sunday counts as a working day here
   const since = deps.mailer.sent.length;
   let r = await pubCall('POST', '/book', { start: '2026-12-14T09:00:00.000Z', mode: 'online', service: svc.id, professional: anna, lang: 'it', name: 'Persona Tardi', email: 'tardi@example.it', privacy: true });
   assert.equal(r.status, 201, JSON.stringify(r.body));
@@ -1001,4 +1006,186 @@ test('times too close to the approval deadline cannot be requested; a late appro
   clock.now = new Date('2026-12-20T16:00:00Z');
   cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
   await as('admin')('PUT', '/settings', { settings: { minNoticeHours: 24 } });
+  await setWorkdays([1, 2, 3, 4, 5]);
+});
+
+// ---------- round 2 (7/11): confirmation 48 h before, second invitation, 18:00 notice, freeing the time,
+// "I can't come", "help me choose" for people who don't know yet, notifications only to the professional,
+// "Passa alla collega".
+
+test('round 2: help me choose, notifications to the professional, passing a request to a colleague', opts, async () => {
+  clock.now = new Date('2027-01-14T09:00:00Z'); // Thursday; Monday 18 January is bookable
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  let r = await as('admin')('PUT', '/settings', { settings: { confirmHours: 48, confirmNudgeHours: 24, reminder2Hours: 2, cancelHours: 24, approvalDeadline: '18:00', minNoticeHours: 24 } });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.deepEqual(r.body.settings.approvalWorkdays, [1, 2, 3, 4, 5]);
+  assert.equal((await as('admin')('PUT', '/settings', { settings: { approvalWorkdays: [] } })).status, 400);
+
+  const cats = (await as('admin')('GET', '/catalog')).body.categories;
+  const shared = cats.find((c) => c.slug === 'da-scegliere');
+  const coachingCat = cats.find((c) => c.slug === 'coaching');
+  assert.ok(shared, 'the area for people who don\'t know yet exists');
+  const mkSvc = async (categoryId, name) => {
+    const res = await as('admin')('POST', '/services', { categoryId, name, nameEn: 'Free first meeting', durationMinutes: 30, price: 'Gratuito', priceEn: 'Free', firstMeeting: true });
+    assert.equal(res.status, 201, JSON.stringify(res.body));
+    return res.body.id;
+  };
+  const sharedSvc = await mkSvc(shared.id, 'Primo colloquio round2 da scegliere');
+  const coachSvc = await mkSvc(coachingCat.id, 'Primo colloquio round2 coaching');
+  const mkPro = async (body) => { const res = await as('admin')('POST', '/professionals', body); assert.equal(res.status, 201, JSON.stringify(res.body)); return res.body.id; };
+  const rita = await mkPro({ name: 'Rita Prova', title: 'Psicologa', languages: ['it', 'en'], notifyEmail: 'rita@example.it' });
+  const sara = await mkPro({ name: 'Sara Prova', title: 'Psicologa', languages: ['it'] }); // no notification email
+  await as('admin')('PUT', `/professionals/${rita}/services`, { offerings: [{ serviceId: sharedSvc, inStudio: false, online: true }, { serviceId: coachSvc, inStudio: false, online: true }] });
+  await as('admin')('PUT', `/professionals/${sara}/services`, { offerings: [{ serviceId: sharedSvc, inStudio: false, online: true }] });
+  for (const pro of [rita, sara]) {
+    r = await as('admin')('PUT', '/rules', { professionalId: pro, rules: [{ weekday: 1, start_time: '09:00', end_time: '13:00', mode: 'online', public: true }] });
+    assert.equal(r.status, 200);
+  }
+
+  // "Non lo so ancora": both professionals, so "help me choose" exists; in English only Rita.
+  const cat = (await pubCall('GET', '/catalog')).body.categories.find((c) => c.slug === 'da-scegliere');
+  assert.equal(cat.services[0].professionals.length, 2);
+  const start = '2027-01-18T09:00:00.000Z'; // Monday 10:00 in Rome
+  const book = (email, extra = {}) => pubCall('POST', '/book', { start, mode: 'online', service: sharedSvc, professional: 'any', name: 'Persona Prova', email, privacy: true, ...extra });
+  let since = deps.mailer.sent.length;
+  r = await book('scelta1@example.it', { lang: 'en' });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  assert.equal(r.body.booking.professional.id, rita, 'in English only who works in English');
+  // Only Rita is told, at her notification email; never the studio inbox; nothing about the person.
+  const notice = deps.mailer.sent.slice(since).filter((m) => m.to !== 'scelta1@example.it');
+  assert.deepEqual(notice.map((m) => m.to), ['rita@example.it']);
+  assert.match(notice[0].subject, /nuova richiesta di primo colloquio da accettare/);
+  assert.doesNotMatch(notice[0].text, /Persona Prova|scelta1@example\.it/);
+
+  since = deps.mailer.sent.length;
+  r = await book('scelta2@example.it');
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  assert.equal(r.body.booking.professional.id, sara, 'the one with fewer upcoming appointments');
+  const toAdmins = deps.mailer.sent.slice(since).filter((m) => m.to !== 'scelta2@example.it').map((m) => m.to);
+  assert.ok(toAdmins.includes(adminUser.email) && !toAdmins.includes('studio@example.it'), 'no notification email: the administrators are told, not the studio inbox');
+
+  // "Passa alla collega": a coaching request of Rita goes to Sara through the shared first meeting.
+  r = await pubCall('POST', '/book', { start: '2027-01-18T10:00:00.000Z', mode: 'online', service: coachSvc, professional: rita, name: 'Persona Prova', email: 'passa@example.it', privacy: true });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  const pending = (await as('admin')('GET', '/events/pending')).body;
+  const req = (pending.events || pending.requests || pending).find((e) => e.start === '2027-01-18T10:00:00.000Z');
+  assert.ok(req, JSON.stringify(pending));
+  since = deps.mailer.sent.length;
+  r = await as('admin')('POST', `/events/${req.id}/reassign`, { professionalId: sara });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.equal(mailsTo('passa@example.it', since).length, 0, 'nothing changes for the person');
+  assert.ok(deps.mailer.sent.slice(since).some((m) => /ti ha passato una richiesta/.test(m.subject)));
+  // Sara is busy at 10:00 (scelta2) and doesn't work in English.
+  r = await pubCall('POST', '/book', { start: '2027-01-18T11:00:00.000Z', mode: 'online', service: coachSvc, professional: rita, name: 'Persona Prova', email: 'passa2@example.it', privacy: true, lang: 'en' });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  const req2 = ((await as('admin')('GET', '/events/pending')).body.events || []).find((e) => e.start === '2027-01-18T11:00:00.000Z');
+  r = await as('admin')('POST', `/events/${req2.id}/reassign`, { professionalId: sara });
+  assert.equal(r.status, 409);
+  assert.match(r.body.message, /inglese/);
+  const req3 = ((await as('admin')('GET', '/events/pending')).body.events || []).find((e) => e.start === '2027-01-18T09:00:00.000Z' && e.professionalId === rita);
+  // Sara has blocked 09:00 in her agenda: an Italian request at that time can't go to her.
+  r = await as('admin')('POST', '/events', { professionalId: sara, kind: 'blocco', startDate: '2027-01-18', startTime: '09:00', endTime: '10:00', title: 'Impegno' });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  r = await pubCall('POST', '/book', { start: '2027-01-18T08:00:00.000Z', mode: 'online', service: coachSvc, professional: rita, name: 'Persona Prova', email: 'passa3@example.it', privacy: true });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  const req4 = ((await as('admin')('GET', '/events/pending')).body.events || []).find((e) => e.start === '2027-01-18T08:00:00.000Z');
+  r = await as('admin')('POST', `/events/${req4.id}/reassign`, { professionalId: sara });
+  assert.equal(r.status, 409, JSON.stringify(r.body));
+  assert.match(r.body.message, /non è libera/);
+  const log = (await as('admin')('GET', '/audit')).body.entries.map((e) => e.action);
+  assert.ok(log.includes('richiesta passata a una collega'));
+  ids.round2 = { rita, sara, sharedSvc, coachSvc, reqRita: req3.id };
+});
+
+test('round 2: confirmation asked 48 h before in the daytime, second invitation, 18:00 notice, freeing the time, "I can\'t come"', opts, async () => {
+  const { rita, reqRita } = ids.round2;
+  clock.now = new Date('2027-01-14T10:00:00Z');
+  let r = await as('admin')('POST', `/events/${reqRita}/approve`, {});
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  const email = 'scelta1@example.it';
+
+  // 47 h before but at night (22:30 in Rome): nothing; the next morning at 08:30 the request goes.
+  clock.now = new Date('2027-01-16T21:30:00Z');
+  let since = deps.mailer.sent.length;
+  await runReminders(deps);
+  assert.equal(mailsTo(email, since).length, 0, 'no emails asking for action at night');
+  clock.now = new Date('2027-01-17T07:30:00Z');
+  await runReminders(deps);
+  const ask = mailsTo(email, since);
+  assert.equal(ask.length, 1);
+  assert.match(ask[0].subject, /Confirm your appointment|confirm/i);
+
+  // 23.5 h before, not confirmed: one kind second invitation with a new link.
+  clock.now = new Date('2027-01-17T09:30:00Z');
+  since = deps.mailer.sent.length;
+  await runReminders(deps);
+  const nudge = mailsTo(email, since);
+  assert.equal(nudge.length, 1);
+  assert.match(nudge[0].subject, /Can you still make it/);
+  await runReminders(deps);
+  assert.equal(mailsTo(email, since).length, 1, 'only once');
+
+  // 18:05 in Rome the day before: Rita gets the list of tomorrow's unconfirmed appointments, once.
+  clock.now = new Date('2027-01-17T17:05:00Z');
+  since = deps.mailer.sent.length;
+  await runReminders(deps);
+  const list = mailsTo('rita@example.it', since).filter((m) => /non ancora confermat/.test(m.subject));
+  assert.equal(list.length, 1);
+  assert.doesNotMatch(list[0].text, /Persona Prova|scelta1/, 'no personal data in the notice');
+  clock.now = new Date('2027-01-17T17:20:00Z');
+  await runReminders(deps);
+  assert.equal(mailsTo('rita@example.it', since).filter((m) => /non ancora confermat/.test(m.subject)).length, 1);
+
+  // "Libera l'orario": the person is told what to do if it was a mistake.
+  clock.now = new Date('2027-01-17T17:30:00Z');
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret)); // the test clock jumped past the session
+  since = deps.mailer.sent.length;
+  r = await as('admin')('POST', `/events/${reqRita}/cancel`, { scope: 'one', reason: 'non_confermato' });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.equal(r.body.emailSent, true);
+  const freed = mailsTo(email, since)[0];
+  assert.match(freed.text, /didn't hear back|non avendo ricevuto/i);
+  assert.match(freed.text, /still free|ancora libero/);
+
+  // The same time given to someone else (set by the professional, with emails): only the new person gets the
+  // 2-hour reminder; and inside the cancellation window "I can't come" still works, flagged as late.
+  r = await as('admin')('POST', '/events', { professionalId: rita, kind: 'seduta', date: '2027-01-18', time: '10:00', durationMinutes: 50, mode: 'online', name: 'Nuova', email: 'nuova@example.it', sendEmail: true });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  const link = mailsTo('nuova@example.it', since)[0].text.match(/#t=([\w-]+)/)[1];
+  clock.now = new Date('2027-01-18T07:05:00Z');
+  since = deps.mailer.sent.length;
+  await runReminders(deps);
+  assert.equal(mailsTo(email, since).length, 0, 'no reminder for a freed appointment');
+  assert.equal(mailsTo('nuova@example.it', since).filter((m) => /tra poco|soon/i.test(m.subject)).length, 1);
+  r = await pubCall('POST', '/manage', { t: link });
+  assert.equal(r.body.booking.canCancel, true);
+  assert.equal(r.body.booking.lateCancel, true);
+  since = deps.mailer.sent.length;
+  r = await pubCall('POST', '/manage/cancel', { t: link });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.equal(r.body.late, true);
+  assert.ok(mailsTo('rita@example.it', since).some((m) => /ultimo momento/.test(m.subject)), 'the professional is told');
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  const ev = (await as('admin')('GET', '/events?from=2027-01-18&to=2027-01-18&cancelled=1')).body.events.find((e) => e.name === 'Nuova');
+  assert.equal(ev.cancelReason, 'tardivo');
+});
+
+test('round 2: an organisations first meeting can be requested with "help me choose" and is assigned automatically', opts, async () => {
+  const { rita, sara, sharedSvc, coachSvc } = ids.round2;
+  clock.now = new Date('2027-01-21T09:00:00Z'); // Thursday; Monday 25 January is bookable
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  const aziende = (await as('admin')('GET', '/catalog')).body.categories.find((c) => c.slug === 'aziende');
+  assert.ok(aziende, 'the organisations area exists');
+  let r = await as('admin')('POST', '/services', { categoryId: aziende.id, name: 'Primo colloquio round2 organizzazioni', nameEn: 'Free first meeting', durationMinutes: 30, price: 'Gratuito', priceEn: 'Free', firstMeeting: true });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  const orgSvc = r.body.id;
+  await as('admin')('PUT', `/professionals/${rita}/services`, { offerings: [sharedSvc, coachSvc, orgSvc].map((serviceId) => ({ serviceId, inStudio: false, online: true })) });
+  await as('admin')('PUT', `/professionals/${sara}/services`, { offerings: [sharedSvc, orgSvc].map((serviceId) => ({ serviceId, inStudio: false, online: true })) });
+  const cat = (await pubCall('GET', '/catalog')).body.categories.find((c) => c.slug === 'aziende');
+  assert.equal(cat.services[0].professionals.length, 2);
+  r = await pubCall('POST', '/book', { start: '2027-01-25T10:00:00.000Z', mode: 'online', service: orgSvc, professional: 'any', name: 'Referente HR', email: 'hr-round2@example.it', privacy: true });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  assert.equal(r.body.booking.pending, true);
+  assert.equal(r.body.booking.assigned, true);
+  assert.ok([rita, sara].includes(r.body.booking.professional.id));
 });

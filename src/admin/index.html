@@ -236,9 +236,12 @@
         <div class="field"><label for="s-notice">Anticipo minimo per prenotare (ore)</label><input id="s-notice" name="minNoticeHours" type="number" min="0" max="336"></div>
         <div class="field"><label for="s-horizon">Prenotabile fino a (giorni avanti)</label><input id="s-horizon" name="horizonDays" type="number" min="1" max="180"></div>
         <div class="field"><label for="s-cancel">Annullabile online fino a (ore prima)</label><input id="s-cancel" name="cancelHours" type="number" min="0" max="168"></div>
-        <div class="field"><label for="s-confirm">Richiesta di conferma della presenza (ore prima)</label><input id="s-confirm" name="confirmHours" type="number" min="2" max="96"></div>
+        <div class="field"><label for="s-confirm">Richiesta di conferma della presenza (ore prima)</label><input id="s-confirm" name="confirmHours" type="number" min="2" max="120"></div>
+        <div class="field"><label for="s-nudge">Secondo invito a confermare, a chi non l'ha fatto (ore prima, 0 = nessuno)</label><input id="s-nudge" name="confirmNudgeHours" type="number" min="0" max="72"></div>
         <div class="field"><label for="s-reminder2">Secondo promemoria (ore prima, 0 = nessuno)</label><input id="s-reminder2" name="reminder2Hours" type="number" min="0" max="12"></div>
         <div class="field"><label for="s-deadline">Le richieste non approvate scadono il giorno prima alle</label><input id="s-deadline" name="approvalDeadline" type="time" step="900"></div>
+        <fieldset class="field workdays"><legend>Giorni lavorativi per accettare le richieste</legend><div class="wd-row"><label class="wd"><input type="checkbox" data-workday value="1"> lun</label><label class="wd"><input type="checkbox" data-workday value="2"> mar</label><label class="wd"><input type="checkbox" data-workday value="3"> mer</label><label class="wd"><input type="checkbox" data-workday value="4"> gio</label><label class="wd"><input type="checkbox" data-workday value="5"> ven</label><label class="wd"><input type="checkbox" data-workday value="6"> sab</label><label class="wd"><input type="checkbox" data-workday value="7"> dom</label></div>
+          <span class="hint">Se il giorno prima non è lavorativo, la richiesta scade l'ultimo giorno lavorativo precedente (es. lunedì → venerdì).</span></fieldset>
         <div class="field"><label for="s-retention">Cancella i recapiti dopo (mesi)</label><input id="s-retention" name="retentionMonths" type="number" min="1" max="120"></div>
         <div class="field"><label for="s-req">Cancella le richieste dopo (mesi)</label><input id="s-req" name="requestRetentionMonths" type="number" min="1" max="24"></div>
         <p class="hint">Se cambi i mesi di conservazione, va aggiornata anche l'informativa privacy (oggi dice: recapiti cancellati 24 mesi dopo l'ultimo appuntamento, richieste dopo 6 mesi).</p>
@@ -360,10 +363,17 @@
     </div>
 
     <p class="ev-status" data-ev-status hidden></p>
+    <div class="field reassign-box" data-reassign-box hidden>
+      <label for="ev-reassign">Passa alla collega</label>
+      <div class="cta-row"><select id="ev-reassign" data-reassign-to></select><button type="button" class="btn btn-ghost btn-small" data-reassign>Passa la richiesta</button></div>
+      <span class="hint">La persona non riceve email: cambia solo chi la accetta. La collega deve essere libera a quell'ora e lavorare nella lingua del colloquio.</span>
+    </div>
     <p class="status form-error" role="alert" data-dlg-error></p>
     <div class="cta-row dlg-actions">
       <button type="button" class="btn btn-primary btn-small" data-approve hidden>Approva la richiesta</button>
       <button type="button" class="btn btn-ghost btn-small" data-decline hidden>Rifiuta</button>
+      <a class="btn btn-ghost btn-small" data-write-person hidden href="#">Scrivi alla persona</a>
+      <button type="button" class="btn btn-danger btn-small" data-free-slot hidden>Libera l'orario</button>
       <button type="submit" class="btn btn-primary btn-small" data-save>Salva</button>
       <button type="button" class="btn btn-danger btn-small" data-cancel hidden>Annulla appuntamento</button>
     </div>

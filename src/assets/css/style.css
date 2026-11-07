@@ -972,3 +972,7 @@ html[data-palette]:not([data-palette="x"]) .lang-notice { background: var(--nigh
 /* Psicoterapia: situazioni divise in due gruppi */
 .rows-group { margin: clamp(32px, 5vw, 64px) 0 0; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
 .rows-group + .rows { margin-top: 16px; }
+
+/* Secondary link under the booking choices (organisations form). */
+.need-alt { grid-column: 1 / -1; margin: 4px 0 0; font-size: .9rem; color: var(--muted, #4d6a66); }
+.need-alt a { text-decoration: underline; }

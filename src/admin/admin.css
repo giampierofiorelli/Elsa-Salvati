@@ -299,3 +299,10 @@ code { background: var(--paper); border: 1px solid var(--line); padding: 8px 10p
 .ev-flag-wait, .tag-wait { background: #FDE7C2; color: #7A4B0C; }
 .ev-flag-ok, .tag-ok { background: #D6F0E2; color: #1F5A3F; }
 .ev-status { margin: 8px 0 0; padding: 10px 12px; border-radius: 10px; background: #FBF5EA; font-size: .9rem; line-height: 1.45; }
+
+.ev-flag-late, .tag-late { color: #8A3B12; background: #FBEDE4; }
+
+.workdays { border: 0; padding: 0; margin: 0; }
+.workdays legend { padding: 0; margin-bottom: .35rem; }
+.wd-row { display: flex; flex-wrap: wrap; gap: .25rem .9rem; }
+.wd { display: inline-flex; align-items: center; gap: .3rem; font-weight: normal; }

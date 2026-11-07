@@ -114,7 +114,7 @@ test('IPv6 addresses are grouped by /64 for rate limits', async () => {
 
 test('approval deadline: the day before at 18:00 Rome time, also across daylight-saving changes', async () => {
   const { approvalDeadlineFor, requestOpen, DEFAULT_SETTINGS } = await import('../lib/slots.mjs');
-  const s = { ...DEFAULT_SETTINGS };
+  const s = { ...DEFAULT_SETTINGS, approvalWorkdays: [1, 2, 3, 4, 5, 6, 7] };
   // Summer time starts on Sunday 29 March 2026: 18:00 in Rome that day is 16:00 UTC.
   assert.equal(approvalDeadlineFor('2026-03-30T07:00:00Z', s).toISOString(), '2026-03-29T16:00:00.000Z');
   // Winter time is back on Sunday 25 October 2026: 18:00 in Rome is 17:00 UTC.
@@ -125,4 +125,45 @@ test('approval deadline: the day before at 18:00 Rome time, also across daylight
   assert.equal(requestOpen('2026-12-08T08:00:00Z', s, '2026-12-07T18:00:00Z'), false);
   assert.equal(requestOpen('2026-12-08T08:00:00Z', s, '2026-12-07T14:59:00Z'), true);
   assert.equal(requestOpen('2026-12-08T08:00:00Z', { ...s, approvalDeadline: '12:00' }, '2026-12-07T10:30:00Z'), false);
+});
+
+test('approval deadline skips non-working days: a Monday request lapses on Friday (DST-safe)', async () => {
+  const { approvalDeadlineFor, requestOpen, normalizeSettings, DEFAULT_SETTINGS } = await import('../lib/slots.mjs');
+  const s = { ...DEFAULT_SETTINGS };
+  assert.deepEqual(s.approvalWorkdays, [1, 2, 3, 4, 5]);
+  // Monday 30 March 2026 (summer time began Sunday 29): Friday 27 March 18:00 is still winter time, 17:00 UTC.
+  assert.equal(approvalDeadlineFor('2026-03-30T07:00:00Z', s).toISOString(), '2026-03-27T17:00:00.000Z');
+  // Monday 26 October 2026 (winter time back Sunday 25): Friday 23 October 18:00 is summer time, 16:00 UTC.
+  assert.equal(approvalDeadlineFor('2026-10-26T08:00:00Z', s).toISOString(), '2026-10-23T16:00:00.000Z');
+  // Saturday and Sunday appointments also lapse on Friday; a Tuesday one on Monday.
+  assert.equal(approvalDeadlineFor('2026-11-14T09:00:00Z', s).toISOString(), '2026-11-13T17:00:00.000Z');
+  assert.equal(approvalDeadlineFor('2026-11-15T09:00:00Z', s).toISOString(), '2026-11-13T17:00:00.000Z');
+  assert.equal(approvalDeadlineFor('2026-11-10T09:00:00Z', s).toISOString(), '2026-11-09T17:00:00.000Z');
+  // Monday 9 November 09:00: requestable until Friday 16:00 (2 hours before the deadline), not on Saturday.
+  assert.equal(requestOpen('2026-11-09T08:00:00Z', s, '2026-11-06T15:00:00Z'), true);
+  assert.equal(requestOpen('2026-11-09T08:00:00Z', s, '2026-11-06T15:01:00Z'), false);
+  assert.equal(requestOpen('2026-11-09T08:00:00Z', s, '2026-11-07T09:00:00Z'), false);
+  // With Saturday as a working day the deadline moves to Saturday.
+  assert.equal(approvalDeadlineFor('2026-11-09T08:00:00Z', { ...s, approvalWorkdays: [1, 2, 3, 4, 5, 6] }).toISOString(), '2026-11-07T17:00:00.000Z');
+  // Validation: at least one day, integers 1-7.
+  assert.deepEqual(normalizeSettings({ approvalWorkdays: [6, 1, 1] }).approvalWorkdays, [1, 6]);
+  assert.throws(() => normalizeSettings({ approvalWorkdays: [] }), RangeError);
+  assert.throws(() => normalizeSettings({ approvalWorkdays: [0, 8] }), RangeError);
+});
+
+test('booking choices: "Non lo so ancora" opens the shared first meeting; that area stays out of the request forms', async () => {
+  const { createSite } = await import('../lib/site.mjs');
+  const { readKitFiles } = await import('../lib/site-kit.mjs');
+  const kit = readKitFiles(new URL('..', import.meta.url).pathname);
+  const catalog = { categories: [{ slug: 'carriera', name: 'Orientamento e carriera', services: [] }, { slug: 'da-scegliere', name: 'Non lo so ancora', services: [] }, { slug: 'aziende', name: 'Per la tua organizzazione', services: [] }], professionals: [] };
+  const site = createSite({ config: kit.config, layouts: kit.layouts, catalog, globals: kit.globals });
+  const it = site.render('{{@needOptions}}');
+  assert.match(it, /data-cats="da-scegliere"[^>]*><strong>Non lo so ancora<\/strong>/);
+  assert.doesNotMatch(it, /Non sono sicuro/);
+  assert.match(site.render('{{@needOptionsEn}}'), /<strong>Not sure yet<\/strong>/);
+  const options = site.render('{{@categoryOptions}}', {}, { lang: 'it' });
+  assert.match(options, /carriera/);
+  assert.doesNotMatch(options, /da-scegliere/);
+  assert.doesNotMatch(options, /value="aziende"/, 'the forms already have their own organisations option');
+  assert.match(it, /class="need-alt"[^>]*>[^<]*<a href="\/aziende\/#contatto"/);
 });

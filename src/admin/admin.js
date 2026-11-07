@@ -254,6 +254,8 @@
   function evState(ev) {
     if (ev.kind === 'blocco') return null;
     if (ev.pending) return { cls: 'pending', text: 'Da approvare' };
+    if (ev.status === 'annullato' && ev.cancelReason === 'tardivo') return { cls: 'late', text: 'Annullato dalla persona all\'ultimo momento' };
+    if (ev.status === 'annullato' && ev.cancelReason === 'non_confermato') return { cls: 'late', text: 'Orario liberato: presenza non confermata' };
     if (ev.status !== 'confermato') return null;
     if (ev.clientConfirmedAt) return { cls: 'ok', text: 'Confermato dalla persona' };
     if ((ev.source === 'sito' || ev.notifyClient) && new Date(ev.start) > new Date()) return { cls: 'wait', text: 'In attesa di conferma' };
@@ -439,6 +441,9 @@
     $('[data-save]').hidden = false;
     $('[data-approve]').hidden = true;
     $('[data-decline]').hidden = true;
+    $('[data-write-person]').hidden = true;
+    $('[data-free-slot]').hidden = true;
+    $('[data-reassign-box]').hidden = true;
     $('[data-ev-status]').hidden = true;
   }
 
@@ -490,12 +495,28 @@
     var st = evState(ev);
     var stBox = $('[data-ev-status]');
     if (ev.pending) {
-      stBox.textContent = 'Richiesta dal sito, da approvare. Se non la approvi entro le ' + ((state.settings && state.settings.approvalDeadline) || '18:00') + ' del giorno prima, scade e la persona riceve un\'email per scegliere un altro orario.';
+      stBox.textContent = 'Richiesta dal sito, da approvare. Se non la approvi entro le ' + ((state.settings && state.settings.approvalDeadline) || '18:00') + ' dell\'ultimo giorno lavorativo prima, scade e la persona riceve un\'email per scegliere un altro orario.';
       stBox.hidden = false;
       $('[data-approve]').hidden = false;
       $('[data-decline]').hidden = false;
+      // "Passa alla collega": the other active professionals.
+      var others = ((state.catalog && state.catalog.professionals) || state.me.professionals || []).filter(function (p) { return p.id !== ev.professionalId && p.active !== false; });
+      var sel = $('[data-reassign-to]');
+      sel.textContent = '';
+      others.forEach(function (p) { sel.appendChild(el('option', { value: p.id, text: p.name })); });
+      $('[data-reassign-box]').hidden = !others.length;
       $('[data-save]').hidden = true;
     } else if (st) {
+      // Asked to confirm and not confirmed yet: write to the person, or free the time (she gets an email
+      // explaining what to do if it was a mistake). Nothing is cancelled automatically.
+      if (st.cls === 'wait' && ev.confirmRequested) {
+        if (ev.email) {
+          var w = $('[data-write-person]');
+          w.href = 'mailto:' + encodeURIComponent(ev.email).replace(/%40/g, '@') + '?subject=' + encodeURIComponent(ev.lang === 'en' ? 'Your appointment – Blooming' : 'Il tuo appuntamento – Blooming');
+          w.hidden = false;
+        }
+        $('[data-free-slot]').hidden = false;
+      }
       stBox.textContent = st.text + (ev.clientConfirmedAt ? ' il ' + new Date(ev.clientConfirmedAt).toLocaleString('it-IT', { dateStyle: 'medium', timeStyle: 'short' }) : '') + '.';
       stBox.hidden = false;
     }
@@ -573,6 +594,19 @@
     $('[data-notify-box]').hidden = ev.kind === 'blocco' || !ev.email;
     $('[data-save]').hidden = true;
     this.hidden = true;
+  });
+  $('[data-reassign]').addEventListener('click', function () {
+    var ev = state.editing;
+    var to = $('[data-reassign-to]').value;
+    if (!to) return;
+    api('POST', '/events/' + ev.id + '/reassign', { professionalId: to }).then(function () { dlg.close(); refresh(); })
+      .catch(function (e) { $('[data-dlg-error]').textContent = e.message; });
+  });
+  $('[data-free-slot]').addEventListener('click', function () {
+    var ev = state.editing;
+    if (!window.confirm('Liberare l\'orario? L\'appuntamento viene annullato e la persona riceve un\'email che le spiega cosa fare se non aveva confermato per errore.')) return;
+    api('POST', '/events/' + ev.id + '/cancel', { scope: 'one', reason: 'non_confermato' }).then(function () { dlg.close(); refresh(); })
+      .catch(function (e) { $('[data-dlg-error]').textContent = e.message; });
   });
   $('[data-approve]').addEventListener('click', function () {
     var ev = state.editing;
@@ -829,7 +863,7 @@
       { name: 'langIt', label: 'Fa colloqui in italiano', type: 'checkbox' },
       { name: 'langEn', label: 'Fa colloqui in inglese (compare sul sito inglese e in «Help me choose»)', type: 'checkbox' },
       { name: 'albo', label: 'Iscrizione all\'Albo (es. Ordine degli Psicologi dell\'Emilia-Romagna n. 1234)', max: 120 },
-      { name: 'notifyEmail', label: 'Email per gli avvisi di prenotazione', type: 'email' },
+      { name: 'notifyEmail', label: 'Email per le notifiche', type: 'email', hint: 'Qui arrivano le nuove richieste di primo colloquio e le conferme o disdette delle persone. Senza email, gli avvisi vanno agli amministratori.' },
       { name: 'photo', label: 'Foto (nome del file, es. elsa-salvati)', max: 60, hint: 'Le foto si aggiungono al sito su richiesta; lascia vuoto per usare il logo.' },
       { name: 'sort', label: 'Ordine nell\'elenco', type: 'number' },
       { name: 'active', label: 'Attivo (visibile e prenotabile)', type: 'checkbox' },
@@ -876,7 +910,7 @@
     if (!p) { box.appendChild(el('p', { class: 'hint', text: 'Profilo non trovato.' })); return; }
     var f = el('form', { class: 'panel profile-form' });
     [{ name: 'title', label: 'Titolo', max: 80 }, { name: 'bio', label: 'Presentazione breve', type: 'textarea' },
-      { name: 'notifyEmail', label: 'Email per gli avvisi di prenotazione', type: 'email' }].forEach(function (s) { f.appendChild(field(s, p[s.name])); });
+      { name: 'notifyEmail', label: 'Email per le notifiche', type: 'email', hint: 'Qui arrivano le nuove richieste di primo colloquio e le conferme o disdette delle persone. Senza email, gli avvisi vanno agli amministratori.' }].forEach(function (s) { f.appendChild(field(s, p[s.name])); });
     var editor = offeringsEditor(p.offerings, { canAddRemove: isAdmin() });
     f.appendChild(editor.node);
     var status = el('p', { class: 'status', role: 'status' });
@@ -982,13 +1016,17 @@
       state.settings = res.settings;
       var f = $('[data-settings-form]');
       Object.keys(res.settings).forEach(function (k) { if (f.elements[k]) f.elements[k].value = res.settings[k]; });
+      var wd = res.settings.approvalWorkdays || [1, 2, 3, 4, 5];
+      $$('[data-workday]', f).forEach(function (c) { c.checked = wd.indexOf(Number(c.value)) !== -1; });
     });
   }
   $('[data-settings-form]').addEventListener('submit', function (e) {
     e.preventDefault();
     var status = $('[data-settings-status]');
     var s = {};
-    $$('input', e.target).forEach(function (i) { if (i.value.trim() !== '') s[i.name] = i.type === 'time' ? i.value : Number(i.value); });
+    $$('input', e.target).forEach(function (i) { if (i.name && i.value.trim() !== '') s[i.name] = i.type === 'time' ? i.value : Number(i.value); });
+    s.approvalWorkdays = $$('[data-workday]', e.target).filter(function (c) { return c.checked; }).map(function (c) { return Number(c.value); });
+    if (!s.approvalWorkdays.length) { status.className = 'status form-error'; status.textContent = 'Scegli almeno un giorno lavorativo.'; return; }
     api('PUT', '/settings', { settings: s }).then(function (res) {
       state.settings = res.settings;
       status.className = 'status form-ok';

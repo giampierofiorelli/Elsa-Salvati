@@ -117,6 +117,8 @@ async function seed() {
     imprese: await s.insertService({ category_id: cats.coaching, slug: 'consulenza-per-le-imprese', name: 'Consulenza per le imprese', description: 'Benessere organizzativo, gestione dello stress, percorsi per responsabili e team.', duration_minutes: 60, price_text: 'Preventivo su misura', sort: 2, active: true }),
     genitori: await s.insertService({ category_id: cats.psicologia, slug: 'sostegno-alla-genitorialita', name: 'Sostegno alla genitorialità', description: 'Le fatiche e i dubbi dell\'essere genitori, dalla nascita all\'adolescenza dei figli.', duration_minutes: 50, price_text: '€60', sort: 1, active: true }),
     primo: await s.insertService({ category_id: cats.carriera, slug: 'primo-colloquio-carriera', name: 'Primo colloquio conoscitivo', name_en: 'Free first meeting', description: 'Trenta minuti per conoscerci e capire se e come possiamo aiutarti.', duration_minutes: 30, price_text: 'Gratuito', price_text_en: 'Free', first_meeting: true, sort: 0, active: true }),
+    scegliere: cats['da-scegliere'] ? await s.insertService({ category_id: cats['da-scegliere'], slug: 'primo-colloquio-da-scegliere', name: 'Primo colloquio gratuito', name_en: 'Free first meeting', description: 'Trenta minuti per capire insieme da dove partire.', duration_minutes: 30, price_text: 'Gratuito', price_text_en: 'Free', first_meeting: true, sort: 0, active: true }) : null,
+    aziende: cats.aziende ? await s.insertService({ category_id: cats.aziende, slug: 'primo-colloquio-organizzazioni', name: 'Primo colloquio gratuito', name_en: 'Free first meeting', description: 'Trenta minuti per capire di cosa ha bisogno la vostra organizzazione.', duration_minutes: 30, price_text: 'Gratuito', price_text_en: 'Free', first_meeting: true, sort: 0, active: true }) : null,
     terapia: await s.insertService({ category_id: cats.psicoterapia, slug: 'psicoterapia-individuale', name: 'Psicoterapia individuale', description: 'Per ansia, depressione e momenti difficili della vita, con professionisti di diversi orientamenti.', duration_minutes: 50, price_text: '€70', sort: 1, active: true }),
   };
   const pro = {
@@ -125,11 +127,13 @@ async function seed() {
     marco: await s.insertProfessional({ slug: 'marco-neri', name: 'Dott. Marco Neri', title: 'Psicologo psicoterapeuta', bio: 'Orientamento cognitivo-comportamentale. Ansia e depressione.', albo: 'Ordine degli Psicologi dell\'Emilia-Romagna n. [numero]', photo: 'professionista-psicoterapia', notify_email: '', sort: 3, active: true }),
   };
   await s.replaceOfferings(pro.elsa, [{ service_id: svc.coaching, in_studio: true, online: true }, { service_id: svc.imprese, in_studio: true, online: true }, { service_id: svc.primo, in_studio: false, online: true }]);
-  await s.replaceOfferings(pro.giulia, [{ service_id: svc.genitori, in_studio: true, online: true }, { service_id: svc.primo, in_studio: false, online: true }]);
+  await s.replaceOfferings(pro.giulia, [{ service_id: svc.genitori, in_studio: true, online: true }, { service_id: svc.primo, in_studio: false, online: true }].concat(svc.scegliere ? [{ service_id: svc.scegliere, in_studio: false, online: true }] : [], svc.aziende ? [{ service_id: svc.aziende, in_studio: false, online: true }] : []));
+  // "Non lo so ancora": the shared first meeting with both, so "Aiutami a scegliere" appears.
+  if (svc.scegliere) await s.replaceOfferings(pro.elsa, [{ service_id: svc.coaching, in_studio: true, online: true }, { service_id: svc.imprese, in_studio: true, online: true }, { service_id: svc.primo, in_studio: false, online: true }, { service_id: svc.scegliere, in_studio: false, online: true }].concat(svc.aziende ? [{ service_id: svc.aziende, in_studio: false, online: true }] : []));
   await s.replaceOfferings(pro.marco, [{ service_id: svc.terapia, in_studio: true, online: false }]);
   const rules = (spec) => spec.map(([weekday, start_time, end_time, mode, pub]) => ({ weekday, start_time, end_time, mode, public: pub, active: true }));
   await s.replaceRules(pro.elsa, rules([[1, '09:00', '13:00', 'entrambi', true], [3, '14:00', '18:00', 'entrambi', true], [5, '09:00', '12:00', 'online', true]]));
-  await s.replaceRules(pro.giulia, rules([[2, '09:00', '13:00', 'entrambi', true], [4, '14:00', '19:00', 'studio', true]]));
+  await s.replaceRules(pro.giulia, rules([[1, '10:00', '13:00', 'online', true], [2, '09:00', '13:00', 'entrambi', true], [4, '14:00', '19:00', 'studio', true]]));
   await s.replaceRules(pro.marco, rules([[1, '14:00', '19:00', 'studio', true], [3, '09:00', '13:00', 'studio', true], [4, '09:00', '18:00', 'studio', false]]));
   await s.saveSettings({ minNoticeHours: 12 });
   const tz = 'Europe/Rome';
