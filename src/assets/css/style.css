@@ -808,3 +808,17 @@ main .eyebrow + h2, main .eyebrow + h1 { margin-top: 0; }
 @media (max-width: 699px) {
   .site main a.btn:is(.btn-ghost, .btn-outline-light):is([target="_blank"], [href^="tel:"], [href^="mailto:"]):not(:has(svg))::after { content: "↗"; }
 }
+
+/* Desktop too (G, 7/11): every secondary link or outlined button that takes you
+   somewhere ends with an arrow, like on phones (→ inside the site, ↗ outside).
+   On hover the arrow nudges forward. */
+.site main .row-links a::after, .site main .link-arrow::after,
+.site main a.btn:is(.btn-ghost, .btn-outline-light):not([download]):not(:has(svg))::after {
+  content: "→"; display: inline-block; margin-left: .45em; line-height: 1; transition: transform .2s;
+}
+.site main a.btn:is(.btn-ghost, .btn-outline-light):is([target="_blank"], [href^="tel:"], [href^="mailto:"]):not(:has(svg))::after { content: "↗"; }
+.site main a.btn:is(.btn-ghost, .btn-outline-light)::after { margin-left: 0; }
+@media (hover: hover) {
+  .site main .row-links a:hover::after, .site main .link-arrow:hover::after,
+  .site main a.btn:is(.btn-ghost, .btn-outline-light):not([target="_blank"]):hover::after { transform: translateX(3px); }
+}
