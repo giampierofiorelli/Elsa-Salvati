@@ -143,7 +143,7 @@ for (const file of walk(out).filter((f) => /\.(html|js)$/.test(f) && !f.includes
 
 // Cache busting: assets are cached for a week, so every CSS/JS reference gets
 // ?v=<content hash>. A changed file gets a new URL and phones fetch it at once.
-const versioned = ['/assets/css/style.css', '/assets/js/site.js', '/assets/js/booking.js', '/assets/js/motion.js', '/assets/js/effects.js', '/admin/admin.css', '/admin/admin.js', '/admin/vendor/qrcode.js'];
+const versioned = ['/assets/css/style.css', '/assets/js/site.js', '/assets/js/booking.js', '/assets/js/motion.js', '/assets/js/effects.js', '/admin/admin.css', '/admin/core.js', '/admin/agenda.js', '/admin/requests.js', '/admin/site-editor.js', '/admin/studio.js', '/admin/settings.js', '/admin/vendor/qrcode.js'];
 const hashes = Object.fromEntries(versioned.map((u) => [u, createHash('sha256').update(readFileSync(join(out, u))).digest('hex').slice(0, 10)]));
 for (const file of walk(out).filter((f) => f.endsWith('.html'))) {
   let html = readFileSync(file, 'utf8');
