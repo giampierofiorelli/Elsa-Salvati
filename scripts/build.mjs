@@ -7,10 +7,11 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { createSite, LANGS, isPlaceholder } from '../lib/site.mjs';
+import { stripDraftNotes } from '../lib/draft-notes.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = join(root, 'src');
-const out = join(root, 'dist');
+const out = process.env.BUILD_OUT || join(root, 'dist'); // BUILD_OUT: tests build elsewhere
 const config = JSON.parse(readFileSync(join(src, 'site.config.json'), 'utf8'));
 // Preview mode (SITE_DEMO=true): visible banner, not indexed by search engines.
 const demo = process.env.SITE_DEMO === 'true';
@@ -117,11 +118,14 @@ for (const pg of pages) {
   const { lang, meta, body, path } = pg;
   if (pg.blockPage) {
     // Internal notes show on previews and staging, never in production.
-    write(path, site.blockPage(pg.blockPage, { notes: process.env.CONTEXT !== 'production' }));
+    const out = site.blockPage(pg.blockPage, { notes: process.env.CONTEXT !== 'production' });
+    write(path, process.env.CONTEXT === 'production' ? stripDraftNotes(out) : out);
     if (!pg.blockPage.noindex) urls.push({ path, key: meta.key });
     continue;
   }
-  const html = page({ ...meta, title: render(meta.title), description: render(meta.description || '') }, body, path, { lang });
+  let html = page({ ...meta, title: render(meta.title), description: render(meta.description || '') }, body, path, { lang });
+  // Notes written by hand (yellow boxes, notes in brackets, draft comments): staging only.
+  if (process.env.CONTEXT === 'production') html = stripDraftNotes(html);
   write(path === '/404' ? '404.html' : path === '/en/404' ? 'en/404.html' : path, html);
   if (meta.noindex !== 'true' && path !== '/404' && path !== '/en/404') urls.push({ path, key: meta.key });
 }

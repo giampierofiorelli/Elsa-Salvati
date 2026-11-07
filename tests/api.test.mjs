@@ -770,6 +770,8 @@ test('header, footer and studio details: edited once, shown on every page after 
   const privacy = await serve('/privacy/', { CONTEXT: 'production' });
   assert.equal(privacy.status, 200);
   const ph = await privacy.text();
+  assert.doesNotMatch(ph, /placeholder-note|draft-inline|Nota bozza|da verificare/, 'production: no internal notes on hand-written pages');
+  assert.match(await (await serve('/privacy/', { CONTEXT: 'branch-deploy' })).text(), /placeholder-note/, 'staging keeps them');
   assert.match(ph, /data-roll>Scrivici<\/a>/);
   assert.match(ph, /Informativa/);
   const manage = await serve('/prenota/gestisci/', { CONTEXT: 'production' });
