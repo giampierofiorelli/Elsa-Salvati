@@ -1,0 +1,549 @@
+{
+  "key": "psicoterapia",
+  "path": "/psicoterapia/",
+  "title": "Psicoterapia cognitivo-comportamentale online – Blooming",
+  "description": "Psicoterapia cognitivo-comportamentale online con Monica Federico: ansia, umore basso, pensieri ossessivi, rapporto con il cibo, dipendenze, traumi. Primo colloquio gratuito.",
+  "nav": "servizi",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Psicoterapia",
+        "title": "Quando quello che senti non passa, e cambia il modo in cui vivi.",
+        "subtitle": "Psicoterapia cognitivo-comportamentale con Monica Federico.",
+        "intro": {
+          "p": []
+        },
+        "buttons": [
+          {
+            "label": "Prenota con Monica",
+            "to": {
+              "kind": "book",
+              "pro": "monica-federico"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "Vedi come funziona",
+            "to": {
+              "kind": "anchor",
+              "anchor": "come-funziona"
+            },
+            "style": "ghost"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero",
+      "note": "Monica da inserire nel sistema di prenotazione (slug monica-federico)."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Situazioni",
+        "title": "La psicoterapia serve quando il malessere dura e ti limita.",
+        "intro": {
+          "p": []
+        },
+        "marker": "numbers",
+        "items": [
+          {
+            "group": "Come ti senti",
+            "title": "L'ansia arriva anche quando non succede niente di preciso",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "E hai cominciato a evitare situazioni che prima affrontavi."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Da settimane l'umore resta basso",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Le cose che ti piacevano non ti dicono più niente."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Qualcosa che ti è successo torna all'improvviso o di notte",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Anche dopo anni: un incidente, una violenza, una paura."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "Cosa ti trovi a fare",
+            "title": "Controllare, contare, ripetere gli stessi gesti",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Anche se sai che non serve."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Il cibo occupa le giornate",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Diete, abbuffate, il pensiero del peso."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Bere, giocare, comprare o stare online più di quanto vorresti",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Senza riuscire a smettere."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Le relazioni finiscono sempre allo stesso modo",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "E ti chiedi perché succede a te."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Come funziona",
+        "title": "Capire cosa tiene in piedi il problema, e cambiarlo.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "La psicoterapia cognitivo-comportamentale lavora sul legame tra pensieri, emozioni e comportamenti: si guarda cosa succede oggi, cosa lo mantiene e cosa puoi fare di diverso. Monica lo fa guardando anche il corpo e la tua situazione di vita, come il sonno, la salute, il lavoro e le relazioni: è quello che si chiama approccio bio-psico-sociale."
+              }
+            ]
+          ]
+        },
+        "items": [
+          {
+            "title": "Valutare",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Nelle prime sedute ricostruite il problema, la sua storia e come incide sulla tua vita."
+                  }
+                ]
+              ]
+            },
+            "note": "Uso di strumenti di valutazione: da confermare con Monica."
+          },
+          {
+            "title": "Concordare gli obiettivi",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Decidete insieme su cosa lavorare e da cosa capirete che state andando avanti."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Lavorare",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "In seduta e tra una seduta e l'altra provi strategie concrete, che poi rivedete insieme."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Concludere",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Quando gli obiettivi sono raggiunti, preparate insieme la fine del percorso."
+                  }
+                ]
+              ]
+            },
+            "note": "Ed eventuali sedute di controllo: da confermare con Monica."
+          }
+        ],
+        "after": []
+      },
+      "anchor": "come-funziona",
+      "type": "steps",
+      "note": "Metodo proposto, da confermare con Monica. Non pubblicare questa sezione prima della conferma. · Frequenza, durata tipica e numero di sedute: da confermare con Monica."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Cosa comprende e quando serve altro",
+        "title": "Cosa si può affrontare in psicoterapia, e quando servono anche altri specialisti.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Per esempio ansia, depressione, disturbo ossessivo-compulsivo, disturbi alimentari, dipendenze, disturbi di personalità e conseguenze di esperienze traumatiche."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Monica non prescrive farmaci: se serve anche una visita medica o psichiatrica, te lo dice."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "La psicoterapia non è un servizio per le emergenze: in caso di pericolo immediato chiama il 112 o il 118, oppure vai al Pronto Soccorso più vicino."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Elenco da confermare con Monica. · Quando e come: da confermare con Monica. Per esempio nei disturbi alimentari o nelle dipendenze, anche un medico o una nutrizionista: da confermare con Monica."
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "eyebrow": "Chi se ne occupa",
+        "title": "Monica Federico, psicoterapeuta cognitivo-comportamentale.",
+        "people": [
+          {
+            "name": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Psicologa, iscritta all'Albo dal 2010. Psicoterapeuta a indirizzo cognitivo-comportamentale. Ha lavorato in ambito ospedaliero, in centri clinici e in studio privato."
+                  }
+                ]
+              ]
+            },
+            "tag": "",
+            "button": {
+              "label": "Prenota con Monica",
+              "to": {
+                "kind": "book",
+                "pro": "monica-federico"
+              },
+              "style": "light"
+            },
+            "link": {
+              "label": "Scheda di Monica",
+              "to": {
+                "kind": "page",
+                "key": "team",
+                "anchor": "monica"
+              }
+            },
+            "note": "Anno di specializzazione da confermare."
+          }
+        ],
+        "why": [],
+        "dots": false
+      },
+      "type": "people"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Prezzi, durata e flessibilità",
+        "title": "Online, in videochiamata, dopo un primo colloquio gratuito.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Il primo colloquio dura 30 minuti, in videochiamata."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "arrow",
+            "link": {
+              "label": "Tariffe e prenotazioni",
+              "to": {
+                "kind": "page",
+                "key": "costi-e-faq"
+              }
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Durata delle sedute: 50/60 minuti, da confermare (poi nel titolo). Prezzo per seduta: da concordare, da non pubblicare finché non è approvato; il brief indica 70 € per un'ora. Frequenza e possibilità di interrompere: da confermare con Monica. Detrazione: da verificare con un vostro consulente."
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Collegamenti utili",
+        "title": "Se la tua situazione è un'altra.",
+        "intro": {
+          "p": []
+        },
+        "marker": "links",
+        "items": [
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se stai attraversando un momento difficile ma circoscritto"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Sostegno psicologico",
+                "to": {
+                  "kind": "page",
+                  "key": "sostegno"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se a pesare è soprattutto il lavoro"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Coaching",
+                "to": {
+                  "kind": "page",
+                  "key": "coaching"
+                }
+              },
+              {
+                "label": "Orientamento e carriera",
+                "to": {
+                  "kind": "page",
+                  "key": "lavoro"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se non sai che tipo di aiuto ti serve"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psicologa, psicoterapeuta o coach: le differenze",
+                "to": {
+                  "kind": "page",
+                  "key": "differenze"
+                }
+              }
+            ],
+            "anchor": ""
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Parti da mezz'ora con Monica, gratis.",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "Le racconti cosa succede; ti dice se la psicoterapia è la strada giusta o se basta un sostegno più breve."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Prenota con Monica",
+            "to": {
+              "kind": "book",
+              "pro": "monica-federico"
+            },
+            "style": "light"
+          },
+          {
+            "label": "Scrivici una domanda",
+            "to": {
+              "kind": "page",
+              "key": "contatti"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": []
+        }
+      },
+      "type": "closing-cta",
+      "note": "Rispondiamo entro [un giorno lavorativo], per email [indirizzo], telefono [numero] o WhatsApp [se confermato]."
+    }
+  ]
+}

@@ -1,0 +1,693 @@
+{
+  "key": "lavoro",
+  "path": "/en/career-guidance/",
+  "title": "Career coaching & guidance in English, in Italy – Blooming",
+  "description": "Career guidance with a psychologist who has worked in HR for over ten years and knows the Italian job market. Online, in English. Free first meeting.",
+  "nav": "career",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Career coaching & guidance",
+        "title": "Finding your direction at work, in the life you're building here.",
+        "subtitle": "",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "One-to-one career coaching in English with Elsa Salvati, a psychologist who has worked in HR for over ten years. For anyone who has moved to Italy, or is about to, and wants work that fits the rest of their life. Sessions are online, by video call."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Book a free first meeting with Elsa",
+            "to": {
+              "kind": "book",
+              "pro": "elsa-salvati"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "See how it works",
+            "to": {
+              "kind": "anchor",
+              "anchor": "how-it-works"
+            },
+            "style": "ghost"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Situations",
+        "title": "Where you might be starting from.",
+        "intro": {
+          "p": []
+        },
+        "marker": "numbers",
+        "items": [
+          {
+            "group": "",
+            "title": "Applications go nowhere, and everyone says it's who you know",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "You've sent CV after CV and can't even get an interview. A CV written for another job market can come across very differently to a recruiter here, and contacts matter when you have almost none yet."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Your qualifications and experience don't seem to count",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Years of work and a degree that opened doors at home now seem to carry little weight. Getting a qualification formally recognised is a separate process, and it takes time."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "You followed your partner, and your own career went on hold",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "The move made sense for both of you. Now your partner has a job to go to and you're the one rebuilding from scratch, often in a language you're still learning. How you spend your days affects everything else, at home as well as at work."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "You're moving soon and want a plan before you arrive",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "You'd rather know what's realistic before you land: which roles are open to you, how much Italian they need, and what to prepare while you're still abroad."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "You have a job, but it isn't going anywhere",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "You've settled in, the work is fine, and there's no obvious next step. You may be wondering whether to push for more where you are, change field, or leave Italy altogether."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          }
+        ],
+        "after": [
+          {
+            "kind": "stat",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "If this feels harder than you expected, you're not alone: 42% of expats in Italy rate the local job market negatively."
+                  }
+                ]
+              ]
+            },
+            "source": "InterNations Expat Insider 2026"
+          }
+        ]
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "How it works",
+        "title": "It starts with your situation, not with your CV.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Career coaching with Elsa is a series of one-to-one video sessions. It's practical work on your career, led by a psychologist, and it isn't therapy. What you do in the sessions depends on where you're starting from."
+              }
+            ]
+          ]
+        },
+        "items": [
+          {
+            "title": "Your whole situation comes first",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Elsa starts by looking at your skills and experience and what you want from work. Then come the things you have to plan around, such as how much Italian you speak, family, a visa or where you'd like to live. Moving country changes your working life and your home life at the same time, so a career plan that leaves one of them out rarely holds up for long."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Then a realistic look at what's open to you",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "An ad that asks for \"fluent Italian\" doesn't always mean it. Elsa has spent years on the other side of job ads, so she can help you tell a hard requirement from a wish list, and say plainly how much Italian the roles you want are likely to need. From there you compare the options that are realistically open, and decide whether a course or a new qualification would actually change your chances."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "The work itself depends on where you are",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Still deciding on a direction:",
+                    "b": true
+                  },
+                  {
+                    "t": " you won't start with your CV. You work out which directions make sense for you."
+                  }
+                ],
+                [
+                  {
+                    "t": "Wanting to progress in your current job:",
+                    "b": true
+                  },
+                  {
+                    "t": " the focus is on how to move forward where you are, and what that would take."
+                  }
+                ],
+                [
+                  {
+                    "t": "Actively looking for work:",
+                    "b": true
+                  },
+                  {
+                    "t": " your CV, target companies, the job platforms worth your time, LinkedIn and interview practice."
+                  }
+                ]
+              ]
+            },
+            "note": "Skills assessment tools, if any: to confirm."
+          },
+          {
+            "title": "A plan you review at every session",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Each session ends with concrete next steps, and the next one begins with how they went, so the plan changes as you find out what works."
+                  }
+                ]
+              ]
+            },
+            "note": "At the end, a written plan with your options and next steps; a fictional sample to show here: to confirm."
+          }
+        ],
+        "after": []
+      },
+      "anchor": "how-it-works",
+      "type": "steps",
+      "note": "Proposed method: to confirm with Elsa."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "What it covers",
+        "title": "What career coaching with Elsa can cover.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "After the first sessions, you and Elsa agree which of these you need."
+              }
+            ]
+          ]
+        },
+        "variant": "terms",
+        "items": [
+          {
+            "term": "CV writing:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "a CV aimed at the roles you want, and at the people who will read it."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Job search:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "choosing target companies and the platforms where it's worth looking."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Interview preparation:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "mock interviews with feedback, so the real thing feels familiar."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Skills and experience assessment:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "what you bring, and how to describe it to an employer here."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Networking and LinkedIn:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "building contacts from almost nothing, and a profile that supports what you're aiming for."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Career direction:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "working out which way to go when more than one path is possible, or none looks clear."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "The stress of a career transition:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "room to deal with the pressure of a job change or a new start, as part of the coaching."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Training and new skills:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "deciding whether a course, a qualification or more Italian is worth it for your goals."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Job offers:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "if you get an offer, you can go through it together, understand what it includes and prepare to negotiate."
+                  }
+                ]
+              ]
+            },
+            "note": "Relocation pointers: first pointers on housing and paperwork for your move. Only if the service is confirmed."
+          }
+        ],
+        "after": [],
+        "link": null
+      },
+      "type": "term-list"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Limits",
+        "title": "What coaching can't do, and when someone else can help.",
+        "intro": {
+          "p": []
+        },
+        "variant": "terms",
+        "items": [
+          {
+            "term": "No one can guarantee a job.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Elsa helps you prepare and decide; she doesn't put clients forward to employers."
+                  }
+                ]
+              ]
+            },
+            "note": "Rule on how this fits with the practice's recruitment and outplacement work for organisations: the practice decides."
+          },
+          {
+            "term": "Some questions need a specialist.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Formal recognition of foreign qualifications, legal questions about a contract, and visa or move paperwork need the relevant office or professional. Job offer work with Elsa isn't legal advice."
+                  }
+                ]
+              ]
+            },
+            "note": "The brief includes legal aspects and workers' rights: the client decides; any referral network to confirm."
+          },
+          {
+            "term": "While a qualification is being recognised,",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Elsa can help you decide what to do with your experience in the meantime."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "When it's more than a career question.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Months of rejections can wear down anyone's confidence, and sometimes what's left goes beyond career work. Then Elsa will say so and, if you'd like, suggest Monica Federico, the practice's psychotherapist, who has an MSc in work and organisational psychology. With your consent, Elsa and Monica can talk to each other."
+                  }
+                ]
+              ]
+            },
+            "note": "Therapy in English: to confirm. How information is shared, and its limits: to define with the practice and check with your own adviser. If you're still abroad: the rules for online services, especially psychological ones, may depend on the country you're in; to check with your own adviser."
+          }
+        ],
+        "after": [],
+        "link": null
+      },
+      "type": "term-list"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "eyebrow": "Who",
+        "title": "Elsa Salvati, psychologist and HR professional.",
+        "people": [
+          {
+            "name": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Elsa is a psychologist, registered with the Italian Order of Psychologists since 2014, and her entry in the Order's register states that she offers sessions in English. She has worked in HR for over ten years, across recruitment, development, training and change management, and knows the Italian job market. She also has international academic and professional experience."
+                  }
+                ],
+                [
+                  {
+                    "t": "That combination shapes the sessions. When she reads your CV or runs a mock interview, she draws on years of HR work, recruitment included. As a psychologist, she can also work with what a career change does to your confidence and your days, alongside the practical steps."
+                  }
+                ]
+              ]
+            },
+            "tag": "MSc in cognitive neuroscience · Postgraduate diploma in People Development and Management",
+            "button": {
+              "label": "Book with Elsa",
+              "to": {
+                "kind": "book",
+                "pro": "elsa-salvati"
+              },
+              "style": "light"
+            },
+            "link": null,
+            "note": "Accreditation wording to check against the certificate. Short video of Elsa speaking English: to film."
+          }
+        ],
+        "why": [],
+        "dots": false
+      },
+      "type": "people"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Fees, length and flexibility",
+        "title": "Online sessions, and how the first meeting works.",
+        "intro": {
+          "p": []
+        },
+        "variant": "terms",
+        "items": [
+          {
+            "term": "Free first meeting:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "30 minutes by video call, with no obligation to continue. You talk about where you are and what you'd like to change, and decide together whether career coaching is the right fit."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Sessions:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "online, by video call."
+                  }
+                ]
+              ]
+            },
+            "note": "Fee per session: to agree, not to be published until agreed (the brief says €50 an hour; research proposes packages and a different fee for sessions in English; the client decides). Usual number of sessions and how often: to agree with Elsa. Whether a single session is possible (for example one mock interview or a CV review), and whether you can pause or stop at any time: to confirm."
+          }
+        ],
+        "after": [],
+        "link": null
+      },
+      "type": "term-list"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Related pages",
+        "title": "If your situation is a different one.",
+        "intro": {
+          "p": []
+        },
+        "marker": "links",
+        "items": [
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "If you have a job and want to work on how things go there, such as stress, conflict or leading a team"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Workplace coaching",
+                "to": {
+                  "kind": "page",
+                  "key": "coaching"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "If what weighs on you most right now isn't the job"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psychological support",
+                "to": {
+                  "kind": "page",
+                  "key": "sostegno"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "When the move weighs on more than work"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Moving to Italy",
+                "to": {
+                  "kind": "page",
+                  "key": "servizi",
+                  "anchor": "moving-to-italy"
+                }
+              }
+            ],
+            "anchor": ""
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Start with a free first meeting with Elsa.",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "Thirty minutes on video to tell Elsa what you'd like to change. By the end you'll both have a clearer idea of whether career coaching suits you, and what working together could look like."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Book a free first meeting with Elsa",
+            "to": {
+              "kind": "book",
+              "pro": "elsa-salvati"
+            },
+            "style": "light"
+          },
+          {
+            "label": "Ask a question",
+            "to": {
+              "kind": "page",
+              "key": "contatti"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": []
+        }
+      },
+      "type": "closing-cta",
+      "note": "Reply time to confirm (for example within one working day), by email, phone or WhatsApp."
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "key": "contatti",
+  "path": "/en/contact/",
+  "title": "Contact | Book online or ask us something first – Blooming",
+  "description": "Book a free 30-minute first meeting online, call or email, or ask Blooming to get back to you. Psychology and coaching, online, for people living in Italy or moving here.",
+  "nav": "contact",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Contact",
+        "title": "Book online, or ask us something first.",
+        "subtitle": "",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Book a free first meeting",
+                "href": "/en/book/"
+              },
+              {
+                "t": " online · phone "
+              },
+              {
+                "t": "{{contact.phone}}",
+                "href": "tel:{{contact.phoneHref}}"
+              },
+              {
+                "t": " · email "
+              },
+              {
+                "t": "{{contact.email}}",
+                "href": "mailto:{{contact.email}}"
+              },
+              {
+                "t": " · WhatsApp for practical questions."
+              }
+            ]
+          ]
+        },
+        "buttons": [],
+        "width": "wide"
+      },
+      "type": "page-hero",
+      "note": "Phone, email, WhatsApp number and use: to confirm. We reply within [reply time: to confirm]. Your messages are read by [to confirm]."
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "variant": "people",
+        "eyebrow": "Form",
+        "title": "Ask us to get back to you.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Leave your details and we'll contact you to arrange a time, or to answer your question."
+              }
+            ]
+          ]
+        }
+      },
+      "anchor": "get-back-to-you",
+      "type": "request-form",
+      "note": "Professional field: Monica in English to confirm. If Monica doesn't confirm English, choosing psychological support or psychotherapy in English shows: \"Psychological support and psychotherapy are in Italian. Elsa works in English for career coaching & guidance and workplace coaching.\" Privacy wording to check with your own adviser;"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Organisations",
+        "title": "Companies and teams have their own page.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "For hiring, team coaching or training, the organisations page explains how the practice works with companies, and has its own form."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "arrow",
+            "link": {
+              "label": "For organisations",
+              "to": {
+                "kind": "page",
+                "key": "aziende"
+              }
+            }
+          }
+        ]
+      },
+      "type": "text-columns"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Blooming isn't an emergency service.",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "If you or someone else is in danger, call "
+              },
+              {
+                "t": "112",
+                "href": "tel:112"
+              },
+              {
+                "t": " or "
+              },
+              {
+                "t": "118",
+                "href": "tel:118"
+              },
+              {
+                "t": ", or go to the nearest emergency department (Pronto Soccorso)."
+              }
+            ]
+          ]
+        },
+        "buttons": [],
+        "more": {
+          "p": []
+        }
+      },
+      "type": "closing-cta"
+    }
+  ]
+}

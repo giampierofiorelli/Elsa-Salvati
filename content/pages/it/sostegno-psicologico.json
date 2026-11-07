@@ -1,0 +1,516 @@
+{
+  "key": "sostegno",
+  "path": "/sostegno-psicologico/",
+  "title": "Sostegno psicologico online con una psicoterapeuta – Blooming",
+  "description": "Sostegno psicologico online con Monica Federico, psicologa e psicoterapeuta: lutto, separazione, malattia di una persona cara, genitorialità. Primo colloquio gratuito.",
+  "nav": "servizi",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Sostegno psicologico",
+        "title": "Un lutto, una separazione, un figlio che non arriva: non devi attraversarli da te.",
+        "subtitle": "Sostegno psicologico con Monica Federico, psicologa e psicoterapeuta.",
+        "intro": {
+          "p": []
+        },
+        "buttons": [
+          {
+            "label": "Prenota con Monica",
+            "to": {
+              "kind": "book",
+              "pro": "monica-federico"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "Vedi come funziona",
+            "to": {
+              "kind": "anchor",
+              "anchor": "come-funziona"
+            },
+            "style": "ghost"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero",
+      "note": "Alternativa, solo se Monica conferma il formato breve: \"…per attraversarli non serve per forza una lunga terapia.\" · Monica da inserire nel sistema di prenotazione (slug monica-federico)."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Situazioni",
+        "title": "Il sostegno serve quando un momento della vita pesa più del solito.",
+        "intro": {
+          "p": []
+        },
+        "marker": "numbers",
+        "items": [
+          {
+            "group": "",
+            "title": "Hai perso qualcuno o qualcosa che contava",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Una persona, da poco o in un lutto che senti ancora vicino, una relazione, il lavoro."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Ti occupi di una persona cara con una malattia grave, fisica o psichiatrica",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Le visite e le decisioni passano da te, e a te non pensa nessuno."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Gli esami per avere un figlio, mese dopo mese",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "E le domande degli altri a cui non sai più cosa rispondere."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "In gravidanza o nei primi mesi con un figlio",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Ti chiedi se è normale sentirsi così."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Il rientro dall'estero, fatto o solo pensato",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "O una città nuova in cui non riesci ad ambientarti."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Come funziona",
+        "title": "Dare un nome a quello che succede, e trovare cosa ti aiuta a reggere.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Con Monica il sostegno psicologico si concentra su un momento preciso della tua vita."
+              }
+            ]
+          ]
+        },
+        "items": [
+          {
+            "title": "Raccontare",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Nelle prime sedute racconti cosa succede, con i tuoi tempi. Monica ti aiuta a dare un nome a quello che provi."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Trovare appigli",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Insieme cercate cosa ti aiuta a reggere: le persone, le abitudini, le risorse che hai già."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Decidere come proseguire",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Vi chiedete se il sostegno ti basta, se serve un percorso diverso o se puoi fermarti."
+                  }
+                ]
+              ]
+            },
+            "note": "Ogni quante sedute: da confermare."
+          }
+        ],
+        "after": []
+      },
+      "anchor": "come-funziona",
+      "type": "steps",
+      "note": "Metodo proposto, da confermare con Monica. Non pubblicare questa sezione prima della conferma. · Di solito più breve di una psicoterapia; durata tipica: da confermare con Monica. Strumenti di valutazione e come si conclude: da confermare con Monica."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Cosa comprende e quando serve altro",
+        "title": "Se il disagio è più profondo, Monica può proporti la psicoterapia.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Se emerge che il disagio dura da tempo o pesa molto, Monica, che è anche psicoterapeuta, te lo dice e, se vuoi, ti propone un percorso di psicoterapia."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "arrow",
+            "link": {
+              "label": "Psicoterapia",
+              "to": {
+                "kind": "page",
+                "key": "psicoterapia"
+              }
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Se serve anche una visita medica o psichiatrica, te lo dice."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Lavoro e vita non viaggiano separati: se il periodo difficile pesa soprattutto sul lavoro, Monica può proporti di lavorarci anche con Elsa."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Il sostegno psicologico non è un servizio per le emergenze: in caso di pericolo immediato chiama il 112 o il 118, oppure vai al Pronto Soccorso più vicino."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Quando e come: da confermare con Monica. · Da confermare."
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "eyebrow": "Chi se ne occupa",
+        "title": "Monica Federico, psicologa e psicoterapeuta, con esperienza in ospedale e in centri clinici.",
+        "people": [
+          {
+            "name": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Psicologa, iscritta all'Albo dal 2010. Psicoterapeuta a indirizzo cognitivo-comportamentale. Ha lavorato in ambito ospedaliero, in centri clinici e in studio privato. Si è laureata in psicologia del lavoro e delle organizzazioni."
+                  }
+                ]
+              ]
+            },
+            "tag": "",
+            "button": {
+              "label": "Prenota con Monica",
+              "to": {
+                "kind": "book",
+                "pro": "monica-federico"
+              },
+              "style": "light"
+            },
+            "link": {
+              "label": "Scheda di Monica",
+              "to": {
+                "kind": "page",
+                "key": "team",
+                "anchor": "monica"
+              }
+            },
+            "note": "Anno di specializzazione da confermare."
+          }
+        ],
+        "why": [],
+        "dots": false
+      },
+      "type": "people"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Prezzi, durata e flessibilità",
+        "title": "Online, in videochiamata, dopo un primo colloquio gratuito.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Il primo colloquio dura 30 minuti, in videochiamata."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "arrow",
+            "link": {
+              "label": "Tariffe e prenotazioni",
+              "to": {
+                "kind": "page",
+                "key": "costi-e-faq"
+              }
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Durata delle sedute: 50/60 minuti, da confermare (poi nel titolo). Prezzo per seduta: da concordare, da non pubblicare finché non è approvato; il brief indica 50 € per un'ora. Numero di sedute tipico, possibilità di interrompere: da confermare con Monica."
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Collegamenti utili",
+        "title": "Se la tua situazione è un'altra.",
+        "intro": {
+          "p": []
+        },
+        "marker": "links",
+        "items": [
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se il disagio è profondo o dura da tempo"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psicoterapia",
+                "to": {
+                  "kind": "page",
+                  "key": "psicoterapia"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se a pesare è soprattutto il lavoro"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Coaching",
+                "to": {
+                  "kind": "page",
+                  "key": "coaching"
+                }
+              },
+              {
+                "label": "Orientamento e carriera",
+                "to": {
+                  "kind": "page",
+                  "key": "lavoro"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se non sai che tipo di aiuto ti serve"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psicologa, psicoterapeuta o coach: le differenze",
+                "to": {
+                  "kind": "page",
+                  "key": "differenze"
+                }
+              }
+            ],
+            "anchor": ""
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Parti da mezz'ora con Monica, gratis.",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "Le racconti cosa sta succedendo, anche se non sai da dove cominciare. Ti dice come potete lavorarci e se il sostegno è la strada giusta."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Prenota con Monica",
+            "to": {
+              "kind": "book",
+              "pro": "monica-federico"
+            },
+            "style": "light"
+          },
+          {
+            "label": "Scrivici una domanda",
+            "to": {
+              "kind": "page",
+              "key": "contatti"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": []
+        }
+      },
+      "type": "closing-cta",
+      "note": "Rispondiamo entro [un giorno lavorativo], per email [indirizzo], telefono [numero] o WhatsApp [se confermato]."
+    }
+  ]
+}

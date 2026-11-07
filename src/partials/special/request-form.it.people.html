@@ -1,0 +1,23 @@
+<section class="section<!--bg-->"<!--id--> data-theme-section="light">
+  <div class="wrap two-col-v4">
+    <div>
+      <!--head-->
+    </div>
+    <form class="panel form-v4" data-request-form novalidate>
+      <input type="hidden" name="mode" value="da_definire">
+      <div class="field"><label for="r-name">Nome</label><input id="r-name" name="name" type="text" autocomplete="name" required maxlength="80"></div>
+      <div class="field"><label for="r-email">Email</label><input id="r-email" name="email" type="email" autocomplete="email" maxlength="254"></div>
+      <div class="field"><label for="r-phone">Telefono</label><input id="r-phone" name="phone" type="tel" autocomplete="tel" maxlength="20"><span class="hint">Indica almeno un recapito tra email e telefono.</span></div>
+      <div class="field"><label for="r-category">Area</label>
+        <select id="r-category" name="category"><option value="da_definire">Non so ancora</option>{{@categoryOptions}}</select></div>
+      <div class="field" data-pro-field hidden><label for="r-pro">Professionista <span class="hint">(facoltativo)</span></label><select id="r-pro" name="professional"><option value="">Indifferente</option></select></div>
+      <div class="field"><label for="r-lang">Lingua del colloquio</label><select id="r-lang" data-extra="Lingua del colloquio"><option>Italiano</option><option>Inglese</option></select></div>
+      <div class="field"><label for="r-pref">Giorni e orari preferiti <span class="hint">(facoltativo)</span></label><input id="r-pref" name="preference" type="text" maxlength="200" placeholder="es. martedì pomeriggio"></div>
+      <div class="field"><label for="r-msg">Messaggio <span class="hint">(facoltativo)</span></label><textarea id="r-msg" name="message" maxlength="480"></textarea><span class="hint">Non serve raccontare qui la tua situazione o parlare della tua salute: ne parlerai nel colloquio.</span></div>
+      <div class="hp" aria-hidden="true"><label for="r-website">Lascia vuoto</label><input id="r-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <label class="check"><input type="checkbox" name="privacy" required> <span>Ho letto l'<a href="/privacy/" target="_blank" rel="noopener">informativa sulla privacy</a>.</span></label>
+      <p class="status" role="status" data-request-status></p>
+      <button class="btn btn-primary" type="submit">Invia la richiesta</button>
+    </form>
+  </div>
+</section>

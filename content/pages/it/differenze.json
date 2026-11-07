@@ -1,0 +1,465 @@
+{
+  "key": "differenze",
+  "path": "/differenze/",
+  "title": "Differenza tra psicologo, psicoterapeuta e coach – Blooming",
+  "description": "Cosa cambia tra psicologa, psicoterapeuta, coach e psichiatra, come verificare l'iscrizione all'Albo e come scegliere. Primo colloquio gratuito per capirlo insieme.",
+  "nav": "servizi",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Le differenze",
+        "title": "Psicologa, psicoterapeuta o coach: cosa cambia e come scegliere.",
+        "subtitle": "Non devi saperlo prima di prenotare: il primo colloquio serve anche a questo.",
+        "intro": {
+          "p": []
+        },
+        "buttons": [
+          {
+            "label": "Prenota il primo colloquio gratuito",
+            "to": {
+              "kind": "book"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "Come possiamo aiutarti",
+            "to": {
+              "kind": "page",
+              "key": "servizi"
+            },
+            "style": "ghost"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero",
+      "note": "Il pulsante apre la prenotazione senza professionista: scelta l'area, «Aiutami a scegliere» è già selezionato quando ci sono più professioniste."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Le figure",
+        "title": "Titoli diversi, che spesso si sommano.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Una psicoterapeuta è anche psicologa o medica; una psicologa può fare coaching. Cambiano la formazione e quello che la legge permette di fare."
+              }
+            ]
+          ]
+        },
+        "variant": "terms",
+        "items": [
+          {
+            "term": "Psicologa o psicologo.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Ha una laurea in psicologia, l'abilitazione e l'iscrizione all'Albo degli Psicologi della sua regione. Si occupa di valutazione e sostegno psicologico, di orientamento e di coaching."
+                  }
+                ]
+              ]
+            },
+            "note": "Definizione da verificare su psy.it; link da inserire."
+          },
+          {
+            "term": "Psicoterapeuta.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Una psicologa o uno psicologo, una medica o un medico, con una specializzazione in psicoterapia di almeno quattro anni. Fa psicoterapia: un percorso per disturbi psicologici come l'ansia o la depressione."
+                  }
+                ]
+              ]
+            },
+            "note": "Fonte: L. 56/1989, art. 3; link da inserire. Formula da verificare con un vostro consulente."
+          },
+          {
+            "term": "Coach.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Lavora su obiettivi concreti, di solito legati al lavoro. Per fare coaching non serve l'iscrizione a un Albo. Un coaching fatto da una psicologa ha in più la formazione in psicologia e le regole del codice deontologico."
+                  }
+                ]
+              ]
+            },
+            "note": "L. 4/2013: da verificare con un vostro consulente. Formula sul codice deontologico da verificare con un vostro consulente."
+          },
+          {
+            "term": "Psichiatra.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Ha una laurea in medicina e la specializzazione in psichiatria: può prescrivere farmaci."
+                  }
+                ]
+              ]
+            },
+            "note": "Fonte da inserire."
+          }
+        ],
+        "after": [],
+        "link": null
+      },
+      "type": "term-list"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Come verificare e chi fa cosa qui",
+        "title": "Puoi controllare l'iscrizione all'Albo di chiunque, anche la nostra.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "L'elenco delle persone iscritte all'Albo degli Psicologi è pubblico."
+              }
+            ]
+          ]
+        },
+        "body": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Elsa Salvati",
+                    "b": true
+                  },
+                  {
+                    "t": ", psicologa, iscritta all'Albo dal 2014, da oltre dieci anni nelle risorse umane: orientamento e carriera, coaching. Non è psicoterapeuta."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Monica Federico",
+                    "b": true
+                  },
+                  {
+                    "t": ", psicologa, iscritta all'Albo dal 2010, psicoterapeuta cognitivo-comportamentale: sostegno psicologico, psicoterapia."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Lo studio non offre psichiatria. Se nel percorso serve anche una visita psichiatrica, la professionista te lo dice."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "arrow",
+            "link": {
+              "label": "Chi siamo",
+              "to": {
+                "kind": "page",
+                "key": "team"
+              }
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Da confermare. · Link al registro nazionale da inserire; indicare anche dove si vede l'annotazione di psicoterapeuta."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Cosa succede in seduta",
+        "title": "Tre modi diversi di passare un'ora insieme.",
+        "intro": {
+          "p": []
+        },
+        "marker": "numbers",
+        "items": [
+          {
+            "group": "",
+            "title": "Nel coaching",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Parti da un obiettivo di lavoro, e ogni seduta finisce con qualcosa da provare prima della successiva."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Nel sostegno psicologico",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Racconti cosa stai vivendo e cerchi, con la professionista, cosa ti aiuta a reggere in questo periodo."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "In psicoterapia",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Si ricostruisce il problema e si lavora per cambiare ciò che lo mantiene, di solito per un periodo più lungo."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": "",
+            "note": "Durata indicativa: da confermare."
+          }
+        ],
+        "after": []
+      },
+      "type": "rows",
+      "note": "Da confermare con Elsa e Monica, insieme ai metodi delle pagine area. Non pubblicare prima della conferma. Durata e prezzo indicativi di ciascun servizio: da confermare, da non pubblicare finché non sono approvati."
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Come scegliere",
+        "title": "Quattro esempi per orientarti.",
+        "intro": {
+          "p": []
+        },
+        "marker": "links",
+        "items": [
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Non sai se restare nel tuo lavoro o cambiarlo:",
+                        "b": true
+                      },
+                      {
+                        "t": " è orientamento, con Elsa."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Orientamento e carriera",
+                "to": {
+                  "kind": "page",
+                  "key": "lavoro"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Il lavoro ce l'hai, ma un conflitto o lo stress ti tolgono energia e tempo:",
+                        "b": true
+                      },
+                      {
+                        "t": " è coaching, con Elsa. Se dietro c'è altro, Elsa ti propone di parlarne con Monica."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Coaching",
+                "to": {
+                  "kind": "page",
+                  "key": "coaching"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Stai attraversando un lutto, una separazione, un periodo che fatichi a reggere:",
+                        "b": true
+                      },
+                      {
+                        "t": " è sostegno psicologico, con Monica."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Sostegno psicologico",
+                "to": {
+                  "kind": "page",
+                  "key": "sostegno"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Un'ansia o un umore basso che durano da mesi:",
+                        "b": true
+                      },
+                      {
+                        "t": " è psicoterapia, con Monica."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psicoterapia",
+                "to": {
+                  "kind": "page",
+                  "key": "psicoterapia"
+                }
+              }
+            ],
+            "anchor": ""
+          }
+        ],
+        "after": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Per un problema di lavoro spesso basta il coaching; per un periodo difficile, a volte, poche sedute di sostegno."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "type": "rows",
+      "note": "Da confermare con Monica."
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Se non sai ancora cosa ti serve, inizia dal colloquio gratuito.",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "Puoi scegliere la professionista oppure «Aiutami a scegliere»: incontri una delle due professioniste; se il tuo bisogno riguarda l'area della collega, te lo dice."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Prenota il primo colloquio gratuito",
+            "to": {
+              "kind": "book"
+            },
+            "style": "light"
+          },
+          {
+            "label": "Scrivici una domanda",
+            "to": {
+              "kind": "page",
+              "key": "contatti"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": []
+        }
+      },
+      "type": "closing-cta",
+      "note": "E fissate un colloquio con lei: da confermare. · Rispondiamo entro [un giorno lavorativo], per email [indirizzo], telefono [numero] o WhatsApp [se confermato]."
+    }
+  ]
+}

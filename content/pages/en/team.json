@@ -1,0 +1,335 @@
+{
+  "key": "team",
+  "path": "/en/team/",
+  "title": "Team | Elsa Salvati and Monica Federico, psychologists – Blooming",
+  "description": "Meet the two psychologists at Blooming: Elsa Salvati for career coaching & guidance and workplace coaching, Monica Federico for psychological support and psychotherapy. Online, for people living in Italy or moving here.",
+  "nav": "team",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Team",
+        "title": "Elsa Salvati and Monica Federico, two psychologists who work together.",
+        "subtitle": "",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Blooming is a small psychology and coaching practice. Elsa and Monica work online, by video call, with people living in Italy or about to move here. A job search that drags on can start to affect your sleep, and a hard time at home can make work feel impossible. That's why one practice offers both career help and psychological help. The name comes from the same idea: to bloom is to come through a difficult time, find your own resources and reach a point where you feel well again."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Book a free first meeting",
+            "to": {
+              "kind": "book"
+            },
+            "style": "primary"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "photo": {
+          "id": "static-elsa-salvati",
+          "alt": "Elsa Salvati",
+          "w": 800,
+          "h": 1067
+        },
+        "eyebrow": "Elsa",
+        "title": "Elsa Salvati, psychologist and HR professional.",
+        "languages": "Languages: English · Italian",
+        "items": [
+          {
+            "term": "Registration.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Psychologist, registered with the Order of Psychologists of Emilia-Romagna (no. 10626, section A) since 2022; on the register since 2014. Her entry in the register states that she offers sessions in English."
+                  }
+                ]
+              ]
+            },
+            "note": "Link to the register entry: to add; number to recheck."
+          },
+          {
+            "term": "Qualifications.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "MSc in cognitive neuroscience. Postgraduate diploma in People Development and Management. Over ten years in HR, across recruitment, development, training, organisation and change management, with international academic and professional experience."
+                  }
+                ]
+              ]
+            },
+            "note": "Accreditation wording of the diploma to check against the certificate."
+          },
+          {
+            "term": "Career coaching & guidance.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Choosing a direction, your CV, where to look, interviews, building contacts, what to do with experience gained elsewhere, and going through a job offer before you negotiate. Elsa knows the Italian job market, so she can give you a realistic idea of what's open to you and how much Italian the roles you want are likely to need."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Workplace coaching.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "For when you have a job but work isn't going well: stress, a conflict that has dragged on, a change you didn't choose, or leading a team for the first time."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Work with organisations.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Hiring for key roles, team coaching and tailored training."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "When someone else is the right person.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Elsa isn't a psychotherapist. If what you need turns out to be therapy, she'll tell you, and can suggest Monica. Coaching can't guarantee a job, and Elsa doesn't put clients forward to employers. Visas, the recognition of foreign qualifications and legal questions about a contract need the relevant office or professional; going through a job offer with Elsa isn't legal advice."
+                  }
+                ]
+              ]
+            },
+            "note": "Monica in English: to confirm (if not: \"Monica, whose sessions are in Italian\"). How \"doesn't put clients forward\" fits with the practice's hiring work for organisations: the practice decides. Method proposed, to confirm with Elsa."
+          }
+        ],
+        "button": {
+          "label": "Book with Elsa",
+          "to": {
+            "kind": "book",
+            "pro": "elsa-salvati"
+          },
+          "style": "primary"
+        },
+        "links": [
+          {
+            "label": "How career coaching works",
+            "to": {
+              "kind": "page",
+              "key": "lavoro"
+            }
+          },
+          {
+            "label": "Workplace coaching",
+            "to": {
+              "kind": "page",
+              "key": "coaching"
+            }
+          },
+          {
+            "label": "For organisations",
+            "to": {
+              "kind": "page",
+              "key": "aziende"
+            }
+          }
+        ]
+      },
+      "anchor": "elsa",
+      "type": "profile",
+      "note": "Languages list to confirm with Elsa. Photo: confirm it's the one to use. Short video of Elsa speaking English: to film before launch. One sentence of her own, in the first person: to be supplied."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "photo": null,
+        "eyebrow": "Monica",
+        "title": "Monica Federico, psychologist and psychotherapist.",
+        "languages": "",
+        "items": [
+          {
+            "term": "Registration and qualifications.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Psychologist, registered with the Italian Order of Psychologists since 2010. Cognitive behavioural psychotherapist. MSc in work and organisational psychology. Clinical experience in hospitals, clinics and private practice."
+                  }
+                ]
+              ]
+            },
+            "note": "Registration number: to verify on the register; link to add. Year of specialisation: to confirm."
+          },
+          {
+            "term": "Psychological support.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "For a hard time that began at a particular point, and that you'd like to get through: a bereavement, a separation, a job that ends, trying for a baby, becoming a parent, a family member who is seriously ill, physically or mentally, or a move that turns out heavier than expected."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Psychotherapy.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "For difficulties that run deep or have lasted a long time. Monica works with a bio-psycho-social approach: she looks at your body, your mind and your circumstances together."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "She also has an MSc in work and organisational psychology."
+                  }
+                ]
+              ]
+            },
+            "note": "To confirm in Monica's own words. If Monica confirms English: \"Talking about something painful is hard enough without hunting for the words in Italian. With Monica you can do it in English.\" If not, leave this out and add above the button: \"Monica's sessions are in Italian.\""
+          },
+          {
+            "term": "When someone else is the right person.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "If what weighs on you is mainly a career decision, or how things are going at work, Monica can suggest Elsa."
+                  }
+                ]
+              ]
+            },
+            "note": "To confirm with the practice. How Monica works (first sessions, assessment tools, how long support lasts compared with psychotherapy, frequency, how progress is reviewed): to confirm with Monica."
+          }
+        ],
+        "button": {
+          "label": "Book with Monica",
+          "to": {
+            "kind": "book",
+            "pro": "monica-federico"
+          },
+          "style": "primary"
+        },
+        "links": [
+          {
+            "label": "Psychological support",
+            "to": {
+              "kind": "page",
+              "key": "sostegno"
+            }
+          },
+          {
+            "label": "Psychotherapy",
+            "to": {
+              "kind": "page",
+              "key": "psicoterapia"
+            }
+          }
+        ]
+      },
+      "anchor": "monica",
+      "type": "profile",
+      "note": "Real photo to come. Languages to confirm with Monica (if she works in English: \"Italian · English\"; if not: \"Italian\"). Short video: in English only if she confirms sessions in English. One sentence of her own, in the first person: to be supplied. · \"Book with Monica\" only once she is in the booking system and if she works in English. Dagmara Ostrowska: profile when her details exist."
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Working with both",
+        "title": "Elsa and Monica can work alongside each other when work and life get tangled up.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "lead",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Say a parent back home becomes seriously ill, and you start seeing Monica to get through the months of calls and flights. Once things are steadier, the job you put on hold comes back into view, and Monica can suggest a few sessions with Elsa to plan your next step. You decide whether to go ahead. With your consent, Elsa and Monica can talk to each other."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Monica in English: to confirm. Both directions to confirm with the practice. How information is shared, and its limits: to define with the practice; check with your own adviser."
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Start with a free 30-minute first meeting.",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "Book a free 30-minute first meeting with either of them, or choose \"Help me choose\"."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Book a free first meeting",
+            "to": {
+              "kind": "book"
+            },
+            "style": "light"
+          },
+          {
+            "label": "Fees & booking",
+            "to": {
+              "kind": "page",
+              "key": "costi-e-faq"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": [
+            [
+              {
+                "t": "If you'd rather ask something first: "
+              },
+              {
+                "t": "Contact",
+                "href": "/en/contact/"
+              }
+            ]
+          ]
+        }
+      },
+      "type": "closing-cta",
+      "note": "Monica in English: to confirm. If you'd rather ask something first: email, phone or WhatsApp [to confirm]; reply time [to confirm]."
+    }
+  ]
+}

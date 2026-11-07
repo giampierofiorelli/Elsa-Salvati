@@ -1,0 +1,575 @@
+{
+  "key": "lavoro",
+  "path": "/orientamento-carriera/",
+  "title": "Orientamento professionale online con una psicologa – Blooming",
+  "description": "Capire che lavoro fare, e come arrivarci. Orientamento professionale online con Elsa Salvati, psicologa che da oltre dieci anni lavora nelle risorse umane. Primo colloquio gratuito di 30 minuti.",
+  "nav": "lavoro",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Orientamento e carriera",
+        "title": "Capire che lavoro fare, e come arrivarci.",
+        "subtitle": "Orientamento professionale con una psicologa che da oltre dieci anni lavora nelle risorse umane.",
+        "intro": {
+          "p": []
+        },
+        "buttons": [
+          {
+            "label": "Prenota il primo colloquio gratuito con Elsa (30 min)",
+            "to": {
+              "kind": "book",
+              "pro": "elsa-salvati"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "Vedi come funziona il percorso",
+            "to": {
+              "kind": "anchor",
+              "anchor": "percorso"
+            },
+            "style": "ghost"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Situazioni",
+        "title": "Quando l'orientamento può servirti.",
+        "intro": {
+          "p": []
+        },
+        "marker": "numbers",
+        "items": [
+          {
+            "group": "",
+            "title": "Il lavoro che fai ti fa stare male",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "E non sai che altro potresti fare."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Vuoi cambiare settore o ruolo",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "E capire se ha senso prima di muoverti."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Vuoi crescere dove sei",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Ma quello che fai non viene riconosciuto."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "stat",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Non succede solo a te: quasi otto lavoratori su dieci, in Italia, non si sentono valorizzati nel proprio lavoro."
+                      }
+                    ]
+                  ]
+                },
+                "source": "Censis-Eudaimon, 2026"
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Cerchi lavoro",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Hai lasciato o perso il tuo, oppure mandi curriculum e non ti chiama nessuno."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Hai cambiato città",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Per lavoro, per studio o per amore, e devi rifarti una rete."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Pensi di rientrare in Italia, o l'hai appena fatto",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "E non sai quanto valga qui la tua esperienza."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Come funziona il percorso",
+        "title": "Un percorso che parte dalla tua situazione.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Si tratta di orientamento professionale svolto da una psicologa iscritta all'Albo. Negli incontri Elsa ti fa domande e ti propone esercizi e simulazioni di colloquio con un riscontro preciso; tra un incontro e l'altro hai qualcosa da provare."
+              }
+            ]
+          ]
+        },
+        "items": [
+          {
+            "title": "Capire da dove parti",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Con Elsa guardi esperienze e competenze, quello che ti interessa e quello che conta per te, e i vincoli concreti, per esempio di tempo o di famiglia. È un lavoro simile a un bilancio di competenze."
+                  }
+                ]
+              ]
+            },
+            "note": "Il cliente sceglie se usare il termine \"bilancio di competenze\"."
+          },
+          {
+            "title": "Esaminare le possibilità",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Elsa legge con te annunci e requisiti reali dei ruoli che ti interessano, con lo sguardo di chi fa selezione: vedi cosa hai già e cosa ti manca. Valuti le alternative con i loro pro e contro, e capisci se ti serve un corso o un aggiornamento, e quale."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Scegliere su cosa lavorare",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Secondo quello che emerge: una nuova direzione, la crescita dove sei già, oppure la ricerca di un lavoro, anche in vista di un rientro o di un trasferimento. In questo caso lavori sul curriculum e su LinkedIn, scegli le aziende a cui puntare e i canali in cui conviene cercare, curi i contatti e ti prepari ai colloqui. Se ricevi un'offerta, capisci cosa contiene e ti prepari a trattare. Se stai ancora decidendo, il curriculum può aspettare."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Un piano concreto, verificato strada facendo",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Concordi i passi e i tempi, e a ogni incontro vedi con Elsa cosa sta funzionando."
+                  }
+                ]
+              ]
+            },
+            "note": "Alla fine il piano anche per iscritto, con un esempio fittizio sulla pagina: da confermare."
+          }
+        ],
+        "after": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Lavoro e vita non viaggiano separati: per questo lo stress e i dubbi di una scelta fanno parte del percorso. Se però l'ansia, per esempio, ti toglie il sonno o ti blocca, Elsa ne parla con te e, se vuoi, ti propone di lavorarci con Monica, psicoterapeuta laureata in psicologia del lavoro. Con il tuo consenso possono confrontarsi, così il passaggio è più semplice."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "anchor": "percorso",
+      "type": "steps",
+      "note": "Modalità e limiti della condivisione da definire con lo studio; da verificare con un vostro consulente. · Metodo proposto, da confermare con Elsa. · Strumenti di valutazione: da confermare con Elsa."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Cosa comprende",
+        "title": "Il percorso ti aiuta a decidere e a muoverti. Un lavoro, però, non può garantirlo nessuno.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Comprende l'analisi delle competenze, la scelta della direzione e della formazione, curriculum e LinkedIn, la scelta delle aziende e dei canali di ricerca, i contatti, le simulazioni di colloquio, la lettura di un'offerta e la preparazione alla trattativa."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Il percorso è per te e non prevede che il tuo profilo venga proposto alle aziende."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Per alcune cose servono altre figure professionali: gli aspetti legali di un contratto, il riconoscimento dei titoli presi all'estero e le pratiche di un trasferimento."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Regola sul rapporto con la selezione per le aziende e con l'outplacement: la decide lo studio; da verificare con un vostro consulente. · Il brief include \"aspetti legali e diritti dei lavoratori\": decide il cliente; eventuale rete di riferimento da confermare. Indicazioni su casa e pratiche solo se il servizio \"Supporto al trasferimento per lavoro\" viene confermato. Se sei ancora all'estero: le regole per i servizi online, soprattutto psicologici, possono dipendere dal paese in cui ti trovi; da verificare con un vostro consulente."
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "eyebrow": "Chi se ne occupa",
+        "title": "Elsa Salvati, psicologa, da oltre dieci anni nelle risorse umane.",
+        "people": [
+          {
+            "name": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Psicologa, iscritta all'Albo degli Psicologi dal 2014. Laurea magistrale in neuroscienze cognitive, master in People Development and Management. Da oltre dieci anni nelle risorse umane, tra selezione, sviluppo, formazione e gestione del cambiamento, con esperienza internazionale."
+                  }
+                ]
+              ]
+            },
+            "tag": "",
+            "button": {
+              "label": "Prenota con Elsa",
+              "to": {
+                "kind": "book",
+                "pro": "elsa-salvati"
+              },
+              "style": "light"
+            },
+            "link": {
+              "label": "Scheda di Elsa",
+              "to": {
+                "kind": "page",
+                "key": "team"
+              }
+            },
+            "note": "Una frase di Elsa, in prima persona. · Formula sull'accreditamento ASFOR e SHRM del master da controllare sul documento."
+          }
+        ],
+        "why": [],
+        "dots": false
+      },
+      "type": "people"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Prezzi, durata e flessibilità",
+        "title": "Online, in videochiamata.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Il primo colloquio è gratuito e dura 30 minuti, in videochiamata."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "arrow",
+            "link": {
+              "label": "Tariffe e prenotazioni",
+              "to": {
+                "kind": "page",
+                "key": "costi-e-faq"
+              }
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "A incontri singoli o a percorso: da confermare. Prezzi e durata da non pubblicare finché non sono concordati (il brief indica 50 € per un'ora; le ricerche propongono pacchetti; decide il cliente). Da confermare con Elsa: si può fare un solo incontro? Quanti incontri servono di solito? Quando si decide se continuare? Si può interrompere in qualsiasi momento?"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Collegamenti utili",
+        "title": "Se la tua situazione è un'altra.",
+        "intro": {
+          "p": []
+        },
+        "marker": "links",
+        "items": [
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se il lavoro ti pesa per un capo, un conflitto o lo stress"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Coaching",
+                "to": {
+                  "kind": "page",
+                  "key": "coaching"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se il lavoro è solo una parte di un periodo difficile"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Sostegno psicologico",
+                "to": {
+                  "kind": "page",
+                  "key": "sostegno"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se cambi città o rientri, e pesa anche il resto"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Cambiare città o rientrare in Italia",
+                "to": {
+                  "kind": "page",
+                  "key": "servizi",
+                  "anchor": "cambiare-citta"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se non sai che tipo di aiuto ti serve"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psicologa, psicoterapeuta o coach: le differenze",
+                "to": {
+                  "kind": "page",
+                  "key": "differenze"
+                }
+              }
+            ],
+            "anchor": ""
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Inizia con un colloquio gratuito con Elsa.",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "In 30 minuti le racconti a che punto sei e capisci se può aiutarti, e come. Nessun obbligo di continuare."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Prenota il primo colloquio gratuito con Elsa",
+            "to": {
+              "kind": "book",
+              "pro": "elsa-salvati"
+            },
+            "style": "light"
+          },
+          {
+            "label": "Scrivici una domanda",
+            "to": {
+              "kind": "page",
+              "key": "contatti"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": []
+        }
+      },
+      "type": "closing-cta",
+      "note": "Tempo di risposta da confermare (per esempio entro un giorno lavorativo), per email, telefono o WhatsApp."
+    }
+  ]
+}

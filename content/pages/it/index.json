@@ -1,0 +1,472 @@
+{
+  "key": "index",
+  "path": "/",
+  "title": "Blooming · Studio di psicologia e coaching – sostegno psicologico, psicoterapia, orientamento e coaching online",
+  "description": "Sostegno psicologico, psicoterapia, orientamento professionale e coaching con due psicologhe: una esperta di risorse umane, l'altra psicoterapeuta. Online, da tutta Italia. Primo colloquio gratuito di 30 minuti.",
+  "nav": "home",
+  "blocks": [
+    {
+      "bg": "light",
+      "data": {
+        "descriptor": "Psicologia per la vita e il lavoro",
+        "title": "Il lavoro e la vita non viaggiano separati.",
+        "subtitle": "Per questo qui ce ne occupiamo insieme.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Sostegno psicologico, psicoterapia, orientamento professionale e coaching, con due psicologhe: una esperta di risorse umane, l'altra psicoterapeuta. Online, da tutta Italia."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Prenota il primo colloquio gratuito (30 min)",
+            "to": {
+              "kind": "book"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "Scopri come possiamo aiutarti",
+            "to": {
+              "kind": "page",
+              "key": "servizi"
+            },
+            "style": "ghost"
+          }
+        ]
+      },
+      "type": "home-hero"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Situazioni",
+        "title": "Lavoro, cambiamenti e momenti difficili spesso arrivano insieme.",
+        "intro": {
+          "p": []
+        },
+        "marker": "numbers",
+        "items": [
+          {
+            "group": "",
+            "title": "Quando il lavoro ti pesa, o non sai più che lavoro fare",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "A trenta o a cinquant'anni ti ritrovi a non sapere più cosa vuoi fare. Oppure il lavoro ce l'hai, ma un capo che ti schiaccia o un conflitto che ti porti a casa la sera ti tolgono il fiato, e non riesci più a dire la tua. O vorresti andartene e non ci riesci."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "stat",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Non succede solo a te: quasi otto lavoratori su dieci, in Italia, non si sentono valorizzati nel proprio lavoro."
+                      }
+                    ]
+                  ]
+                },
+                "source": "Censis-Eudaimon, 2026"
+              },
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Elsa, psicologa, da oltre dieci anni lavora nelle risorse umane, tra selezione, sviluppo e formazione. Con lei metti in fila quello che sai fare e decidi a cosa puntare, o come cambiare le cose dove sei. Nessuno può prometterti un posto, e lei non lo fa. Costruite insieme una strategia concreta."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Qui il coaching lo fa una psicologa iscritta all'Albo. Se dietro un problema di lavoro c'è altro, Elsa se ne accorge e, se vuoi, ti propone di lavorarci anche con Monica."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Orientamento e carriera",
+                "to": {
+                  "kind": "page",
+                  "key": "lavoro"
+                }
+              },
+              {
+                "label": "Coaching",
+                "to": {
+                  "kind": "page",
+                  "key": "coaching"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Quando cambi città, o torni in Italia",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Hai cambiato città per lavoro o per studio, e la sera non conosci nessuno. Oppure stai pensando di rientrare dall'estero, o l'hai appena fatto: temi per la carriera e intanto noti tutto quello che non funziona."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Elsa ti aiuta con il lavoro, nella nuova città o al rientro. Monica ti aiuta con la fatica di ambientarti o di ritrovarti."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Cambiare città o rientrare in Italia",
+                "to": {
+                  "kind": "page",
+                  "key": "servizi",
+                  "anchor": "cambiare-citta"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Quando stai attraversando un periodo difficile",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Un'ansia che non passa, o un lutto. Una separazione. Un figlio in arrivo, o uno che non arriva. Un genitore o un partner gravemente malato, e tu che reggi tutto. Oppure qualcosa che ancora non sai dire, se non che non ti riconosci più."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Qui lavori con Monica, psicologa e psicoterapeuta: qualche incontro di sostegno o una psicoterapia, secondo quello di cui hai bisogno."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Sostegno psicologico",
+                "to": {
+                  "kind": "page",
+                  "key": "sostegno"
+                }
+              },
+              {
+                "label": "Psicoterapia",
+                "to": {
+                  "kind": "page",
+                  "key": "psicoterapia"
+                }
+              }
+            ],
+            "anchor": ""
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Le differenze",
+        "title": "Coaching, sostegno psicologico e psicoterapia servono a cose diverse.",
+        "items": [
+          {
+            "title": "Orientamento e coaching",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Per prendere decisioni sul lavoro e metterle in pratica."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Sostegno psicologico",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Per attraversare un periodo difficile, anche in pochi incontri."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Psicoterapia",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Quando il disagio è profondo o dura da tempo."
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "after": {
+          "p": [
+            [
+              {
+                "t": "Un problema sul lavoro non richiede per forza una psicoterapia. Nel primo colloquio capiamo insieme che tipo di aiuto ti serve."
+              }
+            ]
+          ]
+        }
+      },
+      "type": "trio"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Il primo colloquio",
+        "title": "Il primo colloquio è gratuito, dura 30 minuti e non ti obbliga a continuare.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Trovare la persona giusta è spesso la parte più difficile, e il primo colloquio serve a questo. Non devi sapere già di che aiuto hai bisogno."
+              }
+            ]
+          ]
+        },
+        "items": [
+          {
+            "title": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Scegli un orario e, se vuoi, la professionista. Se non lo sai, seleziona «Aiutami a scegliere»: nel colloquio capiamo insieme chi di noi fa per te."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "In videochiamata ci racconti cosa succede. Ti diciamo se possiamo aiutarti e come lavoreremmo. Non è una seduta, e nessuno ti farà pressione per continuare."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Se vuoi andare avanti, decidi il percorso con la professionista, ai prezzi indicati nel sito. Se non ti trovi bene, puoi cambiare professionista o fermarti lì. Nessuna email di sollecito."
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "after": []
+      },
+      "type": "steps"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "eyebrow": "Con chi parlerai",
+        "title": "Con Elsa e Monica: una psicologa esperta di risorse umane e una psicoterapeuta.",
+        "people": [
+          {
+            "name": "Elsa Salvati",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Psicologa, iscritta all'Albo degli Psicologi dal 2014, laurea magistrale in neuroscienze cognitive, master in People Development and Management. Da oltre dieci anni lavora nelle risorse umane, tra selezione, formazione e gestione del cambiamento, con esperienza internazionale."
+                  }
+                ]
+              ]
+            },
+            "tag": "Orientamento e carriera · Coaching",
+            "button": {
+              "label": "Prenota con Elsa",
+              "to": {
+                "kind": "book",
+                "pro": "elsa-salvati"
+              },
+              "style": "light"
+            },
+            "link": null
+          },
+          {
+            "name": "Monica Federico",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Psicologa (Albo dal 2010) e psicoterapeuta cognitivo-comportamentale, laurea magistrale in psicologia del lavoro e delle organizzazioni. Ha lavorato in ospedale e in centri clinici."
+                  }
+                ]
+              ]
+            },
+            "tag": "Sostegno psicologico · Psicoterapia",
+            "button": {
+              "label": "Prenota con Monica",
+              "to": {
+                "kind": "book",
+                "pro": "monica-federico"
+              },
+              "style": "light"
+            },
+            "link": null
+          }
+        ],
+        "why": [
+          "Chi ti orienta sul lavoro ha selezionato curriculum per anni, ed è anche psicologa.",
+          "Anche la psicoterapeuta si è laureata in psicologia del lavoro e delle organizzazioni."
+        ],
+        "dots": true
+      },
+      "type": "people"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Le organizzazioni",
+        "title": "Spesso quello che pesa a una persona nasce sul lavoro.",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "Un responsabile che non ascolta mai. Un conflitto nel gruppo che nessuno affronta. Possiamo aiutare una persona a reggere, ma conviene intervenire dove le cose nascono. Per questo lavoriamo anche con le organizzazioni che vogliono una cultura del lavoro più sana."
+              }
+            ]
+          ]
+        },
+        "style": "lead",
+        "link": {
+          "label": "Blooming per le aziende",
+          "to": {
+            "kind": "page",
+            "key": "aziende"
+          }
+        }
+      },
+      "type": "text-narrow"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Il nome",
+        "title": "Perché «Blooming».",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "Fiorire è quello che succede quando una persona attraversa un momento difficile, ritrova le proprie risorse e torna a stare bene, con i suoi tempi. Per questo nel nostro logo c'è un loto, con dentro la Ψ della psicologia. È quello che vogliamo rendere possibile a chi viene da noi."
+              }
+            ]
+          ]
+        },
+        "style": "light",
+        "link": null
+      },
+      "type": "text-narrow"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Inizia con un colloquio gratuito, o scrivici prima.",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "Ti rispondiamo personalmente, per email, telefono o WhatsApp."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Prenota il primo colloquio gratuito",
+            "to": {
+              "kind": "book"
+            },
+            "style": "light"
+          },
+          {
+            "label": "Scrivici una domanda",
+            "to": {
+              "kind": "page",
+              "key": "contatti"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": []
+        }
+      },
+      "type": "closing-cta"
+    }
+  ]
+}

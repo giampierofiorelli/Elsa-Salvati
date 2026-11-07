@@ -1,0 +1,523 @@
+{
+  "key": "coaching",
+  "path": "/coaching/",
+  "title": "Coaching online con una psicologa – Blooming",
+  "description": "Coaching online con Elsa Salvati, psicologa iscritta all'Albo, da oltre dieci anni nelle risorse umane. Primo colloquio gratuito di 30 minuti.",
+  "nav": "servizi",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Coaching",
+        "title": "Per il lavoro che hai già, quando qualcosa si è inceppato.",
+        "subtitle": "Coaching con Elsa Salvati, psicologa iscritta all'Albo, che da oltre dieci anni lavora nelle risorse umane.",
+        "intro": {
+          "p": []
+        },
+        "buttons": [
+          {
+            "label": "Prenota con Elsa",
+            "to": {
+              "kind": "book",
+              "pro": "elsa-salvati"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "Vedi come funziona",
+            "to": {
+              "kind": "anchor",
+              "anchor": "come-funziona"
+            },
+            "style": "ghost"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Situazioni",
+        "title": "Il coaching serve quando il problema sta nel modo in cui va il lavoro.",
+        "intro": {
+          "p": []
+        },
+        "marker": "numbers",
+        "items": [
+          {
+            "group": "",
+            "title": "Ti hanno promosso a capo dei tuoi ex colleghi",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "E non sai più come parlare con loro."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Sei in mezzo a un conflitto nel gruppo",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "E non sai se, e come, intervenire."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "La motivazione si è spenta",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Sai cosa dovresti fare e non riesci a cominciare: rimandi, ti blocchi, ti dai sempre la stessa spiegazione."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Lo stress te lo porti a casa la sera",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "E la domenica pesa già."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "stat",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Non succede solo a te: oltre il 63% di chi lavora in Italia considera il proprio lavoro mentalmente impegnativo o stressante."
+                      }
+                    ]
+                  ]
+                },
+                "source": "SDA Bocconi, Social Sustainability Monitor 2025"
+              }
+            ],
+            "links": [],
+            "anchor": "",
+            "note": "Link alla fonte da inserire; il cliente decide se usare il dato."
+          },
+          {
+            "group": "",
+            "title": "Un cambiamento da gestire",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Una riorganizzazione che ha cambiato il tuo ruolo, o il rientro al lavoro dopo un lungo congedo."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": "",
+            "note": "Secondo esempio da controllare con Elsa."
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Come funziona",
+        "title": "Un obiettivo scelto da te, verificato strada facendo.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Lavoro e vita non viaggiano separati: lo stress che porti a casa la sera fa parte del lavoro che fate insieme. Il coaching è un lavoro pratico su una situazione di lavoro, fatto da una psicologa iscritta all'Albo. Non è una psicoterapia: si parte da quello che succede oggi e da cosa vuoi cambiare."
+              }
+            ]
+          ]
+        },
+        "items": [
+          {
+            "title": "Mettere a fuoco",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Nella prima seduta racconti la situazione e scegli con Elsa un obiettivo preciso: per esempio riuscire a dire la tua in riunione, o organizzare la settimana e arrivare al venerdì con il lavoro fatto."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Capire cosa succede",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Elsa ti aiuta a vedere cosa alimenta il problema: le abitudini, il modo in cui comunichi, come è organizzato il lavoro intorno a te."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Provare",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Tra una seduta e l'altra provi qualcosa di concreto; nella seduta dopo vedete cosa ha funzionato e cosa no."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Verificare",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Vi chiedete se l'obiettivo è più vicino, se va cambiato o se puoi continuare senza coaching."
+                  }
+                ]
+              ]
+            },
+            "note": "Ogni quante sedute: da confermare."
+          }
+        ],
+        "after": []
+      },
+      "anchor": "come-funziona",
+      "type": "steps",
+      "note": "Metodo proposto, da confermare con Elsa. Non pubblicare questa sezione prima della conferma. · Strumenti, durata tipica e numero di sedute: da confermare con Elsa."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Cosa comprende",
+        "title": "Il coaching parte dal lavoro, e da come ti fa stare.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Comprende la gestione dello stress e del tempo, i conflitti e le relazioni di lavoro, anche con chi ti dirige, la comunicazione nei momenti difficili, la guida di un gruppo, i cambiamenti organizzativi e personali, la motivazione e i blocchi che ti fermano."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Comprende anche lo sviluppo nel ruolo che hai: un obiettivo di crescita e il piano per arrivarci. Se la domanda diventa se restare o cambiare lavoro, è orientamento, sempre con Elsa."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "arrow",
+            "link": {
+              "label": "Orientamento e carriera",
+              "to": {
+                "kind": "page",
+                "key": "lavoro"
+              }
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Se nel coaching emerge un disagio più profondo, per esempio un'ansia che non ti lascia dormire, Elsa te lo dice e, se vuoi, ti propone di lavorarci con Monica, psicoterapeuta. Con il tuo consenso possono confrontarsi."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Modalità e limiti della condivisione da definire con lo studio; da verificare con un vostro consulente. Coaching pagato dall'azienda per una persona o per un gruppo: vedi Per le aziende; cosa può sapere l'azienda: da definire."
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "eyebrow": "Chi se ne occupa",
+        "title": "Elsa Salvati, psicologa, da oltre dieci anni nelle risorse umane.",
+        "people": [
+          {
+            "name": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Lavora nelle risorse umane tra selezione, sviluppo, formazione e gestione del cambiamento. È iscritta all'Albo degli Psicologi dal 2014."
+                  }
+                ]
+              ]
+            },
+            "tag": "",
+            "button": {
+              "label": "Prenota con Elsa",
+              "to": {
+                "kind": "book",
+                "pro": "elsa-salvati"
+              },
+              "style": "light"
+            },
+            "link": {
+              "label": "Scheda di Elsa",
+              "to": {
+                "kind": "page",
+                "key": "team",
+                "anchor": "elsa"
+              }
+            },
+            "note": "Facoltativo, se Elsa lo conferma: \"Capi, gruppi e ruoli li vede ogni giorno anche con gli occhi di chi li organizza.\""
+          }
+        ],
+        "why": [],
+        "dots": false
+      },
+      "type": "people"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Prezzi, durata e flessibilità",
+        "title": "Online, in videochiamata, dopo un primo colloquio gratuito.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Il primo colloquio dura 30 minuti, in videochiamata."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "arrow",
+            "link": {
+              "label": "Tariffe e prenotazioni",
+              "to": {
+                "kind": "page",
+                "key": "costi-e-faq"
+              }
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Durata delle sedute: 50/60 minuti, da confermare (poi nel titolo). Prezzo per seduta: da concordare, da non pubblicare finché non è approvato; il brief indica 50 € per un'ora. Si può fare una sola seduta? Quante di solito? Si può interrompere? Da confermare con Elsa."
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Collegamenti utili",
+        "title": "Se la tua situazione è un'altra.",
+        "intro": {
+          "p": []
+        },
+        "marker": "links",
+        "items": [
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se vuoi capire che lavoro fare, o cambiare"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Orientamento e carriera",
+                "to": {
+                  "kind": "page",
+                  "key": "lavoro"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se il lavoro è solo una parte di un periodo difficile"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Sostegno psicologico",
+                "to": {
+                  "kind": "page",
+                  "key": "sostegno"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Se non sai che tipo di aiuto ti serve"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psicologa, psicoterapeuta o coach: le differenze",
+                "to": {
+                  "kind": "page",
+                  "key": "differenze"
+                }
+              }
+            ],
+            "anchor": ""
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Parti da mezz'ora con Elsa, gratis.",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "Le racconti cosa succede al lavoro; ti dice se il coaching è la strada giusta o se ti serve altro, per esempio l'orientamento."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Prenota con Elsa",
+            "to": {
+              "kind": "book",
+              "pro": "elsa-salvati"
+            },
+            "style": "light"
+          },
+          {
+            "label": "Scrivici una domanda",
+            "to": {
+              "kind": "page",
+              "key": "contatti"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": []
+        }
+      },
+      "type": "closing-cta",
+      "note": "Rispondiamo entro [un giorno lavorativo], per email [indirizzo], telefono [numero] o WhatsApp [se confermato]."
+    }
+  ]
+}

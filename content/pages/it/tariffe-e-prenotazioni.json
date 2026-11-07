@@ -1,0 +1,419 @@
+{
+  "key": "costi-e-faq",
+  "path": "/tariffe-e-prenotazioni/",
+  "title": "Tariffe e prenotazioni: primo colloquio gratuito, sedute online, domande frequenti – Blooming",
+  "description": "Come si prenota il primo colloquio gratuito di 30 minuti, come funzionano le sedute online, cancellazione, riservatezza e domande frequenti.",
+  "nav": "tariffe",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Tariffe e prenotazioni",
+        "title": "Quanto costa e come si prenota.",
+        "subtitle": "",
+        "intro": {
+          "p": []
+        },
+        "buttons": [
+          {
+            "label": "Prenota il primo colloquio gratuito (30 min)",
+            "to": {
+              "kind": "book"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "Domande frequenti",
+            "to": {
+              "kind": "anchor",
+              "anchor": "domande"
+            },
+            "style": "ghost"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Come si prenota",
+        "title": "Come si prenota, in quattro passi.",
+        "intro": {
+          "p": []
+        },
+        "items": [
+          {
+            "title": "Scegli con chi parlare e un orario",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Se non sai chi scegliere, seleziona «Aiutami a scegliere»: incontri una delle due professioniste e, se fa per te l'altra, te lo dice."
+                  }
+                ]
+              ]
+            },
+            "note": "E fissate un colloquio con lei: da confermare."
+          },
+          {
+            "title": "Lascia nome ed email",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Ricevi subito la conferma, con il link per spostare o annullare il colloquio."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Primo colloquio gratuito, 30 minuti in videochiamata",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Non devi preparare niente: racconti cosa succede, la professionista ti dice se e come potete lavorare insieme. Non è una seduta né una valutazione, e non ti obbliga a continuare."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Se vuoi andare avanti",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "La professionista ti propone un piano di lavoro e fissate insieme le sedute successive. Se non ti trovi bene, puoi fermarti lì, senza spiegazioni."
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "after": []
+      },
+      "anchor": "come-si-prenota",
+      "type": "steps"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Prezzi",
+        "title": "Online, in videochiamata.",
+        "intro": {
+          "p": []
+        },
+        "variant": "prices",
+        "items": [
+          {
+            "term": "Primo colloquio",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Gratuito, 30 minuti"
+                  }
+                ]
+              ]
+            },
+            "tbd": false
+          },
+          {
+            "term": "Orientamento e carriera",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "da concordare"
+                  }
+                ]
+              ]
+            },
+            "tbd": true
+          },
+          {
+            "term": "Coaching",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "da concordare"
+                  }
+                ]
+              ]
+            },
+            "tbd": true
+          },
+          {
+            "term": "Sostegno psicologico",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "da concordare"
+                  }
+                ]
+              ]
+            },
+            "tbd": true
+          },
+          {
+            "term": "Psicoterapia",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "da concordare"
+                  }
+                ]
+              ]
+            },
+            "tbd": true
+          }
+        ],
+        "after": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Spostare o annullare.",
+                    "b": true
+                  },
+                  {
+                    "t": " Il primo colloquio puoi spostarlo o annullarlo dal link nell'email di conferma. Per le sedute successive avvisa la tua professionista."
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "link": null
+      },
+      "anchor": "prezzi",
+      "type": "term-list",
+      "note": "Prezzi da non pubblicare finché non sono concordati. Il brief indica 50 € per un'ora (orientamento, coaching, sostegno) e 70 € (psicoterapia); le ricerche propongono pacchetti per la carriera e il costo anche su base mensile (per esempio \"2 sedute al mese: […] €\"). Decide il cliente. Durata di una seduta: 50 o 60 minuti, da confermare. · Preavviso (per esempio 24 ore), canale per avvisare e politica per gli avvisi tardivi: da confermare. Fattura e pagamento: da confermare. Detrazione: se e per quali servizi le spese sono detraibili, e il trattamento del coaching, da verificare con un vostro consulente. · Titolo da completare quando i prezzi sono approvati: \"Il prezzo lo vedi qui prima di prenotare.\""
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Gli incontri online",
+        "title": "Ti serve un dispositivo con videocamera e un posto dove nessuno ti sente.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "lead",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Telefono, tablet o computer, con una connessione stabile; meglio con le cuffie. Il link arriva via email. Se cade la linea, la professionista ti richiama al numero che hai lasciato. Gli incontri non vengono registrati. Prima di iniziare il percorso ti chiediamo di firmare il consenso informato."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "anchor": "online",
+      "type": "text-columns",
+      "note": "Piattaforma da scegliere. Richiamata se cade la linea, nessuna registrazione e modalità del consenso informato: da confermare. Se sei all'estero: le regole per i servizi online, soprattutto psicologici, possono dipendere dal paese in cui ti trovi; da verificare con un vostro consulente."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Domande frequenti",
+        "title": "Quello che conviene sapere prima di prenotare.",
+        "items": [
+          {
+            "q": "Devo raccontare il mio problema quando prenoto?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "No. Per prenotare bastano nome ed email: ne parli nel colloquio."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "q": "Posso prenotare se non so di quale aiuto ho bisogno?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "Sì. Capirlo è proprio lo scopo del primo colloquio."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "q": "Devo impegnarmi per un percorso lungo?",
+            "a": {
+              "p": []
+            },
+            "note": "Si può fare anche un solo incontro e interrompere quando vuoi: da confermare con Elsa e Monica."
+          },
+          {
+            "q": "Ogni quanto ci si vede, e per quanto tempo?",
+            "a": {
+              "p": []
+            },
+            "note": "Da confermare con Elsa e Monica."
+          },
+          {
+            "q": "Posso cambiare professionista?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "Se il tuo bisogno riguarda l'area dell'altra professionista, sì: puoi continuare con lei e, se sei d'accordo, si passano le informazioni utili. Per sostegno psicologico e psicoterapia nello studio c'è solo Monica: se non ti trovi bene, puoi dirlo e fermarti, senza spiegazioni."
+                  }
+                ]
+              ]
+            },
+            "note": "Modalità del passaggio di informazioni da definire; eventuale indicazione su a chi rivolgersi: da confermare."
+          },
+          {
+            "q": "Quello che racconto resta riservato?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "Quello che dici negli incontri resta tra te e la professionista. Elsa e Monica si confrontano su di te solo se sei d'accordo."
+                  }
+                ]
+              ]
+            },
+            "note": "Segreto professionale e suoi limiti: formula da verificare con un vostro consulente. Modalità e limiti del confronto da definire con lo studio."
+          },
+          {
+            "q": "Che dati lasci sul sito?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "Solo quelli che servono a prenotare o a ricontattarti (nome, email, telefono, messaggio), conservati in forma cifrata. Il sito non usa cookie di profilazione né strumenti di tracciamento."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "q": "Se paga la mia azienda, cosa sa di me?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "Nulla di quello che dici negli incontri."
+                  }
+                ]
+              ]
+            },
+            "note": "Cosa può sapere (per esempio se il servizio è stato usato, e con il tuo consenso): da definire."
+          },
+          {
+            "q": "Posso scrivere su WhatsApp?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "WhatsApp serve per orari e appuntamenti; di come stai si parla negli incontri."
+                  }
+                ]
+              ]
+            },
+            "note": "Uso di WhatsApp: da confermare."
+          },
+          {
+            "q": "Psicologa, psicoterapeuta, psichiatra: che differenza c'è?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "Le differenze tra psicologa, psicoterapeuta e coach sono in "
+                  },
+                  {
+                    "t": "Psicologa, psicoterapeuta o coach: cosa cambia",
+                    "href": "/differenze/"
+                  },
+                  {
+                    "t": ". La psichiatria è una specializzazione della medicina: chi è psichiatra ha una laurea in medicina e può prescrivere farmaci."
+                  }
+                ]
+              ]
+            },
+            "note": "Fonte da inserire. Se serve una visita psichiatrica, Monica te lo dice: da confermare con Monica."
+          },
+          {
+            "q": "È un servizio per le emergenze?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "No. In caso di pericolo immediato chiama il "
+                  },
+                  {
+                    "t": "112",
+                    "href": "tel:112"
+                  },
+                  {
+                    "t": " o il "
+                  },
+                  {
+                    "t": "118",
+                    "href": "tel:118"
+                  },
+                  {
+                    "t": ", oppure vai al Pronto Soccorso più vicino."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "anchor": "domande",
+      "type": "faq"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Il primo colloquio è gratuito e dura 30 minuti.",
+        "text": {
+          "p": []
+        },
+        "buttons": [
+          {
+            "label": "Prenota il primo colloquio gratuito",
+            "to": {
+              "kind": "book"
+            },
+            "style": "light"
+          },
+          {
+            "label": "Scrivici una domanda",
+            "to": {
+              "kind": "page",
+              "key": "contatti"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": []
+        }
+      },
+      "type": "closing-cta",
+      "note": "Rispondiamo entro [un giorno lavorativo], per email, telefono o WhatsApp [se confermato]."
+    }
+  ]
+}

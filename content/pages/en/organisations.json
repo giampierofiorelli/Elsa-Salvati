@@ -1,0 +1,295 @@
+{
+  "key": "aziende",
+  "path": "/en/organisations/",
+  "title": "For organisations: workplace culture, hiring, team coaching and training in Italy – Blooming",
+  "description": "Processes and roles, hiring for key roles, team coaching, tailored training and outplacement, in English or Italian, with a psychologist who has worked in HR for over ten years. Project-based, with a free first meeting.",
+  "nav": "organisations",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "For organisations",
+        "title": "A healthier workplace culture is possible.",
+        "subtitle": "",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Good people leave, and the reason given is always \"personal\". A promising hire is gone within six months. A team gets the work done, but nobody says what they really think. When this keeps happening, the cause is rarely one person."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Request a free first meeting",
+            "to": {
+              "kind": "anchor",
+              "anchor": "contact"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "What we work on",
+            "to": {
+              "kind": "anchor",
+              "anchor": "services"
+            },
+            "style": "ghost"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Where we start",
+        "title": "Culture is made of everyday decisions.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "lead",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Who gets hired and how, how roles and responsibilities are split, how a team works together, what training is actually needed. Elsa, a psychologist, has worked in HR for over ten years, in recruitment, training and change management, with international experience. Dagmara works on organisational process analysis."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "We look at those decisions with you, in English or Italian, and help you change the ones that matter most. We'd rather fix a few specific things properly than promise to transform your culture."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Dagmara's experience: to confirm. · Optional, only if the client confirms the offer for relocated staff and families (open question 12): when someone moves to Italy for a job, how their partner settles in often decides whether they stay. Source to verify before use: NetExpat 2026."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "What we work on",
+        "title": "Five areas, from processes to people.",
+        "intro": {
+          "p": []
+        },
+        "marker": "numbers",
+        "items": [
+          {
+            "group": "",
+            "title": "Processes and roles",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "We map how your HR processes work today, through interviews and surveys with the people involved, and redesign workflows, roles and structure where needed."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Hiring for key roles",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "We help you define the profile, assess skills and follow up once the person starts."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Team coaching",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "For teams that need to work together better, handle a conflict, get through a change or find their motivation again."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Tailored training",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "We work out what's needed and design the programme, with you if you like. We deliver it, or refer you to a specialist training provider."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Outplacement",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "For people who have to leave."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": "",
+            "note": "Regulatory aspects to check with your own adviser."
+          }
+        ],
+        "after": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "We can also offer your employees coaching, psychological support and psychotherapy. They help the person; what isn't working in the organisation needs dealing with separately, and we'll tell you so. The organisation receives no information about what is said in sessions."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "anchor": "services",
+      "type": "rows",
+      "note": "From the client's brief; each item stays only if confirmed in the questionnaire. · Therapy in English: to confirm. What the organisation may know (for example whether the service was used, and with the person's consent): to define."
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "How we work",
+        "title": "Project-based, with a written quote.",
+        "intro": {
+          "p": []
+        },
+        "items": [
+          {
+            "title": "A free first meeting",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "To understand the situation."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "A written proposal",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "What we'll do, how long it takes, what it costs."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "The work itself",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "With the people involved."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "A review together",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Of what has changed."
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "after": []
+      },
+      "type": "steps"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "variant": "organisations",
+        "eyebrow": "Contact",
+        "title": "Tell us about your organisation.",
+        "intro": {
+          "p": []
+        }
+      },
+      "anchor": "contact",
+      "type": "request-form",
+      "note": "We reply within [two working days]: to confirm."
+    }
+  ]
+}

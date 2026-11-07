@@ -1,0 +1,645 @@
+{
+  "key": "servizi",
+  "path": "/en/how-we-can-help/",
+  "title": "How we can help | English-speaking psychologists for work and life in Italy – Blooming",
+  "description": "Career coaching & guidance, workplace coaching, psychological support and psychotherapy online, with two psychologists who work together. For people living in Italy or moving here. Free first meeting.",
+  "nav": "help",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "How we can help",
+        "title": "Four kinds of help, from a job search that's stalled to a hard time far from home.",
+        "subtitle": "",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Elsa Salvati and Monica Federico are psychologists, and they work online, by video call, with people living in Italy or about to move here. Work and the rest of your life don't run on separate tracks, so career help and psychological help sit in the same small practice."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Book a free first meeting",
+            "to": {
+              "kind": "book"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "Compare the four kinds of help",
+            "to": {
+              "kind": "anchor",
+              "anchor": "differences"
+            },
+            "style": "ghost"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero",
+      "note": "If Monica confirms English: \"All four kinds of help are available in English.\" If not: \"Elsa offers career coaching & guidance and workplace coaching in English; psychological support and psychotherapy with Monica are in Italian.\""
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "The four areas",
+        "title": "Elsa for careers and work, Monica for hard times and deeper difficulties.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "You don't need to know which one fits before you get in touch. Working that out is part of the free first meeting."
+              }
+            ]
+          ]
+        },
+        "marker": "numbers",
+        "items": [
+          {
+            "group": "",
+            "title": "Career coaching & guidance",
+            "who": "With Elsa Salvati · psychologist, over ten years in HR",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Perhaps you've sent application after application and can't even get an interview, or your partner's job brought you to Italy and your own career has been on hold ever since. Elsa is a psychologist who has worked in HR for over ten years and knows the Italian job market. She works with you on your CV, where and how to look, interviews, and building contacts on LinkedIn and beyond. You can also take stock of your skills, choose a direction when none looks obvious, decide whether a course is worth it, or go through a job offer before you negotiate. She'll also give you a realistic idea of how much Italian the roles you want are likely to need."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Nobody can promise you a job; Elsa helps you prepare and decide, including when months of rejections start to wear you down. Recognition of a foreign qualification is a separate process run by other bodies, and in the meantime Elsa can help you decide what to do with your experience."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Career coaching & guidance",
+                "to": {
+                  "kind": "page",
+                  "key": "lavoro"
+                }
+              },
+              {
+                "label": "Book with Elsa",
+                "to": {
+                  "kind": "book",
+                  "pro": "elsa-salvati"
+                }
+              }
+            ],
+            "anchor": "career",
+            "note": "Activities while a qualification is being recognised: to confirm with Elsa."
+          },
+          {
+            "group": "",
+            "title": "Workplace coaching",
+            "who": "With Elsa Salvati · psychologist, over ten years in HR",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Having a job doesn't mean work is going well. Every meeting may be in Italian, and you come home exhausted from following it and from never quite saying what you meant. Or a conflict with a colleague has dragged on for months, or a reorganisation you didn't ask for has changed your role. In coaching, Elsa works with you on stress, on relationships with colleagues and managers, and on getting things done without running yourself into the ground. It also covers finding your motivation again when you feel stuck, leading a team for the first time and planning your next step at work. If the question becomes whether to stay or move on, that's career guidance, also with Elsa."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Coaching isn't therapy. If something heavier comes up, Elsa will tell you and can suggest working with Monica."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Workplace coaching",
+                "to": {
+                  "kind": "page",
+                  "key": "coaching"
+                }
+              },
+              {
+                "label": "Book with Elsa",
+                "to": {
+                  "kind": "book",
+                  "pro": "elsa-salvati"
+                }
+              }
+            ],
+            "anchor": "coaching",
+            "note": "Monica in English: to confirm. Method, length and fee: to confirm with Elsa."
+          },
+          {
+            "group": "",
+            "title": "Psychological support",
+            "who": "With Monica Federico · psychologist and psychotherapist",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Hard things don't wait until you feel settled. A parent at home becomes seriously ill, physically or mentally, and you're managing from a distance, between calls and flight searches. Someone you love dies and you can't easily be there. A relationship ends, or the job that brought you here does. Trying for a baby means tests and appointments in a language you're still learning, and a new baby arrives with your own family a long flight away. Even the move itself can turn out heavier than you expected."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Monica is a psychologist and psychotherapist who has worked in hospitals, clinics and private practice. She also has an MSc in work and organisational psychology."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psychological support",
+                "to": {
+                  "kind": "page",
+                  "key": "sostegno"
+                }
+              },
+              {
+                "label": "Book with Monica",
+                "to": {
+                  "kind": "book",
+                  "pro": "monica-federico"
+                }
+              }
+            ],
+            "anchor": "psychological-support",
+            "note": "Support of this kind is usually shorter than therapy, sometimes just a few sessions: to confirm with Monica. · \"Sometimes just a few sessions\": to confirm with Monica. Only if Monica confirms English: \"Talking about something painful is hard enough without hunting for the words in a second language, and with Monica you can do it in English.\" Method, length and fee: to confirm. \"Book with Monica\" only if she works in English and is in the booking system."
+          },
+          {
+            "group": "",
+            "title": "Psychotherapy",
+            "who": "With Monica Federico · cognitive behavioural psychotherapist",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Some difficulties were there long before the move; others started after it, far from the people who know you best. You might lie awake going over everything that could go wrong, or feel flat and far away for weeks at a time. Some people find they keep checking or repeating things they can't stop. For others, food has become a battle, or something they can't cut down has started to run their days. You may notice the same patterns in your relationships again and again, or still be living with something that happened to you years ago."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Psychotherapy is for difficulties that run deep or have lasted a long time. Monica is a cognitive behavioural psychotherapist, and she looks at your body, your mind and your circumstances together, including the distance from home."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psychotherapy",
+                "to": {
+                  "kind": "page",
+                  "key": "psicoterapia"
+                }
+              },
+              {
+                "label": "Book with Monica",
+                "to": {
+                  "kind": "book",
+                  "pro": "monica-federico"
+                }
+              }
+            ],
+            "anchor": "psychotherapy",
+            "note": "Therapy in English: to confirm. Method, length and fee: to confirm with Monica."
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Two situations",
+        "title": "Some changes hit your work and your home life at once.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Moving country and working remotely are two of them. Each one touches more than one area, which is where having career help and psychological help in the same practice is useful."
+              }
+            ]
+          ]
+        },
+        "marker": "letters",
+        "items": [
+          {
+            "group": "",
+            "title": "Moving to Italy",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "You came for a job, for love or for a fresh start, or you're about to arrive. Perhaps you followed your partner and your own work is the part still waiting. The paperwork is exhausting, and the practice can't do it for you. What it can help with is what the move does to your work and to how you feel."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Work, with Elsa.",
+                        "b": true
+                      },
+                      {
+                        "t": " Elsa looks with you at where your experience fits here and what to change in your CV. She can help you build contacts when you hardly know anyone yet, and give you a sense of how much Italian your field asks for."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Settling in, with Monica.",
+                        "b": true
+                      },
+                      {
+                        "t": " Loneliness can creep up in the months when nobody calls you by name. Missing people at home, or feeling slow and awkward in every conversation, can wear you down even when the move was your choice. Monica helps with the strain of settling in."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "stat",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "The language is a common hurdle: 60% of expats in Italy find it hard to live here without speaking Italian."
+                      }
+                    ]
+                  ]
+                },
+                "source": "InterNations Expat Insider 2024"
+              },
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "If you're coming back after years abroad and would rather read in Italian, there's a version of this page for you: "
+                      },
+                      {
+                        "t": "Leggi in italiano",
+                        "href": "/servizi/#cambiare-citta"
+                      },
+                      {
+                        "t": "."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Career coaching & guidance",
+                "to": {
+                  "kind": "page",
+                  "key": "lavoro"
+                }
+              },
+              {
+                "label": "Psychological support",
+                "to": {
+                  "kind": "anchor",
+                  "anchor": "psychological-support"
+                }
+              }
+            ],
+            "anchor": "moving-to-italy",
+            "note": "If relocation support is confirmed: first pointers on housing and paperwork from Elsa. Only if Monica confirms English: \"And you can talk about it in your own language, or at least in English.\" If you're still abroad: the rules for online sessions, especially psychological ones, may depend on the country you're in; to check with your own adviser. Source link to add."
+          },
+          {
+            "group": "",
+            "title": "Remote work and isolation",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Your employer might be in London or Berlin, your team a row of faces on a screen, and outside the window a town you're still getting to know. Because the laptop never leaves the kitchen table, the working day spills into the evening. Some weeks the only conversations you have are on calls."
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Elsa can help you put some shape back into your days, and think about where your career goes from here if working alone has left you unsure. The loneliness is something to talk through with Monica."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Workplace coaching",
+                "to": {
+                  "kind": "anchor",
+                  "anchor": "coaching"
+                }
+              },
+              {
+                "label": "Psychological support",
+                "to": {
+                  "kind": "anchor",
+                  "anchor": "psychological-support"
+                }
+              }
+            ],
+            "anchor": "remote-work",
+            "note": "Monica in English: to confirm."
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Working with both",
+        "title": "When work and life tangle, Elsa and Monica can work together.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "lead",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Say your job search has dragged on for months. You're working on applications with Elsa, but the rejections have started to affect your sleep and your confidence. Elsa can suggest a few sessions with Monica alongside the career work. It can go the other way too. A hard time at home can make work feel impossible, and once things are steadier, Monica can suggest Elsa to help you get back on track at work."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "With your consent, Elsa and Monica can talk to each other."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Monica in English: to confirm. How information is shared, and its limits: to define with the practice; check with your own adviser."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "The differences",
+        "title": "Psychologist, psychotherapist and coach do different jobs.",
+        "intro": {
+          "p": []
+        },
+        "variant": "terms",
+        "items": [
+          {
+            "term": "Psychologist.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "In Italy, psychologists are registered with the Order of Psychologists. Psychologists can offer psychological support and career guidance. Elsa has been registered since 2014 and Monica since 2010."
+                  }
+                ]
+              ]
+            },
+            "note": "Scope: to verify with a source."
+          },
+          {
+            "term": "Psychotherapist.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "A psychotherapist is a psychologist or doctor with at least four years of specialist training in psychotherapy. Monica is the practice's psychotherapist."
+                  }
+                ]
+              ]
+            },
+            "note": "Training length: to verify. Monica's year of specialisation: to confirm."
+          },
+          {
+            "term": "Coach.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Coaching isn't a regulated profession in Italy, so coaches come from many different backgrounds. At this practice, coaching is done by Elsa, a registered psychologist."
+                  }
+                ]
+              ]
+            },
+            "note": "Regulation: to check with your own adviser."
+          },
+          {
+            "term": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "A problem at work doesn't automatically call for therapy, and a hard time doesn't always need months of sessions."
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "after": [],
+        "link": {
+          "label": "The differences, in detail",
+          "to": {
+            "kind": "page",
+            "key": "differenze"
+          }
+        }
+      },
+      "anchor": "differences",
+      "type": "term-list"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "The first meeting",
+        "title": "The first meeting is free, lasts 30 minutes, and there's no obligation to continue.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "It's a video call, online from anywhere in Italy or before you arrive. It isn't a session. You say what's going on and find out whether the practice can help, and how."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "You can book with the psychologist you'd like to see. If you're not sure, pick \"Help me choose\", and in the meeting you work out together whether Elsa or Monica suits what you need."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "If you decide to go on, you plan the next steps with the psychologist you met. If it doesn't feel right, you can switch to the other psychologist or stop there. No follow-up emails."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "arrow",
+            "link": {
+              "label": "Book a free first meeting",
+              "to": {
+                "kind": "book"
+              }
+            }
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Technical: in English, \"Help me choose\" must not assign Monica unless her sessions in English are confirmed. Switching to Monica in English: to confirm. Sessions last 50/60 minutes: to confirm. Fees: not to be published until agreed (brief: €50 per hour for career coaching, workplace coaching and psychological support, €70 for psychotherapy; research proposed a different fee for sessions in English; the client decides). Your request is read only by: to confirm. WhatsApp to arrange appointments: to confirm."
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Book a free first meeting, or ask us something before you decide.",
+        "text": {
+          "p": []
+        },
+        "buttons": [
+          {
+            "label": "Book a free first meeting",
+            "to": {
+              "kind": "book"
+            },
+            "style": "light"
+          },
+          {
+            "label": "Ask a question",
+            "to": {
+              "kind": "page",
+              "key": "contatti"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": [
+            [
+              {
+                "t": "Asking for a company or a team: "
+              },
+              {
+                "t": "Tell us what you need",
+                "href": "/en/organisations/"
+              }
+            ]
+          ]
+        }
+      },
+      "type": "closing-cta",
+      "note": "We reply within [reply time: to confirm], by email, phone or WhatsApp [to confirm]."
+    }
+  ]
+}

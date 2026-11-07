@@ -1,0 +1,23 @@
+<section class="section<!--bg-->"<!--id--> data-theme-section="light">
+  <div class="wrap two-col-v4">
+    <div>
+      <!--head-->
+    </div>
+    <form class="panel form-v4" data-request-form novalidate>
+      <input type="hidden" name="category" value="aziende">
+      <input type="hidden" name="mode" value="da_definire">
+      <div class="field"><label for="a-name">Nome e cognome</label><input id="a-name" name="name" type="text" autocomplete="name" required maxlength="80"></div>
+      <div class="field"><label for="a-org">Organizzazione</label><input id="a-org" name="organization" type="text" autocomplete="organization" maxlength="120"></div>
+      <div class="field"><label for="a-role">Ruolo <span class="hint">(facoltativo)</span></label><input id="a-role" data-extra="Ruolo" type="text" autocomplete="organization-title" maxlength="60"></div>
+      <div class="field"><label for="a-size">Dimensione dell'organizzazione <span class="hint">(facoltativo)</span></label>
+        <select id="a-size" data-extra="Dimensione"><option value="">Seleziona</option><option>Fino a 10 persone</option><option>11–50 persone</option><option>51–250 persone</option><option>Oltre 250 persone</option></select></div>
+      <div class="field"><label for="a-email">Email</label><input id="a-email" name="email" type="email" autocomplete="email" maxlength="254"></div>
+      <div class="field"><label for="a-phone">Telefono <span class="hint">(facoltativo se lasciate l'email)</span></label><input id="a-phone" name="phone" type="tel" autocomplete="tel" maxlength="20"></div>
+      <div class="field"><label for="a-msg">Su cosa vorreste lavorare <span class="hint">(facoltativo)</span></label><textarea id="a-msg" name="message" maxlength="480"></textarea><span class="hint">Bastano poche righe; non inserite dati personali di dipendenti o colleghi.</span></div>
+      <div class="hp" aria-hidden="true"><label for="a-website">Lascia vuoto</label><input id="a-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <label class="check"><input type="checkbox" name="privacy" required> <span>Ho letto l'<a href="/privacy/" target="_blank" rel="noopener">informativa sulla privacy</a>.</span></label>
+      <p class="status" role="status" data-request-status></p>
+      <button class="btn btn-primary" type="submit">Richiedi il primo incontro gratuito</button>
+    </form>
+  </div>
+</section>

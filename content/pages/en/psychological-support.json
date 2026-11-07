@@ -1,0 +1,688 @@
+{
+  "key": "sostegno",
+  "path": "/en/psychological-support/",
+  "title": "Psychological support online with a psychologist in Italy – Blooming",
+  "description": "Psychological support with Monica Federico, psychologist and psychotherapist, for a hard time: illness in the family, bereavement, separation, job loss, infertility, a new baby, a move. Online. Free 30-minute first meeting.",
+  "nav": "help",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Psychological support",
+        "title": "Support for a specific hard time, from an illness in the family to a move.",
+        "subtitle": "",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Psychological support is for something you're going through now: a loss, a separation, a baby, a family member who is seriously ill. It's with Monica Federico, a psychologist and psychotherapist with clinical experience in hospitals, clinics and private practice, online by video call."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Book with Monica",
+            "to": {
+              "kind": "book",
+              "pro": "monica-federico"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "See how support works",
+            "to": {
+              "kind": "anchor",
+              "anchor": "how-it-works"
+            },
+            "style": "ghost"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero",
+      "note": "If Monica does not confirm sessions in English, publish this short version instead of the full page: H1 \"Psychological support with Monica Federico, in Italian\". Text: \"Psychological support at Blooming is with Monica Federico, a psychologist and psychotherapist, and her sessions are in Italian. It's for a specific hard time, such as an illness in the family, a bereavement, a separation, losing a job, infertility, a new baby or a move. If you'd rather start in English, you can book a free first meeting with Elsa: she doesn't offer psychological support herself, but she can help you work out what kind of help you need, and whether sessions in Italian with Monica could work for you.\" Buttons: Book with Monica · Book with Elsa. Then sections Who (without the English line), Fees and Next step. Leave out Situations and How it works. Google title proposed: \"Psychological support online | English-speaking psychologist in Italy\" only if Monica confirms English. · In English: to confirm. · Monica to be added to the booking system; until then the button is \"Ask a question\" → /en/contact/."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Situations",
+        "title": "A hard time can weigh more when the people you'd lean on are far away.",
+        "intro": {
+          "p": []
+        },
+        "marker": "numbers",
+        "items": [
+          {
+            "group": "",
+            "title": "Someone in your family is seriously ill",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "It may be a physical illness or a mental one, in a parent, a partner, a sibling or a child. If you're far away, you get news second-hand and in fragments, and every decision about whether to fly back carries guilt either way. If they're here with you, you may be doing most of the caring alone, with doctors who speak a language you're still learning."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "You've lost someone, and the people around you didn't know them",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Maybe you couldn't get to the funeral, or you went and came back to a life where nobody had met the person you're grieving. Grief doesn't follow the timetable of a working week, and it can be lonelier when the people who'd share it are in another country."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "A relationship or a job has ended, and so has the reason you came",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "If you moved for a partner or a job, losing either one can raise a bigger question: whether to stay at all. You're dealing with the loss and with a decision about your whole life at the same time."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Trying for a baby is taking longer than you hoped",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Tests and treatment bring months of waiting, often with appointments and results in Italian. Each month can bring hope and then disappointment, and it isn't always easy to talk about with the people around you."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "A baby is on the way, or has just arrived, and your own family is far away",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Sleepless nights come without anyone to drop round with food or take a turn. The mix of happiness and worry can be hard to share when the people you'd usually share it with are a flight away."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "The move itself is heavier than you expected",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "It was your choice, and by most measures it's going well. Still, you feel off balance, you miss people more than you thought you would, and small things that used to be easy now take effort."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          }
+        ],
+        "after": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "None of these stays neatly in one part of your life. A bereavement shows up at your desk, and losing a job changes how things are at home, so the sessions can cover both."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "How it works",
+        "title": "Psychological support with Monica focuses on what's happening now.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Psychological support focuses on getting through a specific hard time. It looks at the situation you're in now and how you're coping with it, rather than at difficulties that go back a long way."
+              }
+            ]
+          ]
+        },
+        "items": [
+          {
+            "title": "The first sessions: what's happening and what you need",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Monica asks about what's going on and how it's affecting you day to day, including who you can count on, here and at home. Together you agree what you'd like the sessions to help with."
+                  }
+                ]
+              ]
+            },
+            "note": "Assessment tools or questionnaires, if any: to confirm with Monica."
+          },
+          {
+            "title": "Then sessions shaped around your situation",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Some sessions are space to say what you can't say elsewhere. Others are more practical: how to manage sleep and worry; how to make a decision you keep putting off, such as whether to travel home; how to talk to the people around you, an employer included, about what you're going through."
+                  }
+                ]
+              ]
+            },
+            "note": "Specific techniques: to confirm with Monica."
+          },
+          {
+            "title": "A check on how it's going",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Along the way, you and Monica look at whether the sessions are helping and what you still need. If something longer would help more, she will tell you (see below)."
+                  }
+                ]
+              ]
+            },
+            "note": "When support ends, and whether you can stop at any time: to confirm with Monica."
+          }
+        ],
+        "after": []
+      },
+      "anchor": "how-it-works",
+      "type": "steps",
+      "note": "Proposed method: to confirm with Monica. · Usually shorter than psychotherapy; how long, with Monica: to confirm."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "What it covers",
+        "title": "What psychological support with Monica can cover.",
+        "intro": {
+          "p": []
+        },
+        "variant": "terms",
+        "items": [
+          {
+            "term": "Caring for a family member",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "with a serious physical or mental illness, nearby or from a distance."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Bereavement",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": ", including grieving far from the people who knew the person."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Separation or divorce.",
+            "text": {
+              "p": [
+                []
+              ]
+            }
+          },
+          {
+            "term": "Losing a job",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": ", and what it changes beyond work."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Infertility",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": ", through tests, treatment and waiting."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Becoming a parent",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": ", from pregnancy to the first months with a baby."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Moving and living away from home",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": ", when settling in is harder than expected."
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "after": [],
+        "link": null,
+        "below": null
+      },
+      "type": "term-list"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "When something different would help",
+        "title": "When something different would help.",
+        "intro": {
+          "p": []
+        },
+        "variant": "terms",
+        "items": [
+          {
+            "term": "When support isn't enough.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "If what comes up turns out to run deeper, or was there long before this hard time, Monica may suggest psychotherapy, which she also offers. You decide whether to go on. "
+                  },
+                  {
+                    "t": "Psychotherapy",
+                    "href": "/en/psychotherapy/"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "When the question is about work.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "If what you need is help with your career or your job, Monica can suggest Elsa. With your consent, they can talk to each other."
+                  }
+                ]
+              ]
+            },
+            "note": "To confirm with the practice. How information is shared, and its limits: to define with the practice; check with your own adviser."
+          },
+          {
+            "term": "Medical and practical matters.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Medical questions about your own health or your relative's, legal questions after a separation and paperwork after a death need the relevant doctor, lawyer or office."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Medication and emergencies.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Blooming doesn't offer psychiatry. If you or someone else is in danger, call 112 or 118, or go to the nearest emergency department (Pronto Soccorso)."
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "after": [],
+        "link": null,
+        "below": null
+      },
+      "type": "term-list"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "eyebrow": "Who",
+        "title": "Monica Federico, psychologist and psychotherapist.",
+        "people": [
+          {
+            "name": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Monica has been registered with the Italian Order of Psychologists since 2010 and is a cognitive behavioural psychotherapist. Her clinical experience includes hospital psychology, clinics and private practice. She works with a bio-psycho-social approach, explained on the psychotherapy page. She also has an MSc in work and organisational psychology."
+                  }
+                ]
+              ]
+            },
+            "tag": "",
+            "button": {
+              "label": "Book with Monica",
+              "to": {
+                "kind": "book",
+                "pro": "monica-federico"
+              },
+              "style": "light"
+            },
+            "link": {
+              "label": "Monica's profile",
+              "to": {
+                "kind": "page",
+                "key": "team",
+                "anchor": "monica"
+              }
+            },
+            "note": "Year of specialisation: to confirm. Whether her hospital work included supporting patients' families: to confirm with Monica before mentioning it. Only if Monica confirms English: \"You can talk to Monica in English, so you don't have to put something painful into a language you're still learning.\" Short video of Monica: to film; in English only if she confirms sessions in English."
+          }
+        ],
+        "why": [],
+        "dots": false
+      },
+      "type": "people"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Fees, length and flexibility",
+        "title": "Sessions are online, and the free first meeting comes first.",
+        "intro": {
+          "p": []
+        },
+        "variant": "terms",
+        "items": [
+          {
+            "term": "Free first meeting:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "30 minutes by video call, with no obligation to continue. It isn't a session: you say what you're going through and find out whether support with Monica fits."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Sessions:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "online, by video call."
+                  }
+                ]
+              ]
+            },
+            "note": "Session length 50/60 minutes: to confirm. Fee per session: to agree, not to be published until agreed (the brief says €50 an hour; research proposed a different fee for sessions in English; the client decides). Usual number of sessions and how often: to confirm with Monica. Whether you can pause and come back if things get harder again, for example around an anniversary; whether you can stop at any time: to confirm with Monica. Tax: if you're tax resident in Italy, whether these fees are deductible, to check with your own adviser. If you're still abroad: the rules for online psychological sessions may depend on the country you're in; to check with your own adviser."
+          }
+        ],
+        "after": [],
+        "link": null,
+        "below": {
+          "label": "Fees & booking",
+          "to": {
+            "kind": "page",
+            "key": "costi-e-faq"
+          }
+        }
+      },
+      "type": "term-list"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Other kinds of help",
+        "title": "If a different kind of help fits better.",
+        "intro": {
+          "p": []
+        },
+        "marker": "links",
+        "items": [
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "For difficulties that go deeper or have lasted a long time"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psychotherapy",
+                "to": {
+                  "kind": "page",
+                  "key": "psicoterapia"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "When the move is affecting your work as well"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Moving to Italy",
+                "to": {
+                  "kind": "page",
+                  "key": "servizi",
+                  "anchor": "moving-to-italy"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "If what weighs on you most is your job"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Workplace coaching",
+                "to": {
+                  "kind": "page",
+                  "key": "coaching"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "If you're not sure which kind of help fits"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psychologist, psychotherapist or coach: the differences",
+                "to": {
+                  "kind": "page",
+                  "key": "differenze"
+                }
+              }
+            ],
+            "anchor": ""
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Start with a free first meeting with Monica.",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "Thirty minutes on video to say what's happening and hear how Monica could help. You don't need to have the words ready."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Book with Monica",
+            "to": {
+              "kind": "book",
+              "pro": "monica-federico"
+            },
+            "style": "light"
+          },
+          {
+            "label": "Ask a question",
+            "to": {
+              "kind": "page",
+              "key": "contatti"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": []
+        }
+      },
+      "type": "closing-cta",
+      "note": "Monica to be added to the booking system. If you'd like to ask something first, we reply within [reply time: to confirm], by email [address to confirm], phone [number to confirm] or WhatsApp [to confirm]."
+    }
+  ]
+}

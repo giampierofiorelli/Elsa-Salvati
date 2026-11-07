@@ -1,0 +1,666 @@
+{
+  "key": "psicoterapia",
+  "path": "/en/psychotherapy/",
+  "title": "Psychotherapy online, CBT with a psychotherapist in Italy – Blooming",
+  "description": "Cognitive behavioural psychotherapy with Monica Federico, psychologist and psychotherapist, for anxiety, depression, OCD, eating disorders, addictions, personality disorders and trauma. Online. Free 30-minute first meeting.",
+  "nav": "help",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Psychotherapy",
+        "title": "Psychotherapy for difficulties that have stayed with you, or keep coming back.",
+        "subtitle": "",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Psychotherapy is for difficulties that have lasted a long time, return again and again, or have started to shape your days. Monica Federico is a cognitive behavioural psychotherapist with clinical experience in hospitals, clinics and private practice, and she works online, by video call."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Book with Monica",
+            "to": {
+              "kind": "book",
+              "pro": "monica-federico"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "See how therapy works",
+            "to": {
+              "kind": "anchor",
+              "anchor": "how-it-works"
+            },
+            "style": "ghost"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero",
+      "note": "If Monica does not confirm sessions in English, publish this short version instead of the full page: H1 \"Psychotherapy with Monica Federico, in Italian\". Text: \"Psychotherapy at Blooming is with Monica Federico, a psychologist and cognitive behavioural psychotherapist, and her sessions are in Italian. It's for difficulties that have lasted a long time or keep coming back, such as anxiety, depression, OCD, eating disorders, addictions, personality disorders and trauma. If you'd rather start in English, you can book a free first meeting with Elsa: she isn't a psychotherapist, but she can help you work out what kind of help you need, and whether therapy in Italian with Monica could work for you.\" Buttons: Book with Monica · Book with Elsa. Then sections When a doctor is needed, Who (without the English line), Fees and Next step. Leave out Situations and How it works. Google title proposed: \"Psychotherapy online | CBT in English in Italy\" only if Monica confirms English. · In English: to confirm. · Monica to be added to the booking system; until then the button is \"Ask a question\" → /en/contact/."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Situations",
+        "title": "Some difficulties began with the move, others long before it.",
+        "intro": {
+          "p": []
+        },
+        "marker": "numbers",
+        "items": [
+          {
+            "group": "",
+            "title": "Something that began, or got worse, after the move",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Worry has taken up so much room that there isn't much left for anything else. Your heart races before an ordinary phone call, and you've started avoiding places and people to keep it from happening. Or getting up has become the hardest part of the day, and the things you used to enjoy now feel like effort."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Something you've carried for years",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Certain thoughts come back however hard you push them away, and only a ritual quiets them for a while: checking, washing, counting. Or relationships, at work and at home, keep going wrong in ways that feel familiar, with emotions that swing fast and leave you exhausted."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Something that happened to you still hasn't let go",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "It comes back at night, or lives on in a body that never quite relaxes, whether it happened last year or long ago."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Something that has started to run your days",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "What you eat, or avoid eating, takes up much of your thinking, and meals have become something to manage or hide. Or alcohol, a substance or a habit you meant to cut down on keeps winning, and you've stopped telling people how much."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          }
+        ],
+        "after": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "You don't need a name for what you're going through to get in touch. The free first meeting is for finding out whether psychotherapy with Monica could fit; the first sessions are where you work out together what's going on."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "What it can help with",
+        "title": "Psychotherapy with Monica can help with these difficulties.",
+        "intro": {
+          "p": []
+        },
+        "variant": "terms",
+        "items": [
+          {
+            "term": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Anxiety"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Depression"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Obsessive-compulsive disorder (OCD)"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Eating disorders"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Addictions"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Personality disorders"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Trauma and post-traumatic stress disorder (PTSD)"
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "after": [],
+        "link": null,
+        "below": null
+      },
+      "type": "term-list",
+      "note": "List kept short and delimited on purpose. Each item to confirm with Monica before publishing."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "How it works",
+        "title": "Cognitive behavioural therapy, explained without jargon.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Cognitive behavioural therapy, often shortened to CBT, looks at how your thoughts, feelings, actions and body keep each other going. A worried thought makes your body tense; the tension makes you avoid something; avoiding it makes the worry stronger next time. In CBT you learn to spot these loops in your own life and try other ways of responding, in sessions and between them."
+              }
+            ],
+            [
+              {
+                "t": "Monica also works with a bio-psycho-social approach. Alongside your thoughts and feelings, she takes into account your physical health and your circumstances, your work included. A difficulty that seems to be about one thing is often tied up with the others."
+              }
+            ]
+          ]
+        },
+        "items": [
+          {
+            "title": "The first sessions: understanding the difficulty",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Monica asks about what's happening now, when it started and what makes it better or worse, and what you'd like to be different. At the end of this phase she shares how she understands the difficulty, and you agree on goals together."
+                  }
+                ]
+              ]
+            },
+            "note": "Assessment questionnaires, if any: to confirm with Monica."
+          },
+          {
+            "title": "Then the work itself",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Sessions focus on the goals you agreed. You might keep a short record of the situations that set off the difficulty, or practise facing something you've been avoiding, step by step. Sometimes you test whether a belief you hold about yourself stands up. Between sessions there is usually something to practise."
+                  }
+                ]
+              ]
+            },
+            "note": "Specific techniques: to confirm with Monica."
+          },
+          {
+            "title": "Regular reviews, and a planned ending",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "You and Monica check progress against your goals along the way. Towards the end, you prepare for how to keep what you've learned and what to do if things get harder again."
+                  }
+                ]
+              ]
+            },
+            "note": "Usual length and frequency: to confirm with Monica."
+          },
+          {
+            "title": "Choosing the language",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Therapy asks you to describe thoughts and feelings precisely, so it's worth choosing a language you're comfortable in."
+                  }
+                ]
+              ]
+            },
+            "note": "Only if Monica confirms English: \"With Monica, you can choose English or Italian.\""
+          }
+        ],
+        "after": []
+      },
+      "anchor": "how-it-works",
+      "type": "steps",
+      "note": "Proposed method, length and frequency: to confirm with Monica."
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "When another professional is needed",
+        "title": "When a doctor or another service is needed.",
+        "intro": {
+          "p": []
+        },
+        "variant": "terms",
+        "items": [
+          {
+            "term": "Medication and psychiatry.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Blooming doesn't offer psychiatry. A psychiatrist is a medical doctor and can prescribe medication; a psychologist or psychotherapist who isn't a doctor can't."
+                  }
+                ]
+              ]
+            },
+            "note": "For some difficulties, therapy and medication are used together: to confirm with Monica. When and how Monica suggests seeing a psychiatrist or your GP: to confirm with Monica."
+          },
+          {
+            "term": "Physical risk.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Some eating disorders and addictions also affect your physical health and need medical care alongside therapy, or a specialist service."
+                  }
+                ]
+              ]
+            },
+            "note": "How Monica handles these situations, and when she refers: to confirm with Monica."
+          },
+          {
+            "term": "Emergencies.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Blooming isn't an emergency service. If you or someone else is in danger, call 112 or 118, or go to the nearest emergency department (Pronto Soccorso)."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "When the difficulty is mainly about work.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Monica can suggest Elsa for career or workplace questions, alongside therapy or after it. With your consent, they can talk to each other."
+                  }
+                ]
+              ]
+            },
+            "note": "To confirm with the practice. How information is shared, and its limits: to define with the practice; check with your own adviser."
+          },
+          {
+            "term": "When something shorter may be enough.",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "If what you're going through is a recent, specific hard time, psychological support may fit better, also with Monica. "
+                  },
+                  {
+                    "t": "Psychological support",
+                    "href": "/en/psychological-support/"
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "after": [],
+        "link": null,
+        "below": null
+      },
+      "type": "term-list"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "eyebrow": "Who",
+        "title": "Monica Federico, cognitive behavioural psychotherapist.",
+        "people": [
+          {
+            "name": "",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Monica is a psychologist, registered with the Italian Order of Psychologists since 2010, and a cognitive behavioural psychotherapist. She has worked in hospital psychology, in clinics and in private practice. She also holds an MSc in work and organisational psychology."
+                  }
+                ]
+              ]
+            },
+            "tag": "",
+            "button": {
+              "label": "Book with Monica",
+              "to": {
+                "kind": "book",
+                "pro": "monica-federico"
+              },
+              "style": "light"
+            },
+            "link": {
+              "label": "Monica's profile",
+              "to": {
+                "kind": "page",
+                "key": "team",
+                "anchor": "monica"
+              }
+            },
+            "note": "Year of specialisation: to confirm. Only if Monica confirms English: \"She offers psychotherapy in English and Italian.\" Short video of Monica: to film; in English only if she confirms sessions in English."
+          }
+        ],
+        "why": [],
+        "dots": false
+      },
+      "type": "people"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Fees, length and flexibility",
+        "title": "Sessions are online, by video call, after a free first meeting.",
+        "intro": {
+          "p": []
+        },
+        "variant": "terms",
+        "items": [
+          {
+            "term": "Free first meeting:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "30 minutes by video call, with no obligation to continue. It isn't a session or a diagnostic assessment: you say what's going on and find out whether psychotherapy with Monica could fit."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Sessions:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "online, by video call."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "term": "Length and frequency:",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "you agree them with Monica after the first sessions, and review them as you go."
+                  }
+                ]
+              ]
+            },
+            "note": "Session length 50/60 minutes: to confirm. Fee per session: to agree, not to be published until agreed (the brief says €70 an hour for psychotherapy; research proposed a different fee for sessions in English; the client decides). Usual length and frequency: to confirm with Monica. Whether you can change frequency, pause or stop at any time: to confirm with Monica. Tax and insurance: if you're tax resident in Italy, whether fees are deductible; what invoices are issued and whether international insurers accept them: to check with your own adviser and the practice. If you're still abroad: the rules for online psychological sessions may depend on the country you're in; to check with your own adviser."
+          }
+        ],
+        "after": [],
+        "link": null,
+        "below": {
+          "label": "Fees & booking",
+          "to": {
+            "kind": "page",
+            "key": "costi-e-faq"
+          }
+        }
+      },
+      "type": "term-list"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Other kinds of help",
+        "title": "If a different kind of help fits better.",
+        "intro": {
+          "p": []
+        },
+        "marker": "links",
+        "items": [
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "For getting through a specific hard time"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psychological support",
+                "to": {
+                  "kind": "page",
+                  "key": "sostegno"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Including what a psychiatrist does"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Psychologist, psychotherapist or coach: the differences",
+                "to": {
+                  "kind": "page",
+                  "key": "differenze"
+                }
+              }
+            ],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "More about Monica"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [
+              {
+                "label": "Monica's profile",
+                "to": {
+                  "kind": "page",
+                  "key": "team",
+                  "anchor": "monica"
+                }
+              }
+            ],
+            "anchor": ""
+          }
+        ],
+        "after": []
+      },
+      "type": "rows"
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Start with a free first meeting with Monica.",
+        "text": {
+          "p": [
+            [
+              {
+                "t": "Thirty minutes on video to describe what's been happening. You can say as much or as little as you like."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Book with Monica",
+            "to": {
+              "kind": "book",
+              "pro": "monica-federico"
+            },
+            "style": "light"
+          },
+          {
+            "label": "Ask a question",
+            "to": {
+              "kind": "page",
+              "key": "contatti"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": []
+        }
+      },
+      "type": "closing-cta",
+      "note": "Monica to be added to the booking system. If you'd like to ask something first, we reply within [reply time: to confirm], by email [address to confirm], phone [number to confirm] or WhatsApp [to confirm]."
+    }
+  ]
+}

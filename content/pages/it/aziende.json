@@ -1,0 +1,320 @@
+{
+  "key": "aziende",
+  "path": "/aziende/",
+  "title": "Per le aziende: cultura del lavoro, selezione, team coaching e formazione – Blooming",
+  "description": "Processi e ruoli, selezione dei ruoli chiave, team coaching, formazione su misura e outplacement, con una psicologa che da oltre dieci anni lavora nelle risorse umane. A progetto, con un primo incontro gratuito.",
+  "nav": "aziende",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Per le aziende",
+        "title": "Una cultura del lavoro più sana è possibile.",
+        "subtitle": "",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Le persone valide se ne vanno e il motivo ufficiale è sempre \"personale\". Un nuovo assunto promettente lascia dopo sei mesi. Un gruppo porta a casa il lavoro, ma nessuno dice davvero quello che pensa. Quando succede di continuo, la causa raramente è una persona sola."
+              }
+            ]
+          ]
+        },
+        "buttons": [
+          {
+            "label": "Richiedi il primo incontro gratuito",
+            "to": {
+              "kind": "anchor",
+              "anchor": "contatto"
+            },
+            "style": "primary"
+          },
+          {
+            "label": "Su cosa lavoriamo",
+            "to": {
+              "kind": "anchor",
+              "anchor": "servizi"
+            },
+            "style": "ghost"
+          }
+        ],
+        "width": "wide"
+      },
+      "type": "page-hero"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Da dove partiamo",
+        "title": "La cultura è fatta di decisioni di ogni giorno.",
+        "intro": {
+          "p": []
+        },
+        "body": [
+          {
+            "kind": "lead",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Chi viene assunto e come, come sono divisi ruoli e responsabilità, come lavora un gruppo, quale formazione serve davvero. Elsa, psicologa, lavora da oltre dieci anni nelle risorse umane, tra selezione, formazione e gestione del cambiamento. Dagmara si occupa di analisi dei processi organizzativi."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Guardiamo con voi queste decisioni e vi aiutiamo a cambiare quelle che contano di più. Preferiamo sistemare bene poche cose precise piuttosto che promettervi di trasformare la vostra cultura."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Se nel vostro gruppo ci sono persone straniere, possiamo lavorare anche in inglese."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "kind": "stat",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "In Italia oltre il 63% dei lavoratori considera il proprio lavoro mentalmente impegnativo o stressante, contro il 56% della media europea."
+                  }
+                ]
+              ]
+            },
+            "source": "SDA Bocconi, Social Sustainability Monitor 2025"
+          }
+        ]
+      },
+      "type": "text-columns",
+      "note": "Esperienza di Dagmara da confermare. · Dato facoltativo: il cliente decide se tenerlo; link alla fonte da inserire."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "eyebrow": "Su cosa lavoriamo",
+        "title": "Cinque ambiti, dai processi alle persone.",
+        "intro": {
+          "p": []
+        },
+        "marker": "numbers",
+        "items": [
+          {
+            "group": "",
+            "title": "Processi e ruoli",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Mappiamo come funzionano oggi i processi HR, con interviste e questionari alle persone coinvolte, e ridisegniamo flussi, ruoli e struttura dove serve."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Selezione dei ruoli chiave",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Vi affianchiamo nel definire il profilo, valutare le competenze e seguire l'inserimento."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Team coaching",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Per gruppi che devono collaborare meglio, affrontare un conflitto, attraversare un cambiamento o ritrovare motivazione."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Formazione su misura",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Analizziamo il bisogno e progettiamo il percorso, anche insieme a voi. Lo teniamo noi, o vi indichiamo una società di formazione specializzata."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": ""
+          },
+          {
+            "group": "",
+            "title": "Outplacement",
+            "who": "",
+            "body": [
+              {
+                "kind": "p",
+                "text": {
+                  "p": [
+                    [
+                      {
+                        "t": "Per chi deve lasciare l'azienda."
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "links": [],
+            "anchor": "",
+            "note": "Aspetti autorizzativi da verificare con un vostro consulente."
+          }
+        ],
+        "after": [
+          {
+            "kind": "p",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Possiamo offrire ai vostri dipendenti anche coaching, sostegno psicologico e psicoterapia. Aiutano la persona; ciò che non funziona nell'organizzazione va affrontato a parte, e ve lo diciamo. L'azienda non riceve alcuna informazione su ciò che si dice nelle sedute."
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "anchor": "servizi",
+      "type": "rows",
+      "note": "Servizi del brief: ogni voce resta solo se confermata nel questionario. · Cosa può sapere l'azienda (per esempio se il servizio è stato usato, e con il consenso della persona): da definire."
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "eyebrow": "Come lavoriamo",
+        "title": "A progetto, con un preventivo scritto.",
+        "intro": {
+          "p": []
+        },
+        "items": [
+          {
+            "title": "Un primo incontro gratuito",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Per capire la situazione."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Una proposta scritta",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Cosa faremo, in quanto tempo, con quali costi."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "L'intervento",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Con le persone coinvolte."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "title": "Una verifica insieme",
+            "text": {
+              "p": [
+                [
+                  {
+                    "t": "Di cosa è cambiato."
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "after": []
+      },
+      "type": "steps"
+    },
+    {
+      "bg": "light",
+      "data": {
+        "variant": "organisations",
+        "eyebrow": "Contatto",
+        "title": "Raccontateci la vostra organizzazione.",
+        "intro": {
+          "p": []
+        }
+      },
+      "anchor": "contatto",
+      "type": "request-form",
+      "note": "Rispondiamo entro [due giorni lavorativi]: da confermare."
+    }
+  ]
+}

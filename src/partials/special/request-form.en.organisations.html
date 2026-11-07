@@ -1,0 +1,25 @@
+<section class="section<!--bg-->"<!--id--> data-theme-section="light">
+  <div class="wrap two-col-v4">
+    <div>
+      <!--head-->
+    </div>
+    <form class="panel form-v4" data-request-form novalidate>
+      <input type="hidden" name="category" value="aziende">
+      <input type="hidden" name="mode" value="da_definire">
+      <div class="field"><label for="o-name">Full name</label><input id="o-name" name="name" type="text" autocomplete="name" required maxlength="80"></div>
+      <div class="field"><label for="o-org">Organisation</label><input id="o-org" name="organization" type="text" autocomplete="organization" maxlength="120"></div>
+      <div class="field"><label for="o-role">Role <span class="hint">(optional)</span></label><input id="o-role" data-extra="Role" type="text" autocomplete="organization-title" maxlength="60"></div>
+      <div class="field"><label for="o-size">Organisation size <span class="hint">(optional)</span></label>
+        <select id="o-size" data-extra="Size"><option value="">Select</option><option>Up to 10 people</option><option>11–50 people</option><option>51–250 people</option><option>Over 250 people</option></select></div>
+      <div class="field"><label for="o-lang">Language of the team <span class="hint">(optional)</span></label>
+        <select id="o-lang" data-extra="Team language"><option value="">Select</option><option>English</option><option>Italian</option><option>Both</option><option>Other</option></select></div>
+      <div class="field"><label for="o-email">Email</label><input id="o-email" name="email" type="email" autocomplete="email" maxlength="254"></div>
+      <div class="field"><label for="o-phone">Phone <span class="hint">(optional if you leave an email)</span></label><input id="o-phone" name="phone" type="tel" autocomplete="tel" maxlength="20"></div>
+      <div class="field"><label for="o-msg">What you'd like to work on <span class="hint">(optional)</span></label><textarea id="o-msg" name="message" maxlength="480"></textarea><span class="hint">A few lines are enough; please don't include personal details about employees or colleagues.</span></div>
+      <div class="hp" aria-hidden="true"><label for="o-website">Leave empty</label><input id="o-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <label class="check"><input type="checkbox" name="privacy" required> <span>I have read the <a href="/en/privacy/" target="_blank" rel="noopener">privacy notice</a>.</span></label>
+      <p class="status" role="status" data-request-status></p>
+      <button class="btn btn-primary" type="submit">Request a free first meeting</button>
+    </form>
+  </div>
+</section>

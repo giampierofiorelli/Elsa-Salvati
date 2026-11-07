@@ -1,0 +1,104 @@
+{
+  "key": "contatti",
+  "path": "/contatti/",
+  "title": "Contatti – Blooming · Studio di psicologia e coaching",
+  "description": "Prenota online il primo colloquio gratuito, chiamaci o scrivici. Ti risponde una persona dello studio.",
+  "nav": "contatti",
+  "blocks": [
+    {
+      "data": {
+        "eyebrow": "Contatti",
+        "title": "Puoi prenotare online, chiamarci o scriverci.",
+        "subtitle": "",
+        "intro": {
+          "p": []
+        },
+        "buttons": [],
+        "width": "wide"
+      },
+      "type": "page-hero"
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "whatsapp": {
+          "p": [
+            [
+              {
+                "t": "Per domande pratiche su orari e appuntamenti. Per favore non scrivere qui di come stai: ne parli negli incontri."
+              }
+            ]
+          ]
+        },
+        "after": {
+          "p": [
+            [
+              {
+                "t": "Non rispondiamo in tempo reale. Se sei in pericolo immediato chiama il "
+              },
+              {
+                "t": "112",
+                "href": "tel:112"
+              },
+              {
+                "t": " o il "
+              },
+              {
+                "t": "118",
+                "href": "tel:118"
+              },
+              {
+                "t": ", o vai al Pronto Soccorso più vicino."
+              }
+            ]
+          ]
+        }
+      },
+      "type": "contact-channels",
+      "note": "Ti risponde una persona dello studio [chi: da confermare], entro [un giorno lavorativo, dal lunedì al venerdì]. · WhatsApp: se confermato."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "variant": "people",
+        "eyebrow": "Modulo",
+        "title": "Chiedici di ricontattarti.",
+        "intro": {
+          "p": [
+            [
+              {
+                "t": "Non è necessario raccontare la tua situazione: basta indicare come preferisci che ti ricontattiamo."
+              }
+            ]
+          ]
+        }
+      },
+      "anchor": "ricontatto",
+      "type": "request-form",
+      "numbered": false
+    },
+    {
+      "bg": "dark",
+      "data": {
+        "title": "Per la tua organizzazione.",
+        "text": {
+          "p": []
+        },
+        "buttons": [
+          {
+            "label": "Blooming per le aziende",
+            "to": {
+              "kind": "page",
+              "key": "aziende"
+            },
+            "style": "outline-light"
+          }
+        ],
+        "more": {
+          "p": []
+        }
+      },
+      "type": "closing-cta"
+    }
+  ]
+}

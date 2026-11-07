@@ -1,0 +1,49 @@
+<section class="section" id="ricontatto" aria-labelledby="ricontatto-title">
+  <div class="wrap narrow">
+    <p class="eyebrow">No time that suits you?</p>
+    <h2 id="ricontatto-title">Ask us to get back to you.</h2>
+    <p>If you can't find a time, or you'd rather talk first, leave us your details and we'll reply personally.</p>
+    <form class="panel" data-request-form novalidate>
+      <div class="field">
+        <label for="r-name">Name</label>
+        <input id="r-name" name="name" type="text" autocomplete="name" required maxlength="80">
+      </div>
+      <div class="field">
+        <label for="r-email">Email</label>
+        <input id="r-email" name="email" type="email" autocomplete="email" maxlength="254">
+      </div>
+      <div class="field">
+        <label for="r-phone">Phone</label>
+        <input id="r-phone" name="phone" type="tel" autocomplete="tel" maxlength="20">
+        <span class="hint">Give us at least an email or a phone number.</span>
+      </div>
+      <div class="field">
+        <label for="r-category">Area</label>
+        <select id="r-category" name="category">
+          <option value="da_definire">Not sure yet</option>
+          {{@categoryOptions}}
+          <option value="aziende">For my organisation</option>
+        </select>
+      </div>
+      <div class="field" data-pro-field hidden>
+        <label for="r-pro">Professional <span class="hint">(optional)</span></label>
+        <select id="r-pro" name="professional"><option value="">No preference</option></select>
+      </div>
+      <input type="hidden" name="mode" value="da_definire">
+      <div class="field">
+        <label for="r-pref">Preferred days and times <span class="hint">(optional)</span></label>
+        <input id="r-pref" name="preference" type="text" maxlength="200" placeholder="e.g. Tuesday afternoon">
+      </div>
+      <div class="field">
+        <label for="r-msg">Message <span class="hint">(optional)</span></label>
+        <textarea id="r-msg" name="message" maxlength="600"></textarea>
+        <span class="hint">Please don't include health or sensitive personal details: just tell us how to reach you.</span>
+      </div>
+      <div class="hp" aria-hidden="true"><label for="r-website">Leave empty</label><input id="r-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <label class="check"><input type="checkbox" name="privacy" required> <span>I have read the <a href="/en/privacy/" target="_blank" rel="noopener">privacy notice</a>.</span></label>
+      <p class="status" role="status" data-request-status></p>
+      <button class="btn btn-primary" type="submit">Send</button>
+    </form>
+
+  </div>
+</section>
