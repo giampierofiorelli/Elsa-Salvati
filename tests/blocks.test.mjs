@@ -76,3 +76,75 @@ test('library images: every version in srcset, sizes by role, the first picture 
   assert.throws(() => cleanBlocks([photo('d'.repeat(24), { variants: [333] })]), /versioni dell'immagine non valide/);
   assert.throws(() => cleanBlocks([photo('d'.repeat(24), { role: 'hero' })]), /uso dell'immagine non valido/);
 });
+
+// ---------- editor marks (data-edit-*): only in the editor's preview ----------
+import { readdirSync, readFileSync } from 'node:fs';
+
+/** The field definition a data-edit path points to, or null. */
+function fieldAt(fields, path) {
+  const parts = path.split('.');
+  let list = fields;
+  let f = null;
+  for (let i = 0; i < parts.length; i++) {
+    f = list && list.find((x) => x.name === parts[i]);
+    if (!f) return null;
+    if (i === parts.length - 1) return f;
+    const idx = parts[i + 1];
+    if (!/^\d+$/.test(idx)) return null;
+    i += 1;
+    if (i === parts.length - 1) return { ...f, item: true };
+    if (f.type === 'list') list = f.fields;
+    else if (f.type === 'flow') list = [{ name: 'text', type: 'rich' }, { name: 'source', type: 'text' }, { name: 'link', type: 'link' }];
+    else return null;
+  }
+  return f;
+}
+const KIND_OK = {
+  text: (f) => f.type === 'text' || (f.item && f.type === 'textlist'),
+  rich: (f) => f.type === 'rich',
+  inline: (f) => f.type === 'rich',
+  link: (f) => f.item ? (f.type === 'buttons' || f.type === 'links') : (f.type === 'link' || f.type === 'button'),
+  image: (f) => f.type === 'image',
+  item: (f) => f.item && f.type === 'list',
+};
+
+test('editor marks: every data-edit path in every site page points to a field of the right kind', () => {
+  let checked = 0;
+  for (const lang of ['it', 'en']) {
+    for (const file of readdirSync(new URL(`../content/pages/${lang}/`, import.meta.url))) {
+      const pg = JSON.parse(readFileSync(new URL(`../content/pages/${lang}/${file}`, import.meta.url), 'utf8'));
+      if (!Array.isArray(pg.blocks)) continue;
+      const blocks = cleanBlocks(pg.blocks);
+      const html = renderBlocks(blocks, { ...ctx(lang, true), editor: true });
+      // Each block's first element carries its index.
+      const idx = [...html.matchAll(/data-edit-block="(\d+)"/g)].map((m) => Number(m[1]));
+      blocks.forEach((b, i) => { if (!BLOCKS[b.type].special) assert.ok(idx.includes(i), `${file}: block ${i} (${b.type}) not marked`); });
+      // Walk the blocks in order and check every mark against that block's fields.
+      const parts = html.split(/(?=<[a-zA-Z][^>]*data-edit-block=")/);
+      for (const part of parts) {
+        const m = part.match(/data-edit-block="(\d+)"/);
+        if (!m) continue;
+        const def = BLOCKS[blocks[Number(m[1])].type];
+        for (const e of part.matchAll(/data-edit="([^"]+)" data-edit-kind="(\w+)"/g)) {
+          const f = fieldAt(def.fields, e[1]);
+          assert.ok(f, `${file}: ${blocks[Number(m[1])].type} has no field ${e[1]}`);
+          assert.ok(KIND_OK[e[2]] && KIND_OK[e[2]](f), `${file}: ${e[1]} marked ${e[2]} but is ${f.type}`);
+          checked += 1;
+        }
+      }
+    }
+  }
+  assert.ok(checked > 200, `only ${checked} marks checked`);
+});
+
+test('editor marks never reach published pages', () => {
+  for (const lang of ['it', 'en']) {
+    for (const file of readdirSync(new URL(`../content/pages/${lang}/`, import.meta.url))) {
+      const pg = JSON.parse(readFileSync(new URL(`../content/pages/${lang}/${file}`, import.meta.url), 'utf8'));
+      if (!Array.isArray(pg.blocks)) continue;
+      const blocks = cleanBlocks(pg.blocks);
+      assert.doesNotMatch(renderBlocks(blocks, ctx(lang, false)), /data-edit/, file);
+      assert.doesNotMatch(renderBlocks(blocks, ctx(lang, true)), /data-edit/, `${file} (staging, with notes)`);
+    }
+  }
+});

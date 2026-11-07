@@ -567,9 +567,12 @@ test('page editor: only administrators and accounts allowed to edit the site can
   r = await call2('anna', 'POST', '/site/preview', { pageId: it.id, title: 'Pagina di prova', blocks: [...blocks, { type: 'rows', note: 'nota per Elsa', data: { eyebrow: 'Voci', items: [{ title: 'Una' }] } }] });
   assert.equal(r.status, 200, JSON.stringify(r.body));
   assert.match(r.body.html, /Titolo nuovo/);
-  assert.match(r.body.html, /02 · Voci/);
+  assert.match(r.body.html, /02 · (<span[^>]*>)?Voci/);
   assert.match(r.body.html, /class="draft-note">nota per Elsa/);
   assert.match(r.body.html, /href="\/en\/test\/"/);
+  // The preview marks editable fields for the editor; published and staging pages never do (below).
+  assert.match(r.body.html, /data-edit-block="0"/);
+  assert.match(r.body.html, /data-edit="title" data-edit-kind="text"/);
 
   // The public page (production) still shows the published version until "Pubblica".
   const serve = (path, env) => pageResponse(new Request(`https://studio.example.it/.netlify/functions/page?p=${encodeURIComponent(path)}`), {
@@ -581,8 +584,11 @@ test('page editor: only administrators and accounts allowed to edit the site can
   assert.equal(pub1.headers.get('netlify-cache-tag').split(',')[0], `page-${it.id}`);
   assert.match(pub1.headers.get('netlify-cdn-cache-control'), /durable/);
   assert.doesNotMatch(html, /draft-note/);
+  assert.doesNotMatch(html, /data-edit/, 'no editor marks on the public page');
   const staging = await serve('/prova/', { CONTEXT: 'branch-deploy' });
-  assert.match(await staging.text(), /Titolo nuovo/, 'staging shows the draft');
+  const stagingHtml = await staging.text();
+  assert.match(stagingHtml, /Titolo nuovo/, 'staging shows the draft');
+  assert.doesNotMatch(stagingHtml, /data-edit/, 'no editor marks on staging either');
   assert.equal(staging.headers.get('cache-control'), 'no-store');
 
   r = await call2('anna', 'POST', `/site/pages/${it.id}/publish`, {});
