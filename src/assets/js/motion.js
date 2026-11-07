@@ -121,15 +121,12 @@
     });
   }
 
-  // Short loader with the lotus, at most ~1.4 s.
-  // Test phase (G, 7/11): shown on every page load. To go back to first visit
-  // only, set EVERY_LOAD to false.
-  var EVERY_LOAD = true;
+  // Short loader with the lotus, at most ~1.4 s. Switched off (compliance review, 2026-11): the page shows
+  // its content at once, and nothing is saved in the browser to remember a visit. To bring it back on every
+  // page load, set SHOW_LOADER to true; never store anything to show it only once.
+  var SHOW_LOADER = false;
   function loader(done) {
-    var seen = false;
-    try { seen = localStorage.getItem('bl-loader') === '1'; localStorage.setItem('bl-loader', '1'); } catch (e) { seen = true; }
-    if (EVERY_LOAD) seen = false;
-    if (seen || !document.querySelector('.hero-v4')) { done(); return; }
+    if (!SHOW_LOADER || !document.querySelector('.hero-v4')) { done(); return; }
     var el = document.createElement('div');
     el.className = 'loader';
     el.setAttribute('aria-hidden', 'true');
