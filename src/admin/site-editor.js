@@ -217,9 +217,15 @@
     return el('div', { class: 'rte' }, [bar, box, counter]);
   }
 
+  // Language of what is open: header/footer use their scope (studio data counts as Italian), pages their own.
+  function editLang() {
+    if (se.mode === 'global') return se.gscope === 'en' ? 'en' : 'it';
+    return se.page ? se.page.lang : 'it';
+  }
+
   // Link inside a text: a page of the site (same tab) or an outside address (new tab, decided by the site).
   function linkDialog(onPick) {
-    var lang = se.page.lang;
+    var lang = editLang();
     var own = se.pages.filter(function (p) { return p.lang === lang; });
     var dlg = el('dialog', { class: 'dlg' });
     var sel = el('select', { id: 'ld-page' }, own.map(function (p) { return el('option', { value: p.path, text: pageName(p.key) + ' (' + p.path + ')' }); }));
@@ -343,7 +349,7 @@
         onChange(to); render();
       }));
       if (to.kind === 'page') {
-        var lang = se.page.lang;
+        var lang = editLang();
         var opts = se.linkTargets.map(function (t) {
           var here = t[lang];
           return [t.key, pageName(t.key) + (here ? '' : ' (manca in ' + (lang === 'en' ? 'inglese' : 'italiano') + ')')];
@@ -664,7 +670,7 @@
   function imageEditor(value, onChange, opts) {
     opts = opts || {};
     var role = opts.role || 'content';
-    var lang = se.page ? se.page.lang : 'it';
+    var lang = editLang();
     var box = el('div', { class: 'se-image' });
     function useItem(m) {
       var v = Object.assign({}, m.value);
@@ -1312,7 +1318,7 @@
     ]);
   }
   function openShared(part) {
-    var lang = se.page ? se.page.lang : 'it';
+    var lang = editLang();
     if (se.page) se.returnPage = se.page.id;
     return openGlobal(lang, part);
   }

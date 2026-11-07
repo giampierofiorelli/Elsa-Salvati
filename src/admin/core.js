@@ -184,7 +184,7 @@
     left: '<path d="m15 18-6-6 6-6"/>',
     right: '<path d="m9 18 6-6-6-6"/>',
     menu: '<path d="M4 6.5h16M4 12h16M4 17.5h16"/>',
-    collapse: '<rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M9 3v18M16 9.5 13.5 12l2.5 2.5"/>',
+    collapse: '<rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M9 3v18"/><path class="ic-chev" d="M16 9.5 13.5 12l2.5 2.5"/>',
     desktop: '<rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 16.5v4"/>',
     mobile: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18h2"/>',
     check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
@@ -373,6 +373,19 @@
     try { localStorage.setItem('blooming-admin-mini', mini ? '1' : ''); } catch (e) { /* not available */ }
   });
   try { if (localStorage.getItem('blooming-admin-mini')) document.body.classList.add('sb-mini'); } catch (e) { /* not available */ }
+  // The arrow points the way the menu will move: right to open it, left to close it.
+  function syncCollapse() {
+    var b = document.body.classList;
+    var closed = (mqTablet.matches || b.contains('is-editor')) ? !b.contains('sb-wide') : b.contains('sb-mini');
+    var btn = $('[data-sb-collapse]');
+    btn.classList.toggle('is-closed', closed);
+    var t = closed ? 'Espandi il menu' : 'Riduci il menu';
+    btn.setAttribute('aria-label', t); btn.title = t;
+    btn.setAttribute('aria-expanded', String(!closed));
+  }
+  new MutationObserver(syncCollapse).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  if (mqTablet.addEventListener) mqTablet.addEventListener('change', syncCollapse);
+  syncCollapse();
 
   // User menu
   function closeUserMenu() {

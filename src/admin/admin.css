@@ -103,6 +103,8 @@ body.admin {
 .sb-brand-text strong { font: 600 1.05rem var(--serif); letter-spacing: -.01em; color: #fff; }
 .sb-brand-text small { color: var(--sb-muted); font-size: .75rem; }
 .sb-collapse { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; border: 0; background: transparent; color: var(--sb-muted); cursor: pointer; flex: none; }
+.sb-collapse .ic-chev { transform-box: fill-box; transform-origin: center; transition: transform .2s; }
+.sb-collapse.is-closed .ic-chev { transform: scaleX(-1); }
 .sb-collapse:hover { background: rgba(255, 255, 255, .08); color: #fff; }
 .sb-nav { flex: 1 1 auto; overflow-y: auto; padding: var(--s2) var(--s2) var(--s4); scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.2) transparent; }
 .sb-group { padding: var(--s2) 0; }
