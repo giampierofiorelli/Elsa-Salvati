@@ -37,6 +37,19 @@
   [headers.values]
     Cache-Control = "public, max-age=604800"
 
+# Language. Italian is at the root, English under /en/. On the home page only,
+# browsers whose language is not Italian go to the English site. Netlify rules
+# can't express "not Italian", so this lists the common languages; anything
+# else (and crawlers, which send no language) stays on the Italian home page.
+# A choice made with the language switch is kept in the nf_lang cookie, which
+# Netlify reads instead of the browser language.
+[[redirects]]
+  from = "/"
+  to = "/en/"
+  status = 302
+  force = true
+  conditions = {Language = ["en", "fr", "de", "es", "pt", "nl", "pl", "ro", "ru", "uk", "zh", "ja", "ko", "ar", "tr", "el", "sv", "da", "no", "nb", "fi", "cs", "sk", "hu", "bg", "hr", "sr", "sl", "sq", "he", "hi", "bn", "ur", "fa", "vi", "th", "id", "ms", "tl", "lt", "lv", "et", "ca"]}
+
 # Preview deploys are never indexed.
 [context.deploy-preview.environment]
   SITE_DEMO = "true"

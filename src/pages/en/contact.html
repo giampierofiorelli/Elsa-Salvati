@@ -1,0 +1,66 @@
+---
+title: Contact – Blooming · Psychology and coaching practice
+description: Ask a question or ask us to get back to you. We reply personally.
+path: /en/contact/
+key: contatti
+nav: contact
+scripts: booking
+---
+<section class="page-hero">
+  <div class="wrap narrow">
+    <p class="eyebrow">Contact</p>
+    <h1>Write to us, or ask us to call you back.</h1>
+    <p class="lead">For a question before booking, or if you'd rather talk first. We reply within [one working day], by email, phone or WhatsApp.</p>
+  </div>
+</section>
+<section class="section-tight">
+  <div class="wrap narrow">
+    <form class="panel" data-request-form novalidate>
+      <div class="field">
+        <label for="r-name">Name</label>
+        <input id="r-name" name="name" type="text" autocomplete="name" required maxlength="80">
+      </div>
+      <div class="field">
+        <label for="r-email">Email</label>
+        <input id="r-email" name="email" type="email" autocomplete="email" maxlength="254">
+      </div>
+      <div class="field">
+        <label for="r-phone">Phone</label>
+        <input id="r-phone" name="phone" type="tel" autocomplete="tel" maxlength="20">
+        <span class="hint">Give us at least an email or a phone number.</span>
+      </div>
+      <div class="field">
+        <label for="r-category">Area</label>
+        <select id="r-category" name="category">
+          <option value="da_definire">Not sure yet</option>
+          {{@categoryOptions}}
+          <option value="aziende">For my organisation</option>
+        </select>
+      </div>
+      <div class="field" data-pro-field hidden>
+        <label for="r-pro">Professional <span class="hint">(optional)</span></label>
+        <select id="r-pro" name="professional"><option value="">No preference</option></select>
+      </div>
+      <div class="field">
+        <label for="r-mode">Format</label>
+        <select id="r-mode" name="mode">
+          <option value="online">Online</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="r-pref">Preferred days and times <span class="hint">(optional)</span></label>
+        <input id="r-pref" name="preference" type="text" maxlength="200" placeholder="e.g. Tuesday afternoon">
+      </div>
+      <div class="field">
+        <label for="r-msg">Message <span class="hint">(optional)</span></label>
+        <textarea id="r-msg" name="message" maxlength="600"></textarea>
+        <span class="hint">Please don't include health or sensitive personal details: just tell us how to reach you.</span>
+      </div>
+      <div class="hp" aria-hidden="true"><label for="r-website">Leave empty</label><input id="r-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <label class="check"><input type="checkbox" name="privacy" required> <span>I have read the <a href="/privacy/" target="_blank" rel="noopener" hreflang="it">privacy notice</a> (in Italian).</span></label>
+      <p class="status" role="status" data-request-status></p>
+      <button class="btn btn-primary" type="submit">Send</button>
+    </form>
+
+  </div>
+</section>

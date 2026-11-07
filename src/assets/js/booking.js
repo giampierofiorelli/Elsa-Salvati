@@ -5,12 +5,68 @@
   'use strict';
 
   var TZ = 'Europe/Rome';
-  var fmtDay = new Intl.DateTimeFormat('it-IT', { timeZone: TZ, weekday: 'short' });
-  var fmtNum = new Intl.DateTimeFormat('it-IT', { timeZone: TZ, day: 'numeric' });
-  var fmtMonth = new Intl.DateTimeFormat('it-IT', { timeZone: TZ, month: 'short' });
-  var fmtLong = new Intl.DateTimeFormat('it-IT', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  var fmtTime = new Intl.DateTimeFormat('it-IT', { timeZone: TZ, hour: '2-digit', minute: '2-digit' });
-  var MODE_LABEL = { studio: 'In studio', online: 'Online' };
+  var LANG = document.documentElement.lang === 'en' ? 'en' : 'it';
+  var LOCALE = LANG === 'en' ? 'en-GB' : 'it-IT';
+  var T = {
+    it: {
+      at: ', ore ', error: 'Si è verificato un errore. Riprova.', network: 'Connessione non riuscita. Controlla la rete e riprova.',
+      service: 'Servizio', with: 'Con', language: 'Lingua', mode: 'Modalità', when: 'Quando', length: 'Durata', status: 'Stato',
+      newTime: 'Nuovo orario', minutes: ' minuti', assigned: 'La professionista più adatta, assegnata alla conferma',
+      notBookable: 'I servizi di quest\'area non sono ancora prenotabili online: chiedici di ricontattarti qui sotto.',
+      help: 'Aiutami a scegliere', helpText: 'Vedi gli orari di tutte; la professionista più adatta ti viene assegnata alla conferma',
+      needName: 'Inserisci nome e cognome.', needEmail: 'Inserisci un indirizzo email valido.',
+      needPrivacy: 'Per prenotare è necessario prendere visione dell\'informativa privacy.',
+      confirming: 'Conferma in corso…', confirm: 'Conferma la prenotazione',
+      confirmed: 'Confermato', cancelled: 'Annullato', wasCancelled: 'Questo appuntamento è stato annullato.',
+      tooLate: function (h) { return 'Mancano meno di ' + h + ' ore all\'appuntamento: per modificarlo contatta direttamente lo studio.'; },
+      canChange: function (h) { return 'Puoi spostare o annullare l\'appuntamento fino a ' + h + ' ore prima.'; },
+      reallyCancel: 'Vuoi davvero annullare l\'appuntamento?',
+      cancelDone: 'Appuntamento annullato.', cancelDoneText: 'Ti abbiamo inviato un\'email di conferma. Se vuoi, puoi prenotare un nuovo orario quando preferisci.',
+      moveDone: 'Appuntamento spostato.', moveDoneText: 'Ti abbiamo inviato un\'email con il nuovo orario e un nuovo link personale.',
+      noPreference: 'Indifferente', reqName: 'Inserisci il tuo nome.', reqContact: 'Indica almeno un\'email o un numero di telefono.',
+      reqPrivacy: 'È necessario prendere visione dell\'informativa privacy.', reqSent: 'Grazie, richiesta inviata. Ti ricontatteremo personalmente al più presto.',
+      modes: { studio: 'In studio', online: 'Online' },
+    },
+    en: {
+      at: ', ', error: 'Something went wrong. Please try again.', network: 'Connection failed. Check your network and try again.',
+      service: 'Service', with: 'With', language: 'Language', mode: 'Format', when: 'When', length: 'Length', status: 'Status',
+      newTime: 'New time', minutes: ' minutes', assigned: 'The best-suited professional, assigned when you confirm',
+      notBookable: 'These services can\'t be booked online yet: ask us to get back to you below.',
+      help: 'Help me choose', helpText: 'See everyone\'s free times; we assign the best-suited professional when you confirm',
+      needName: 'Please enter your full name.', needEmail: 'Please enter a valid email address.',
+      needPrivacy: 'To book, please confirm you have read the privacy notice.',
+      confirming: 'Confirming…', confirm: 'Confirm booking',
+      confirmed: 'Confirmed', cancelled: 'Cancelled', wasCancelled: 'This meeting has been cancelled.',
+      tooLate: function (h) { return 'The meeting is less than ' + h + ' hours away: to change it, please contact us directly.'; },
+      canChange: function (h) { return 'You can move or cancel the meeting up to ' + h + ' hours before.'; },
+      reallyCancel: 'Do you really want to cancel the meeting?',
+      cancelDone: 'Meeting cancelled.', cancelDoneText: 'We\'ve emailed you a confirmation. You can book a new time whenever you like.',
+      moveDone: 'Meeting moved.', moveDoneText: 'We\'ve emailed you the new time and a new personal link.',
+      noPreference: 'No preference', reqName: 'Please enter your name.', reqContact: 'Please give us an email or a phone number.',
+      reqPrivacy: 'Please confirm you have read the privacy notice.', reqSent: 'Thank you, your message has been sent. We\'ll get back to you personally soon.',
+      modes: { studio: 'In person', online: 'Online' },
+    },
+  }[LANG];
+  // English messages for the server's error codes (the server answers in Italian).
+  var ERR_EN = {
+    slot_unavailable: 'That time is no longer available. Please choose another.',
+    already_booked: 'There is already a first meeting booked with this email. You can move it from the link in your confirmation email.',
+    rate_limited: 'Too many requests in a short time. Please try again later or contact us.',
+    privacy: 'Please confirm you have read the privacy notice.',
+    too_late: 'It\'s too late to change this meeting online. Please contact us.',
+    not_found: 'This link isn\'t valid or has expired.',
+    not_offered: 'This service isn\'t available with this choice.',
+    lang_unavailable: 'The professional you chose doesn\'t hold meetings in this language.',
+  };
+  // Localised catalogue field: English if available on the English site.
+  function loc(obj, field) { return (LANG === 'en' && obj && obj[field + 'En']) || (obj && obj[field]); }
+
+  var fmtDay = new Intl.DateTimeFormat(LOCALE, { timeZone: TZ, weekday: 'short' });
+  var fmtNum = new Intl.DateTimeFormat(LOCALE, { timeZone: TZ, day: 'numeric' });
+  var fmtMonth = new Intl.DateTimeFormat(LOCALE, { timeZone: TZ, month: 'short' });
+  var fmtLong = new Intl.DateTimeFormat(LOCALE, { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  var fmtTime = new Intl.DateTimeFormat(LOCALE, { timeZone: TZ, hour: '2-digit', minute: '2-digit' });
+  var MODE_LABEL = T.modes;
   var LANG_LABEL = { it: 'Italiano', en: 'English' };
   var ANY = 'any'; // "Aiutami a scegliere": the studio assigns the professional at confirmation
 
@@ -27,7 +83,7 @@
   function longDate(iso) {
     var d = new Date(iso);
     var s = fmtLong.format(d);
-    return s.charAt(0).toUpperCase() + s.slice(1) + ', ore ' + fmtTime.format(d);
+    return s.charAt(0).toUpperCase() + s.slice(1) + T.at + fmtTime.format(d);
   }
   function param(name) {
     var m = new RegExp('[?&]' + name + '=([^&#]+)').exec(location.search);
@@ -41,7 +97,7 @@
     return fetch('/api/public' + path, opts).then(function (res) {
       return res.json().catch(function () { return {}; }).then(function (data) {
         if (!res.ok) {
-          var err = new Error(data.message || 'Si è verificato un errore. Riprova.');
+          var err = new Error((LANG === 'en' && ERR_EN[data.error]) || data.message || T.error);
           err.code = data.error;
           err.status = res.status;
           throw err;
@@ -49,7 +105,7 @@
         return data;
       });
     }, function () {
-      throw new Error('Connessione non riuscita. Controlla la rete e riprova.');
+      throw new Error(T.network);
     });
   }
 
@@ -167,7 +223,7 @@
 
   function initBooking(root) {
     var state = { services: [], service: null, pro: null, mode: null, lang: null, assignedName: null };
-    var pageLang = (document.documentElement.lang || 'it').slice(0, 2) === 'en' ? 'en' : 'it';
+    var pageLang = LANG;
     var catalog;
     var picker = new SlotPicker(root, function (slot) {
       $(root, '[data-next]').disabled = !slot;
@@ -177,12 +233,12 @@
 
     function rows() {
       return [
-        ['Servizio', state.service && state.service.name],
-        ['Con', state.assignedName || (state.pro && (state.pro.id === ANY ? 'La professionista più adatta, assegnata alla conferma' : state.pro.name))],
-        ['Lingua', LANG_LABEL[state.lang]],
-        ['Modalità', MODE_LABEL[state.mode]],
-        ['Quando', picker.slot && longDate(picker.slot.start)],
-        ['Durata', state.service && state.service.durationMinutes + ' minuti'],
+        [T.service, state.service && loc(state.service, 'name')],
+        [T.with, state.assignedName || (state.pro && (state.pro.id === ANY ? T.assigned : state.pro.name))],
+        [T.language, LANG_LABEL[state.lang]],
+        [T.mode, MODE_LABEL[state.mode]],
+        [T.when, picker.slot && longDate(picker.slot.start)],
+        [T.length, state.service && state.service.durationMinutes + T.minutes],
       ];
     }
 
@@ -213,14 +269,14 @@
       var bookable = servicesFor(cats).filter(function (x) { return x.service.professionals.length; });
       state.services = bookable.map(function (x) { return x.service; });
       if (!bookable.length) {
-        box.appendChild(el('p', { class: 'note', text: 'I servizi di quest\'area non sono ancora prenotabili online: chiedici di ricontattarti qui sotto.' }));
+        box.appendChild(el('p', { class: 'note', text: T.notBookable }));
       }
       var many = cats === '*' || cats.indexOf(',') >= 0;
       bookable.forEach(function (x) {
         var s = x.service;
         var b = el('button', { type: 'button', class: 'choice', 'data-svc': s.id, 'aria-pressed': 'false' }, [
-          el('strong', { text: s.name }),
-          el('span', { text: (many ? x.category.name + ' · ' : '') + s.durationMinutes + ' minuti' + (s.price ? ' · ' + s.price : '') }),
+          el('strong', { text: loc(s, 'name') }),
+          el('span', { text: (many ? loc(x.category, 'name') + ' · ' : '') + s.durationMinutes + T.minutes + (loc(s, 'price') ? ' · ' + loc(s, 'price') : '') }),
         ]);
         b.addEventListener('click', function () { selectService(s.id); });
         box.appendChild(b);
@@ -252,8 +308,8 @@
         var helper = el('button', { type: 'button', class: 'pro', 'data-pro': ANY, 'aria-pressed': 'false' }, [
           el('span', { class: 'pro-photo' }, [el('img', { src: '/assets/img/logo-icon.webp', alt: '', width: '56', height: '56', class: 'pro-logo' })]),
           el('span', { class: 'pro-text' }, [
-            el('strong', { text: 'Aiutami a scegliere' }),
-            el('span', { text: 'Vedi gli orari di tutte; la professionista più adatta ti viene assegnata alla conferma' }),
+            el('strong', { text: T.help }),
+            el('span', { text: T.helpText }),
           ]),
         ]);
         helper.addEventListener('click', function () { selectPro(ANY); });
@@ -267,7 +323,7 @@
           el('span', { class: 'pro-photo' }, [photo]),
           el('span', { class: 'pro-text' }, [
             el('strong', { text: p.name }),
-            el('span', { text: p.title }),
+            el('span', { text: loc(p, 'title') }),
             el('span', { class: 'pro-modes', text: p.modes.map(function (m) { return MODE_LABEL[m]; }).join(' · ') }),
           ]),
         ]);
@@ -291,7 +347,7 @@
 
     function selectPro(id) {
       state.pro = id === ANY
-        ? { id: ANY, name: 'Aiutami a scegliere' }
+        ? { id: ANY, name: T.help }
         : state.service.professionals.find(function (p) { return p.id === id; });
       state.assignedName = null;
       setPressed($(root, '[data-pros]'), 'data-pro', id);
@@ -391,12 +447,12 @@
       error.textContent = '';
       var name = form.name.value.trim();
       var email = form.email.value.trim();
-      if (name.length < 2) { error.textContent = 'Inserisci nome e cognome.'; form.name.focus(); return; }
-      if (!/^\S+@\S+\.\S{2,}$/.test(email)) { error.textContent = 'Inserisci un indirizzo email valido.'; form.email.focus(); return; }
-      if (!form.privacy.checked) { error.textContent = 'Per prenotare è necessario prendere visione dell\'informativa privacy.'; return; }
+      if (name.length < 2) { error.textContent = T.needName; form.name.focus(); return; }
+      if (!/^\S+@\S+\.\S{2,}$/.test(email)) { error.textContent = T.needEmail; form.email.focus(); return; }
+      if (!form.privacy.checked) { error.textContent = T.needPrivacy; return; }
       var btn = $(root, '[data-confirm]');
       btn.disabled = true;
-      btn.textContent = 'Conferma in corso…';
+      btn.textContent = T.confirming;
       api('/book', {
         start: picker.slot.start, mode: state.mode, service: state.service.id, professional: state.pro.id, lang: state.lang,
         name: name, email: email, phone: form.phone.value.trim(), privacy: true, website: form.website.value,
@@ -414,7 +470,7 @@
         }
       }).then(function () {
         btn.disabled = false;
-        btn.textContent = 'Conferma la prenotazione';
+        btn.textContent = T.confirm;
       });
     });
   }
@@ -433,14 +489,14 @@
     var picker = new SlotPicker(pickStep, function (slot) {
       $(root, '[data-next]').disabled = !slot;
       var dl = $(root, '[data-summary]');
-      if (slot) fillSummary(dl, [['Nuovo orario', longDate(slot.start)], ['Modalità', MODE_LABEL[mode]]]); else dl.hidden = true;
+      if (slot) fillSummary(dl, [[T.newTime, longDate(slot.start)], [T.mode, MODE_LABEL[mode]]]); else dl.hidden = true;
     });
 
     function done(title, text, booking) {
       $(root, '[data-done-title]').textContent = title;
       $(root, '[data-done-text]').textContent = text;
       if (booking) {
-        fillSummary($(root, '[data-summary-3]'), [['Quando', longDate(booking.start)], ['Modalità', MODE_LABEL[booking.mode]]]);
+        fillSummary($(root, '[data-summary-3]'), [[T.when, longDate(booking.start)], [T.mode, MODE_LABEL[booking.mode]]]);
         var ics = $(root, '[data-ics]');
         ics.href = icsHref(booking.start, booking.end, booking.mode);
         ics.hidden = false;
@@ -460,21 +516,21 @@
       loading.hidden = true;
       var b = res.booking;
       fillSummary($(root, '[data-current]'), [
-        ['Quando', longDate(b.start)],
-        ['Servizio', b.service && b.service.name],
-        ['Con', b.professional && b.professional.name],
-        ['Modalità', MODE_LABEL[b.mode] || '—'],
-        ['Stato', b.status === 'confermato' ? 'Confermato' : 'Annullato'],
+        [T.when, longDate(b.start)],
+        [T.service, b.service && b.service.name],
+        [T.with, b.professional && b.professional.name],
+        [T.mode, MODE_LABEL[b.mode] || '—'],
+        [T.status, b.status === 'confermato' ? T.confirmed : T.cancelled],
       ]);
       var note = $(root, '[data-change-note]');
       if (b.status !== 'confermato') {
-        note.textContent = 'Questo appuntamento è stato annullato.';
+        note.textContent = T.wasCancelled;
         $(root, '[data-actions]').hidden = true;
       } else if (!b.canChange) {
-        note.textContent = 'Mancano meno di ' + b.cancelHours + ' ore all\'appuntamento: per modificarlo contatta direttamente lo studio.';
+        note.textContent = T.tooLate(b.cancelHours);
         $(root, '[data-actions]').hidden = true;
       } else {
-        note.textContent = 'Puoi spostare o annullare l\'appuntamento fino a ' + b.cancelHours + ' ore prima.';
+        note.textContent = T.canChange(b.cancelHours);
       }
       show(root, 'view');
 
@@ -486,9 +542,9 @@
       });
 
       $(root, '[data-cancel]').addEventListener('click', function () {
-        if (!window.confirm('Vuoi davvero annullare l\'appuntamento?')) return;
+        if (!window.confirm(T.reallyCancel)) return;
         api('/manage/cancel', { t: token }).then(function () {
-          done('Appuntamento annullato.', 'Ti abbiamo inviato un\'email di conferma. Se vuoi, puoi prenotare un nuovo orario quando preferisci.');
+          done(T.cancelDone, T.cancelDoneText);
         }).catch(function (err) { $(root, '[data-view-error]').textContent = err.message; });
       });
       $(root, '[data-start-reschedule]').addEventListener('click', function () {
@@ -501,7 +557,7 @@
         btn.disabled = true;
         api('/manage/reschedule', { t: token, start: picker.slot.start, mode: mode }).then(function (r) {
           token = (r.manageUrl.match(/t=([\w-]+)/) || [])[1];
-          done('Appuntamento spostato.', 'Ti abbiamo inviato un\'email con il nuovo orario e un nuovo link personale.', r.booking);
+          done(T.moveDone, T.moveDoneText, r.booking);
         }).catch(function (err) {
           $(root, '[data-error]').textContent = err.message;
           if (err.code === 'slot_unavailable') picker.load();
@@ -525,7 +581,7 @@
         getCatalog().then(function (c) {
           var cat = c.categories.find(function (x) { return x.slug === slug; });
           proSelect.textContent = '';
-          proSelect.appendChild(el('option', { value: '', text: 'Indifferente' }));
+          proSelect.appendChild(el('option', { value: '', text: T.noPreference }));
           var seen = {};
           (cat ? cat.services : []).forEach(function (s) {
             s.professionals.forEach(function (p) {
@@ -547,15 +603,15 @@
       var email = form.email.value.trim();
       var phone = form.phone.value.trim();
       function fail(msg) { status.className = 'status form-error'; status.textContent = msg; }
-      if (name.length < 2) return fail('Inserisci il tuo nome.');
-      if (!email && !phone) return fail('Indica almeno un\'email o un numero di telefono.');
-      if (!form.privacy.checked) return fail('È necessario prendere visione dell\'informativa privacy.');
+      if (name.length < 2) return fail(T.reqName);
+      if (!email && !phone) return fail(T.reqContact);
+      if (!form.privacy.checked) return fail(T.reqPrivacy);
       var btn = form.querySelector('button[type="submit"]');
       btn.disabled = true;
       api('/request', {
         name: name, email: email, phone: phone, mode: form.mode.value,
         category: form.category ? form.category.value : 'da_definire',
-        lang: (document.documentElement.lang || 'it').slice(0, 2) === 'en' ? 'en' : 'it',
+        lang: LANG,
         professional: proSelect && !proField.hidden ? proSelect.value : '',
         preference: form.preference ? form.preference.value.trim() : '',
         organization: form.organization ? form.organization.value.trim() : '',
@@ -565,7 +621,7 @@
         form.reset();
         if (proField) proField.hidden = true;
         status.className = 'status form-ok';
-        status.textContent = 'Grazie, richiesta inviata. Ti ricontatteremo personalmente al più presto.';
+        status.textContent = T.reqSent;
       }).catch(function (err) { fail(err.message); }).then(function () { btn.disabled = false; });
     });
   }

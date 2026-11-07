@@ -163,7 +163,9 @@
       "categories": [
         "psicologia",
         "psicoterapia"
-      ]
+      ],
+      "labelEn": "Psychological support",
+      "textEn": "A hard time, anxiety, a loss, settling into life in Italy."
     },
     {
       "slug": "lavoro",
@@ -175,7 +177,9 @@
       "categories": [
         "carriera",
         "coaching"
-      ]
+      ],
+      "labelEn": "Work and career",
+      "textEn": "Finding work in Italy, changing direction, getting on in the job you have."
     },
     {
       "slug": "aziende",
@@ -184,7 +188,9 @@
       "text": "Leadership, team, formazione, benessere e cambiamento organizzativo.",
       "cta": "Servizi per aziende",
       "href": "/aziende/",
-      "categories": []
+      "categories": [],
+      "labelEn": "For organisations",
+      "textEn": "Teams, managers, HR processes and training."
     }
   ],
   "business": {

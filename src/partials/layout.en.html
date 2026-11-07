@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{pageTitle}}</title>
+<meta name="description" content="{{pageDescription}}">
+<!--robots-->
+<!--canonical-->
+<!--hreflang-->
+<meta name="theme-color" content="#FAF8F3">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{pageTitle}}">
+<meta property="og:description" content="{{pageDescription}}">
+<meta property="og:locale" content="en_GB">
+<link rel="icon" href="/assets/img/favicon-64.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css">
+<!--jsonld-->
+<script src="/assets/js/site.js" defer></script>
+<!--scripts-->
+</head>
+<body>
+<a class="skip" href="#contenuto">Skip to content</a>
+<!--demo-->
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/en/" aria-label="Blooming · Psychology and coaching practice – home">
+      <img class="brand-icon" src="/assets/img/logo-icon.webp" width="293" height="224" alt="">
+      <span class="brand-text">
+        <img class="brand-word" src="/assets/img/logo-wordmark.webp" width="497" height="144" alt="{{studioName}}">
+        <span>Psychology and coaching practice</span>
+      </span>
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu">
+      <span class="menu-bars" aria-hidden="true"></span><span class="sr">Menu</span>
+    </button>
+    <nav id="menu" class="nav" aria-label="Main">
+      <ul role="list">
+        <li><a href="/en/how-we-can-help/" data-nav="help">How we can help</a></li>
+        <li><a href="/en/career-guidance/" data-nav="career">Career coaching &amp; guidance</a></li>
+        <li><a href="/en/contact/" data-nav="contact">Contact</a></li>
+      </ul>
+      <!--langswitch-->
+      <a class="btn btn-primary btn-small" href="/en/book/">Book</a>
+    </nav>
+  </div>
+</header>
+
+<main id="contenuto">
+<!--content-->
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <p class="footer-name">{{studioName}}</p>
+      <p class="footer-tagline">Psychology and coaching practice</p>
+      <p>Online sessions in English and Italian, for people living in Italy or moving here.</p>
+    </div>
+    <div>
+      <p class="footer-label">Contact</p>
+      <p><a href="tel:{{contact.phoneHref}}">{{contact.phone}}</a><br><a href="mailto:{{contact.email}}">{{contact.email}}</a></p>
+    </div>
+    <div>
+      <p class="footer-label">Information</p>
+      <ul role="list" class="footer-links">
+        <li><a href="/en/how-we-can-help/">How we can help</a></li>
+        <li><a href="/en/career-guidance/">Career coaching &amp; guidance</a></li>
+        <li><a href="/en/book/">Book a free first meeting</a></li>
+        <li><a href="/privacy/" hreflang="it">Privacy (Italian)</a></li>
+        <li><!--langswitch--></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap">
+    <p class="emergency"><strong>This is not an emergency service.</strong> This website, email, WhatsApp and the booking system are not suitable for emergencies. If you are in immediate danger, call <a href="tel:112">112</a> or <a href="tel:118">118</a>, or go to the nearest emergency department (Pronto Soccorso).</p>
+    <p class="footer-small">© Blooming · Psychology and coaching practice · This site uses no profiling cookies or tracking tools.</p>
+  </div>
+</footer>
+
+<div class="mobile-cta">
+  <a class="btn btn-primary" href="/en/book/">Book a free first meeting</a>
+</div>
+</body>
+</html>

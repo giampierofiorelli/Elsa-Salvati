@@ -493,3 +493,11 @@ a.choice span .icon { vertical-align: -3px; }
 .brand-word { height: 34px; margin-left: -2px; }
 @media (min-width: 900px) { .brand-word { height: 38px; } }
 @media (max-width: 380px) { .brand { gap: 8px; } .brand-icon { height: 40px; } .brand-word { height: 30px; } }
+
+/* ---------- language switch and notice ---------- */
+.lang-switch { font-size: .9rem; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.lang-notice { display: flex; align-items: center; justify-content: center; gap: .75rem; padding: .55rem 1rem; background: var(--logo-navy, #375365); color: #fff; font-size: .92rem; position: relative; z-index: 60; }
+.lang-notice p { margin: 0; }
+.lang-notice a { color: #fff; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.lang-notice-close { background: none; border: 0; color: #fff; font-size: 1.4rem; line-height: 1; cursor: pointer; padding: .1rem .4rem; }
+.lang-notice-close:focus-visible, .lang-notice a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }

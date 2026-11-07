@@ -47,6 +47,17 @@ const allServices = catalog.categories.flatMap((c) => c.services);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const isPlaceholder = (s) => typeof s === 'string' && /\[[^\]]+\]/.test(s);
 
+// ---------- languages ----------
+// Italian at the root, English under /en/. The two versions are separate sites
+// with their own texts; pages are linked to their equivalent through a shared key.
+const LANGS = ['it', 'en'];
+const LANG_INFO = {
+  it: { name: 'Italiano', locale: 'it_IT', switchTo: 'Read in English' },
+  en: { name: 'English', locale: 'en_GB', switchTo: 'Leggi in italiano' },
+};
+// Localised field of a catalogue item: English if present, else the Italian one.
+const tr = (obj, field, lang) => (lang === 'en' && obj[field + 'En']) || obj[field];
+
 function get(path) {
   return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), config);
 }
@@ -227,7 +238,21 @@ const components = {
     : `<a class="choice" href="${esc(n.href)}#contatto"><strong>${esc(n.label)}</strong><span>Parliamo delle vostre esigenze ${arrowRight}</span></a>`).join('')
     + '<button type="button" class="choice" data-need="tutti" data-cats="*" aria-pressed="false"><strong>Non sono sicuro</strong><span>Vedi tutti i servizi: al primo colloquio capiamo insieme il percorso più adatto.</span></button>',
   whatsapp: () => `https://wa.me/${esc(config.contact.whatsapp)}?text=${encodeURIComponent('Buongiorno, vorrei alcune informazioni pratiche.')}`,
-  categoryOptions: () => catalog.categories.map((c) => `<option value="${esc(c.slug)}">${esc(c.name)}</option>`).join(''),
+  categoryOptions: (ctx) => catalog.categories.map((c) => `<option value="${esc(c.slug)}">${esc(tr(c, 'name', ctx.lang))}</option>`).join(''),
+  // English-site components (the Italian site keeps the components above until the v4 texts arrive).
+  needOptionsEn: () => config.needs.map((n) => n.categories.length
+    ? `<button type="button" class="choice" data-need="${esc(n.slug)}" data-cats="${esc(n.categories.join(','))}" aria-pressed="false"><strong>${esc(n.labelEn || n.label)}</strong><span>${esc(n.textEn || n.text)}</span></button>`
+    : `<a class="choice" href="/en/contact/"><strong>${esc(n.labelEn || n.label)}</strong><span>Tell us about your organisation ${arrowRight}</span></a>`).join('')
+    + '<button type="button" class="choice" data-need="tutti" data-cats="*" aria-pressed="false"><strong>Not sure</strong><span>See everything: in the free first meeting we work out together what fits.</span></button>',
+  categoryCardsEn: () => `<ul class="link-list" role="list">${catalog.categories.filter((c) => c.services.length).map((c) => `
+    <li><a class="link-row" href="/en/book/?area=${esc(c.slug)}">
+      <span class="link-row-text">
+        <span class="link-row-title">${esc(tr(c, 'name', 'en'))}</span>
+        <span class="link-row-sub">${c.services.map((sv) => esc(tr(sv, 'name', 'en'))).join(' · ')}</span>
+      </span>
+      ${circleArrow}
+    </a></li>`).join('')}
+  </ul>`,
 };
 
 function render(template, extra = {}, ctx = {}) {
@@ -267,18 +292,49 @@ function jsonLd() {
 
 // ---------- layout ----------
 
-const layout = readFileSync(join(src, 'partials/layout.html'), 'utf8');
+const layouts = Object.fromEntries(LANGS.map((l) => [l, readFileSync(join(src, `partials/layout.${l}.html`), 'utf8')]));
+const base = isPlaceholder(config.siteUrl) ? '' : config.siteUrl.replace(/\/$/, '');
+const abs = (path) => base + path;
+
+// key -> { it: path, en: path }: which pages are equivalent across the two sites.
+const equivalents = new Map();
+function register(key, lang, path) {
+  if (!equivalents.has(key)) equivalents.set(key, {});
+  equivalents.get(key)[lang] = path;
+}
+// Where the language switch goes when a page has no equivalent: the nearest
+// section ("how we can help"), never the home page.
+const FALLBACK_KEY = 'servizi';
+function counterpart(key, lang, fallback) {
+  const other = lang === 'it' ? 'en' : 'it';
+  const eq = equivalents.get(key) || {};
+  if (eq[other]) return { path: eq[other], exact: true };
+  const fb = equivalents.get(fallback || FALLBACK_KEY) || {};
+  return { path: fb[other] || (other === 'en' ? '/en/' : '/'), exact: false };
+}
 
 function page(meta, body, path, ctx = {}) {
-  const canonical = isPlaceholder(config.siteUrl) ? '' : `<link rel="canonical" href="${esc(config.siteUrl.replace(/\/$/, '') + path)}">`;
+  const lang = ctx.lang || 'it';
+  const other = lang === 'it' ? 'en' : 'it';
+  const canonical = base ? `<link rel="canonical" href="${esc(abs(path))}">` : '';
+  const alt = counterpart(meta.key, lang, meta.fallback);
+  // hreflang only between true equivalents; x-default = the English page.
+  const eq = equivalents.get(meta.key) || {};
+  const hreflang = alt.exact && meta.noindex !== 'true'
+    ? [...LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${esc(abs(eq[l]))}">`),
+      `<link rel="alternate" hreflang="x-default" href="${esc(abs(eq.en))}">`].join('\n')
+    : '';
+  const langSwitch = `<a class="lang-switch" href="${esc(alt.path)}" hreflang="${other}" lang="${other}" data-lang-switch="${other}">${esc(LANG_INFO[lang].switchTo)}</a>`;
   const scripts = (meta.scripts || '').split(',').map((s) => s.trim()).filter(Boolean)
     .map((s) => `<script src="/assets/js/${s}.js" defer></script>`).join('\n');
   const nav = meta.nav || '';
-  return render(layout, { pageTitle: meta.title, pageDescription: meta.description || '' })
+  return render(layouts[lang], { pageTitle: meta.title, pageDescription: meta.description || '' })
     .replace('<!--canonical-->', canonical)
+    .replace('<!--hreflang-->', hreflang)
+    .replace(/<!--langswitch-->/g, langSwitch)
     .replace('<!--robots-->', meta.noindex === 'true' || demo ? '<meta name="robots" content="noindex, nofollow">' : '')
     .replace('<!--demo-->', '')
-    .replace('<!--jsonld-->', path === '/' ? `<script type="application/ld+json">${jsonLd()}</script>` : '')
+    .replace('<!--jsonld-->', path === '/' || path === '/en/' ? `<script type="application/ld+json">${jsonLd()}</script>` : '')
     .replace('<!--scripts-->', scripts)
     .replace(/<a ([^>]*)data-nav="([\w-]+)"/g, (all, attrs, key) => (key === nav ? `<a ${attrs}aria-current="page"` : `<a ${attrs}`))
     .replace('<!--content-->', render(body, {}, ctx));
@@ -303,25 +359,42 @@ rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
 cpSync(join(src, 'assets'), join(out, 'assets'), { recursive: true });
 
-const urls = [];
-for (const file of walk(join(src, 'pages')).filter((f) => f.endsWith('.html'))) {
-  const { meta, body } = parsePage(readFileSync(file, 'utf8'));
-  if (meta.template === 'service') {
-    for (const service of allServices) {
-      const path = `/servizi/${service.slug}/`;
-      const cat = catalog.categories.find((c) => c.slug === service.category);
-      const fill = (t) => t.replaceAll('{{svc.name}}', esc(service.name)).replaceAll('{{svc.category}}', esc(cat ? cat.name : ''))
-        .replaceAll('{{svc.categorySlug}}', esc(service.category));
-      const title = render(fill(meta.title));
-      write(path, page({ ...meta, title, description: String(service.description).slice(0, 155) }, fill(body), path, { service }));
-      urls.push(path);
+// Pass 1: read every page of both sites and register equivalents.
+const pages = [];
+for (const lang of LANGS) {
+  const dir = join(src, 'pages', lang);
+  for (const file of walk(dir).filter((f) => f.endsWith('.html'))) {
+    const { meta, body } = parsePage(readFileSync(file, 'utf8'));
+    meta.key = meta.key || file.slice(dir.length + 1).replace(/\.html$/, '');
+    if (meta.template === 'service') {
+      for (const service of allServices) {
+        const path = lang === 'it' ? `/servizi/${service.slug}/` : `/en/services/${service.slug}/`;
+        pages.push({ lang, meta: { ...meta, key: `servizio:${service.slug}` }, body, path, service });
+        register(`servizio:${service.slug}`, lang, path);
+      }
+      continue;
     }
+    pages.push({ lang, meta, body, path: meta.path });
+    if (meta.path !== '/404' && meta.path !== '/en/404') register(meta.key, lang, meta.path);
+  }
+}
+
+// Pass 2: render.
+const urls = []; // { path, key, noindex }
+for (const pg of pages) {
+  const { lang, meta, body, path, service } = pg;
+  if (service) {
+    const cat = catalog.categories.find((c) => c.slug === service.category);
+    const fill = (t) => t.replaceAll('{{svc.name}}', esc(tr(service, 'name', lang))).replaceAll('{{svc.category}}', esc(cat ? tr(cat, 'name', lang) : ''))
+      .replaceAll('{{svc.categorySlug}}', esc(service.category));
+    const title = render(fill(meta.title));
+    write(path, page({ ...meta, title, description: String(tr(service, 'description', lang)).slice(0, 155) }, fill(body), path, { service, lang }));
+    urls.push({ path, key: meta.key });
     continue;
   }
-  const path = meta.path;
-  const html = page({ ...meta, title: render(meta.title), description: render(meta.description || '') }, body, path);
+  const html = page({ ...meta, title: render(meta.title), description: render(meta.description || '') }, body, path, { lang });
   write(path === '/404' ? '404.html' : path, html);
-  if (meta.noindex !== 'true' && path !== '/404') urls.push(path);
+  if (meta.noindex !== 'true' && path !== '/404') urls.push({ path, key: meta.key });
 }
 
 // Admin app: standalone page, not indexed.
@@ -337,10 +410,16 @@ for (const file of walk(out).filter((f) => f.endsWith('.html'))) {
   writeFileSync(file, html);
 }
 
-const base = isPlaceholder(config.siteUrl) ? '' : config.siteUrl.replace(/\/$/, '');
 write('robots.txt', demo ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nDisallow: /admin/\nDisallow: /prenota/gestisci/\n${base ? `Sitemap: ${base}/sitemap.xml\n` : ''}`);
 if (base) {
-  write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.sort().map((u) => `  <url><loc>${base}${u}</loc></url>`).join('\n')}\n</urlset>\n`);
+  const entry = (u) => {
+    const eq = equivalents.get(u.key) || {};
+    const alts = eq.it && eq.en
+      ? LANGS.map((l) => `<xhtml:link rel="alternate" hreflang="${l}" href="${base}${eq[l]}"/>`).join('') + `<xhtml:link rel="alternate" hreflang="x-default" href="${base}${eq.en}"/>`
+      : '';
+    return `  <url><loc>${base}${u.path}</loc>${alts}</url>`;
+  };
+  write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.sort((a, b) => a.path.localeCompare(b.path)).map(entry).join('\n')}\n</urlset>\n`);
 }
 
 // Report placeholders still to fill.
@@ -353,7 +432,7 @@ const pending = [];
     else if (isPlaceholder(v)) pending.push(key);
   }
 })(config, '');
-console.log(`Sito generato in dist/ (${urls.length} pagine indicizzabili, catalogo: ${catalog.source}).`);
+console.log(`Sito generato in dist/ (${urls.length} pagine indicizzabili: ${urls.filter((u) => u.path.startsWith('/en/')).length} in inglese; catalogo: ${catalog.source}).`);
 if (pending.length) {
   console.log(`Attenzione: ${pending.length} dati segnaposto da completare in src/site.config.json:\n  ${pending.join('\n  ')}`);
 }

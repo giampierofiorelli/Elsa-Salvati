@@ -397,3 +397,13 @@ test('v4: first meeting with "help me choose", interview language and fair assig
   r = await pubCall('POST', '/request', { name: 'Persona Prova', email: 'sei@example.it', category: 'carriera', lang: 'en', privacy: true });
   assert.equal(r.status, 201, JSON.stringify(r.body));
 });
+
+test('v4: the management link follows the booking language', opts, async () => {
+  const svc = (await pubCall('GET', '/catalog')).body.categories.find((c) => c.slug === 'carriera').services[0];
+  const r = await pubCall('POST', '/book', {
+    start: '2026-11-16T08:00:00.000Z', mode: 'online', service: svc.id, professional: 'any', lang: 'en',
+    name: 'Persona Prova', email: 'sette@example.it', privacy: true,
+  });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  assert.match(r.body.manageUrl, /\/en\/book\/manage\/#t=/);
+});

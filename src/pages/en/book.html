@@ -1,0 +1,164 @@
+---
+title: Book a free first meeting – Blooming · Psychology and coaching practice
+description: Book a free 30-minute first meeting online, in English or Italian. Instant confirmation; you don't need to explain your situation.
+path: /en/book/
+key: prenota
+nav: book
+scripts: booking
+---
+<section class="page-hero">
+  <div class="wrap">
+    <p class="eyebrow">Booking</p>
+    <h1>Book a free first meeting.</h1>
+    <p class="lead">Choose what you need, then who you'd like to see (or let us match you), the language and a free time. You get an instant confirmation by email. You don't need to explain your situation to book.</p>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap two-col">
+    <div class="booking" id="booking" data-mode="book" aria-live="polite">
+      <div class="booking-step" data-step="pick">
+        <h2>1. What you need</h2>
+        <div class="choice-list need-list" role="group" aria-label="What you need" data-needs>{{@needOptionsEn}}</div>
+        <p class="form-error" data-catalog-error hidden></p>
+
+        <div data-service-box hidden>
+          <p class="label" id="svc-label">Service</p>
+          <div class="choice-list" role="group" aria-labelledby="svc-label" data-services></div>
+        </div>
+
+        <div data-pro-box hidden>
+          <p class="label" id="pro-label">Who you'll see</p>
+          <div class="pro-list" role="group" aria-labelledby="pro-label" data-pros></div>
+        </div>
+
+        <div data-lang-box hidden>
+          <p class="label" id="lang-label">Language of the meeting</p>
+          <div class="seg" role="group" aria-labelledby="lang-label" data-langs></div>
+        </div>
+
+        <div data-mode-box hidden>
+          <p class="label" id="mode-label">Format</p>
+          <div class="seg" role="group" aria-labelledby="mode-label" data-modes></div>
+        </div>
+
+        <div data-slot-box hidden>
+          <h2>2. Day and time</h2>
+          <p class="label" id="days-label">Day</p>
+          <div class="days" role="group" aria-labelledby="days-label" data-days></div>
+          <p class="label" id="times-label">Time</p>
+          <div class="times" role="group" aria-labelledby="times-label" data-times></div>
+          <div data-empty hidden>
+            <p class="note">There are no free times for this choice in the coming weeks. Try another option, or <a href="#ricontatto">ask us to get back to you</a>.</p>
+          </div>
+          <dl class="summary" data-summary hidden></dl>
+          <button class="btn btn-primary" type="button" data-next disabled>Continue with your details</button>
+        </div>
+      </div>
+
+      <form class="booking-step" data-step="details" hidden novalidate>
+        <h2>3. Your details</h2>
+        <dl class="summary" data-summary-2></dl>
+        <div class="field">
+          <label for="b-name">Full name</label>
+          <input id="b-name" name="name" type="text" autocomplete="name" required maxlength="80">
+        </div>
+        <div class="field">
+          <label for="b-email">Email</label>
+          <input id="b-email" name="email" type="email" autocomplete="email" required maxlength="254">
+          <span class="hint">We'll send your confirmation here, with a link to cancel or move the meeting.</span>
+        </div>
+        <div class="field">
+          <label for="b-phone">Phone <span class="hint">(optional)</span></label>
+          <input id="b-phone" name="phone" type="tel" autocomplete="tel" maxlength="20">
+          <span class="hint">Useful if we need to reach you at short notice.</span>
+        </div>
+        <div class="hp" aria-hidden="true"><label for="b-website">Leave empty</label><input id="b-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+        <label class="check"><input type="checkbox" name="privacy" required> <span>I have read the <a href="/privacy/" target="_blank" rel="noopener" hreflang="it">privacy notice</a> (in Italian).</span></label>
+        <p class="note">You don't need to say why you're booking: we'll talk about it in the meeting.</p>
+        <p class="status form-error" role="alert" data-error></p>
+        <div class="cta-row">
+          <button class="btn btn-primary" type="submit" data-confirm>Confirm booking</button>
+          <button class="btn btn-ghost" type="button" data-back>Back</button>
+        </div>
+      </form>
+
+      <div class="booking-step" data-step="done" hidden tabindex="-1">
+        <div class="success-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h2>Your meeting is booked.</h2>
+        <dl class="summary" data-summary-3></dl>
+        <p>We've emailed you a summary and a personal link to cancel or move the meeting. If you can't find it, check your spam folder.</p>
+        <div class="cta-row">
+          <a class="btn btn-ghost" data-ics download="meeting.ics" href="#">Add to calendar</a>
+          <a class="btn btn-ghost" data-manage href="#">Manage your booking</a>
+        </div>
+      </div>
+      <p class="hint">This booking system is not an emergency service: if you are in immediate danger, call 112 or 118.</p>
+    </div>
+
+    <aside class="panel panel-mint aside-sticky">
+      <h2 class="h3">The free first meeting</h2>
+      <dl class="summary">
+        <dt>Length</dt><dd>30 minutes</dd>
+        <dt>Cost</dt><dd>Free, with no obligation to continue</dd>
+        <dt>Where</dt><dd>Online, by video call</dd>
+      </dl>
+      <p>You tell us what's going on, and you find out whether we can help and how we'd work.</p>
+    </aside>
+  </div>
+</section>
+
+<section class="section" id="ricontatto" aria-labelledby="ricontatto-title">
+  <div class="wrap narrow">
+    <p class="eyebrow">No time that suits you?</p>
+    <h2 id="ricontatto-title">Ask us to get back to you.</h2>
+    <p>If you can't find a time, or you'd rather talk first, leave us your details and we'll reply personally.</p>
+    <form class="panel" data-request-form novalidate>
+      <div class="field">
+        <label for="r-name">Name</label>
+        <input id="r-name" name="name" type="text" autocomplete="name" required maxlength="80">
+      </div>
+      <div class="field">
+        <label for="r-email">Email</label>
+        <input id="r-email" name="email" type="email" autocomplete="email" maxlength="254">
+      </div>
+      <div class="field">
+        <label for="r-phone">Phone</label>
+        <input id="r-phone" name="phone" type="tel" autocomplete="tel" maxlength="20">
+        <span class="hint">Give us at least an email or a phone number.</span>
+      </div>
+      <div class="field">
+        <label for="r-category">Area</label>
+        <select id="r-category" name="category">
+          <option value="da_definire">Not sure yet</option>
+          {{@categoryOptions}}
+          <option value="aziende">For my organisation</option>
+        </select>
+      </div>
+      <div class="field" data-pro-field hidden>
+        <label for="r-pro">Professional <span class="hint">(optional)</span></label>
+        <select id="r-pro" name="professional"><option value="">No preference</option></select>
+      </div>
+      <div class="field">
+        <label for="r-mode">Format</label>
+        <select id="r-mode" name="mode">
+          <option value="online">Online</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="r-pref">Preferred days and times <span class="hint">(optional)</span></label>
+        <input id="r-pref" name="preference" type="text" maxlength="200" placeholder="e.g. Tuesday afternoon">
+      </div>
+      <div class="field">
+        <label for="r-msg">Message <span class="hint">(optional)</span></label>
+        <textarea id="r-msg" name="message" maxlength="600"></textarea>
+        <span class="hint">Please don't include health or sensitive personal details: just tell us how to reach you.</span>
+      </div>
+      <div class="hp" aria-hidden="true"><label for="r-website">Leave empty</label><input id="r-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <label class="check"><input type="checkbox" name="privacy" required> <span>I have read the <a href="/privacy/" target="_blank" rel="noopener" hreflang="it">privacy notice</a> (in Italian).</span></label>
+      <p class="status" role="status" data-request-status></p>
+      <button class="btn btn-primary" type="submit">Send</button>
+    </form>
+
+  </div>
+</section>
