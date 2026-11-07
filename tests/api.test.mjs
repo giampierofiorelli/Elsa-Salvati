@@ -244,8 +244,9 @@ test('patient reschedules and cancels from the personal link', opts, async () =>
   r = await pubCall('POST', '/manage/reschedule', { t: manageToken, start: '2026-10-26T10:00:00.000Z', mode: 'studio' });
   assert.equal(r.status, 200, JSON.stringify(r.body));
   const newToken = new URL(r.body.manageUrl).hash.slice(3);
-  const [moved] = await deps.store.sql`select id::text as id, heard_from, contact_hash from events where manage_token_hash = ${sha256(newToken)}`;
+  const [moved] = await deps.store.sql`select id::text as id, heard_from, contact_hash, approved_at from events where manage_token_hash = ${sha256(newToken)}`;
   assert.equal(moved.heard_from, 'passaparola', 'the source answer moves with the appointment');
+  assert.ok(moved.approved_at, 'a moved meeting stays an accepted one');
   assert.equal((await deps.store.sql`select heard_from from events where id = ${old.id}`)[0].heard_from, null, 'and is not kept twice');
   r = await pubCall('POST', '/manage/cancel', { t: newToken });
   assert.equal(r.status, 200);
@@ -1485,6 +1486,11 @@ test('retention: declined or expired requests lose their contacts after 6 months
   const recentDeclined = await mk('rifiutato', 8);
   await sql`update events set cancelled_at = ${ago(5)} where id = ${recentDeclined}`; // declined 5 months ago (for a time long past)
   const kept = await mk('confermato', 7);
+  // Cancelled by the person while still waiting (never accepted): 6 months too. Accepted, then cancelled: 24 months.
+  const cancelledWaiting = await mk('annullato', 7);
+  await sql`update events set cancelled_at = ${ago(7)}, cancelled_by = 'paziente' where id = ${cancelledWaiting}`;
+  const cancelledAccepted = await mk('annullato', 9);
+  await sql`update events set cancelled_at = ${ago(7)}, cancelled_by = 'paziente', approved_at = ${ago(10)} where id = ${cancelledAccepted}`;
   for (const [table, extra] of [['stats_monthly', "'m-test'"], ['stats_site_monthly', "'/x/', 'm-test'"]]) {
     const cols = table === 'stats_monthly' ? '(month, metric, n)' : '(month, page, metric, n)';
     await sql.unsafe(`insert into ${table} ${cols} values ('2026-06-01', ${extra}, 1), ('2026-07-01', ${extra}, 2), ('2027-01-01', ${extra}, 3)`);
@@ -1496,6 +1502,8 @@ test('retention: declined or expired requests lose their contacts after 6 months
   assert.deepEqual(await row(oldDeclined), { contact_enc: null, contact_hash: null, heard_from: null }, 'declined 7 months ago: contacts gone');
   assert.ok((await row(recentDeclined)).contact_enc, 'declined 5 months ago: still there');
   assert.ok((await row(kept)).contact_enc, 'an appointment that took place follows the 24-month rule');
+  assert.equal((await row(cancelledWaiting)).contact_enc, null, 'request cancelled before acceptance: contacts gone after 6 months');
+  assert.ok((await row(cancelledAccepted)).contact_enc, 'accepted then cancelled: 24-month rule');
   assert.ok(r.declined >= 1);
   // 5 years: the month of July 2026 is the oldest kept on 15 July 2031.
   assert.deepEqual((await sql`select to_char(month, 'YYYY-MM') as m from stats_monthly where metric = 'm-test' order by month`).map((x) => x.m), ['2026-07', '2027-01']);
