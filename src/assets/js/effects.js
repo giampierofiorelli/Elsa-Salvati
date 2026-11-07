@@ -1,5 +1,5 @@
-// Desktop-only effects (v4): living gradient in the opening, lotus cursor and
-// dot grid on dark sections. Off on touch screens, small screens and with
+// Desktop-only effects (v4): living gradient in the opening and dot grid on
+// dark sections. (A lotus cursor was tried and set aside for now.) Off on touch screens, small screens and with
 // "reduce motion"; the static CSS gradient stays as the fallback.
 (function () {
   'use strict';
@@ -25,21 +25,31 @@
     // Ivory to lotus peach with slow animated grain, plus a soft gold glow that
     // drifts through a flow field and leans towards the mouse.
     var fs = [
-      'precision mediump float;',
+      'precision highp float;',
       'uniform vec2 r;uniform float t;uniform vec2 m;',
       'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
       'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);',
       ' return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}',
-      'float fbm(vec2 p){float v=0.,a=.5;for(int k=0;k<4;k++){v+=a*n(p);p*=2.02;a*=.5;}return v;}',
+      // A soft shape made of three drifting blobs, warped by slow noise.
+      'float field(vec2 q){',
+      ' vec2 w=q+vec2(n(q*1.6+t*.06),n(q*1.6-t*.05))*.22;',
+      ' vec2 c1=vec2(1.25+.18*sin(t*.11),.78+.10*cos(t*.09));',
+      ' vec2 c2=vec2(1.55+.14*cos(t*.07),.42+.12*sin(t*.10));',
+      ' vec2 c3=mix(vec2(1.05,.30),m,.35)+vec2(.06*sin(t*.13),.05*cos(t*.12));',
+      ' return .11/dot(w-c1,w-c1)+.07/dot(w-c2,w-c2)+.05/dot(w-c3,w-c3);}',
       'void main(){',
-      ' vec2 uv=gl_FragCoord.xy/r;vec2 q=uv;q.x*=r.x/r.y;',
-      ' vec3 ivory=vec3(.980,.965,.941),peach=vec3(.949,.839,.769),gold=vec3(.796,.678,.522);',
-      ' vec3 col=mix(ivory,peach,smoothstep(.15,1.1,uv.x*.55+(1.-uv.y)*.15+fbm(q*1.4+t*.02)*.35));',
-      ' vec2 c=vec2(mix(.78,m.x,.25)*r.x/r.y,mix(.72,1.-m.y,.25));',
-      ' vec2 w=q+vec2(fbm(q*1.8+t*.05),fbm(q*1.8-t*.04))*.35;',
-      ' float g=smoothstep(.75,.0,distance(w,c));',
-      ' col=mix(col,col*(1.-.18*g)+gold*.18*g,g);',
-      ' col+= (h(gl_FragCoord.xy+t)-.5)*.018;',
+      ' vec2 uv=gl_FragCoord.xy/r;float a=r.x/r.y;vec2 q=vec2(uv.x*a,uv.y);',
+      ' vec3 ivory=vec3(.980,.965,.941),peach=vec3(.957,.878,.824),sand=vec3(.910,.800,.706),light=vec3(1.,.992,.980);',
+      ' vec3 col=mix(ivory,peach,smoothstep(.1,1.,uv.x*.6+(1.-uv.y)*.25));',
+      ' float e=.003;float f=field(q);',
+      ' vec2 g=vec2(field(q+vec2(e,0))-f,field(q+vec2(0,e))-f)/e;',
+      ' float body=smoothstep(.85,1.35,f);',
+      ' float rim=smoothstep(.55,1.0,f)*(1.-smoothstep(1.0,1.6,f));',
+      ' vec2 nrm=normalize(g+1e-5);float lit=dot(nrm,normalize(vec2(-.6,.8)));',
+      ' col=mix(col,sand,body*.55);',
+      ' col=mix(col,light,rim*max(lit,0.)*.75);',
+      ' col=mix(col,sand*.92,rim*max(-lit,0.)*.35);',
+      ' col+=(h(gl_FragCoord.xy+fract(t)*91.)-.5)*.035;',
       ' gl_FragColor=vec4(col,1.);}',
     ].join('\n');
     function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
@@ -56,7 +66,7 @@
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     var uR = gl.getUniformLocation(prog, 'r'), uT = gl.getUniformLocation(prog, 't'), uM = gl.getUniformLocation(prog, 'm');
-    var scale = 0.5; // render at half resolution: it's a soft gradient
+    var scale = 0.6; // render below full resolution: it's a soft gradient
     function size() {
       canvas.width = Math.max(1, Math.floor(host.clientWidth * scale));
       canvas.height = Math.max(1, Math.floor(host.clientHeight * scale));
@@ -72,35 +82,11 @@
       sm.x += (mouse.x - sm.x) * 0.03; sm.y += (mouse.y - sm.y) * 0.03;
       gl.uniform2f(uR, canvas.width, canvas.height);
       gl.uniform1f(uT, (now - t0) / 1000);
-      gl.uniform2f(uM, sm.x, sm.y);
+      gl.uniform2f(uM, sm.x * canvas.width / canvas.height, 1 - sm.y);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     })(t0);
   }
   document.querySelectorAll('[data-gradient]').forEach(gradient);
-
-  // ---------- lotus cursor ----------
-  (function cursor() {
-    var el = document.createElement('div');
-    el.className = 'lotus-cursor';
-    el.setAttribute('aria-hidden', 'true');
-    el.innerHTML = '<svg viewBox="0 0 100 100" fill="currentColor"><use href="/assets/img/lotus.svg#g"/></svg>';
-    document.body.appendChild(el);
-    document.documentElement.classList.add('has-lotus-cursor');
-    var x = mouse.px, y = mouse.py, tx = x, ty = y;
-    window.addEventListener('pointermove', function (e) { tx = e.clientX; ty = e.clientY; el.classList.add('on'); }, { passive: true });
-    document.addEventListener('pointerleave', function () { el.classList.remove('on'); });
-    document.addEventListener('pointerover', function (e) {
-      var t = e.target.closest ? e.target : null;
-      el.classList.toggle('active', !!(t && t.closest('a, button, [role="button"], label, summary')));
-      el.classList.toggle('text', !!(t && t.closest('input, textarea, select')));
-      el.classList.toggle('dark', !!(t && t.closest('.section-dark, .site-footer, .site-header.on-dark, .lang-notice')));
-    });
-    (function frame() {
-      requestAnimationFrame(frame);
-      x += (tx - x) * 0.35; y += (ty - y) * 0.35;
-      el.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
-    })();
-  })();
 
   // ---------- dot grid on dark sections ----------
   function dots(section) {

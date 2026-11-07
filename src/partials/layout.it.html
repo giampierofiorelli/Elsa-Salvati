@@ -31,30 +31,26 @@
 <body>
 <a class="skip" href="#contenuto">Vai al contenuto</a>
 <!--demo-->
-<header class="site-header">
-  <div class="wrap header-inner">
-    <a class="brand" href="/" aria-label="{{studioFullName}} – pagina iniziale">
+<header class="site-header hdr">
+  <div class="hdr-inner">
+    <a class="brand" href="/" aria-label="Blooming · Studio di psicologia e coaching – pagina iniziale">
       <img class="brand-icon" src="/assets/img/logo-icon.webp" width="293" height="224" alt="">
-      <span class="brand-text">
-        <img class="brand-word" src="/assets/img/logo-wordmark.webp" width="497" height="144" alt="{{studioName}}">
-        <span>{{studioTagline}}</span>
-      </span>
+      <img class="brand-word" src="/assets/img/logo-wordmark.webp" width="497" height="144" alt="Blooming">
     </a>
-    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu">
-      <span class="menu-bars" aria-hidden="true"></span><span class="sr">Menu</span>
-    </button>
-    <nav id="menu" class="nav" aria-label="Principale">
+    <nav id="menu" class="hdr-nav" aria-label="Principale">
+      <p class="eyebrow hdr-nav-label">Navigazione</p>
       <ul role="list">
-        <li><a href="/servizi/" data-nav="servizi">Percorsi</a></li>
-        <li><a href="/aziende/" data-nav="aziende">Aziende</a></li>
-        <li><a href="/team/" data-nav="team">Professionisti</a></li>
-        <li><a href="/come-lavoriamo/" data-nav="come-lavoriamo">Come lavoriamo</a></li>
-        <li><a href="/costi-e-faq/" data-nav="costi">Costi e FAQ</a></li>
-        <li><a href="/contatti/" data-nav="contatti">Contatti</a></li>
+        <li><a href="/servizi/" data-nav="servizi" data-roll>Come possiamo aiutarti</a></li>
+        <li><a href="/lavoro/" data-nav="lavoro" data-roll>Orientamento e carriera</a></li>
+        <li><a href="/aziende/" data-nav="aziende" data-roll>Aziende</a></li>
+        <li><a href="/team/" data-nav="team" data-roll>Chi siamo</a></li>
+        <li><a href="/costi-e-faq/" data-nav="costi" data-roll>Costi e FAQ</a></li>
+        <li><a href="/contatti/" data-nav="contatti" data-roll>Contatti</a></li>
       </ul>
-      <!--langswitch-->
-      <a class="btn btn-primary btn-small" href="/prenota/">Prenota</a>
+      <p class="hdr-nav-lang"><!--langswitch--></p>
     </nav>
+    <a class="hdr-cta" href="/prenota/">Prenota <svg class="hdr-cta-icon" aria-hidden="true" viewBox="0 0 16 16" width="14" height="14"><path d="M4.5 11.5l7-7M6 4.5h5.5V10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <button class="menu-toggle hdr-toggle" type="button" aria-expanded="false" aria-controls="menu" data-open="Menu" data-close="Chiudi">Menu</button>
   </div>
 </header>
 

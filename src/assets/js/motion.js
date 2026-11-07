@@ -21,7 +21,8 @@
 
   // Rolling text on links and buttons (pure CSS once the text is wrapped).
   document.querySelectorAll('[data-roll]').forEach(function (el) {
-    if (el.querySelector('.roll')) return;
+    // Buttons keep their own style; the rolling text is for secondary links.
+    if (el.querySelector('.roll') || el.classList.contains('btn')) return;
     var text = el.textContent.trim();
     el.setAttribute('aria-label', el.getAttribute('aria-label') || text);
     var wrap = document.createElement('span');
@@ -66,7 +67,7 @@
         return;
       }
       window.SplitText.create(el, {
-        type: 'lines', mask: 'lines', autoSplit: true, aria: 'auto',
+        type: 'lines', mask: 'lines', linesClass: 'sl', autoSplit: true, aria: 'auto',
         onSplit: function (self) {
           return gsap.from(self.lines, {
             yPercent: 110, duration: 0.9, ease: 'expo.out', stagger: 0.08,

@@ -3,18 +3,17 @@
   var toggle = document.querySelector('.menu-toggle');
   var nav = document.getElementById('menu');
   if (toggle && nav) {
-    toggle.addEventListener('click', function () {
-      var open = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', String(!open));
-      nav.classList.toggle('open', !open);
-    });
+    var setOpen = function (open) {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.textContent = open ? toggle.getAttribute('data-close') || 'Chiudi' : toggle.getAttribute('data-open') || 'Menu';
+      nav.classList.toggle('open', open);
+      document.documentElement.classList.toggle('menu-open', open);
+    };
+    toggle.addEventListener('click', function () { setOpen(toggle.getAttribute('aria-expanded') !== 'true'); });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && nav.classList.contains('open')) {
-        toggle.setAttribute('aria-expanded', 'false');
-        nav.classList.remove('open');
-        toggle.focus();
-      }
+      if (e.key === 'Escape' && nav.classList.contains('open')) { setOpen(false); toggle.focus(); }
     });
+    nav.addEventListener('click', function (e) { if (e.target.closest('a')) setOpen(false); });
   }
 
   var header = document.querySelector('.site-header');
@@ -77,5 +76,7 @@
   btn.addEventListener('click', function () { remember(pageLang); bar.remove(); });
   bar.appendChild(p);
   bar.appendChild(btn);
-  document.body.insertBefore(bar, document.body.firstChild);
+  // Inside the (fixed) header, so it never overlaps it.
+  var hdr = document.querySelector('.site-header');
+  if (hdr) hdr.insertBefore(bar, hdr.firstChild); else document.body.insertBefore(bar, document.body.firstChild);
 })();
