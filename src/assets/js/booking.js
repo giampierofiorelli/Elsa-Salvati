@@ -12,6 +12,7 @@
       at: ', ore ', error: 'Si è verificato un errore. Riprova.', network: 'Connessione non riuscita. Controlla la rete e riprova.',
       service: 'Servizio', with: 'Con', language: 'Lingua', mode: 'Modalità', when: 'Quando', length: 'Durata', status: 'Stato',
       newTime: 'Nuovo orario', minutes: ' minuti', assigned: 'Una professionista libera in quell\'orario, assegnata quando invii la richiesta',
+      assignedPending: 'Una professionista dello studio: il nome arriva quando accetta la richiesta',
       notBookable: 'I servizi di quest\'area non sono ancora prenotabili online: chiedici di ricontattarti qui sotto.',
       help: 'Aiutami a scegliere', helpText: 'Vedi gli orari di tutte e due: quando invii la richiesta ti viene assegnata una professionista libera in quell\'orario che parla la lingua che hai scelto. Nel colloquio capite insieme se fa per te o se è meglio la collega.',
       needName: 'Inserisci nome e cognome.', needEmail: 'Inserisci un indirizzo email valido.',
@@ -45,6 +46,7 @@
       at: ', ', error: 'Something went wrong. Please try again.', network: 'Connection failed. Check your network and try again.',
       service: 'Service', with: 'With', language: 'Language', mode: 'Format', when: 'When', length: 'Length', status: 'Status',
       newTime: 'New time', minutes: ' minutes', assigned: 'A psychologist who is free then (you\'ll see who once your request is accepted)',
+      assignedPending: 'One of our psychologists: you\'ll see who once your request is accepted',
       notBookable: 'Sessions are arranged with your psychologist after the free first meeting. To ask something first, use the form below.',
       help: 'Help me choose', helpText: 'See all free times. Your request goes to a psychologist who is free then; you\'ll see who once it\'s accepted. In the meeting you\'ll work out together whether she\'s right for you.',
       needName: 'Please enter your full name.', needEmail: 'Please enter a valid email address.',
@@ -506,7 +508,6 @@
         name: name, email: email, phone: form.phone.value.trim(), privacy: true, website: form.website.value,
         heard: form.heard ? form.heard.value : '',
       }).then(function (res) {
-        if (res.booking.assigned) state.assignedName = res.booking.professional.name;
         fillSummary($(root, '[data-summary-3]'), rows());
         $(root, '[data-ics]').href = icsHref(res.booking.start, res.booking.end, res.booking.mode);
         if (res.booking.pending) {
@@ -581,7 +582,7 @@
       fillSummary($(root, '[data-current]'), [
         [T.when, longDate(b.start)],
         [T.service, b.service && b.service.name],
-        [T.with, b.professional && b.professional.name],
+        [T.with, b.professional ? b.professional.name : (b.assigned ? T.assignedPending : '—')],
         [T.mode, MODE_LABEL[b.mode] || '—'],
         [T.status, statusText],
       ]);

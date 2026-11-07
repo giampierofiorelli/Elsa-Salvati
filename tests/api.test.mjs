@@ -27,6 +27,8 @@ async function call(handler, method, path, body, { headers, context = freshCtx()
   return { status: res.status, body: text ? JSON.parse(text) : null, headers: res.headers };
 }
 const cookieOf = (res) => res.headers.get('set-cookie').split(';')[0].split('=').slice(1).join('=');
+// «Aiutami a scegliere» hides the name from the person: tests read who got the request from the database.
+const assignedTo = async (email) => (await sql`select professional_id::text as id from events where contact_hash = ${deps.vault.lookupHash(`email:${email}`)} order by id desc limit 1`)[0].id;
 // The personal link of a booking arrives only by email: the last one sent to that address.
 const lastToken = (email) => ((deps.mailer.sent.filter((m) => m.to === email).at(-1) || { text: '' }).text.match(/#t=([A-Za-z0-9_-]+)/) || [])[1];
 const as = (who) => (method, path, body) => call(admin, method, `/api/admin${path}`, body, {
@@ -395,17 +397,17 @@ test('v4: first meeting with "help me choose", interview language and fair assig
   assert.equal(r.status, 201, JSON.stringify(r.body));
   assert.equal(r.body.booking.assigned, true);
   assert.equal(r.body.booking.lang, 'it');
-  const firstAssigned = r.body.booking.professional.id;
+  const firstAssigned = await assignedTo('uno@example.it');
   r = await book('due@example.it');
   assert.equal(r.status, 201, 'the other professional is still free');
-  assert.notEqual(r.body.booking.professional.id, firstAssigned);
+  assert.notEqual(await assignedTo('due@example.it'), firstAssigned);
   r = await book('tre@example.it');
   assert.equal(r.status, 409, 'nobody left at that time');
 
   // English booking goes only to someone who speaks English.
   r = await book('quattro@example.it', { start: '2026-11-09T08:00:00.000Z', lang: 'en' });
   assert.equal(r.status, 201, JSON.stringify(r.body));
-  assert.equal(r.body.booking.professional.id, anna);
+  assert.equal(await assignedTo('quattro@example.it'), String(anna));
   r = await book('cinque@example.it', { start: '2026-11-09T10:00:00.000Z', lang: 'en' });
   assert.equal(r.status, 409, 'at 11:00 only Bea is free, and she works in Italian');
 
@@ -425,6 +427,18 @@ test('v4: the management link follows the booking language', opts, async () => {
   });
   assert.equal(r.status, 201, JSON.stringify(r.body));
   assert.match(deps.mailer.sent.filter((m) => m.to === 'sette@example.it').at(-1).text, /\/en\/book\/manage\/#t=/);
+  // «Aiutami a scegliere»: the name stays hidden on the confirmation and on the «Gestisci» page until she accepts.
+  assert.equal(r.body.booking.professional, null);
+  const tok7 = lastToken('sette@example.it');
+  let m7 = await pubCall('POST', '/manage', { t: tok7 });
+  assert.equal(m7.body.booking.professional, null);
+  assert.equal(m7.body.booking.assigned, true);
+  assert.doesNotMatch(JSON.stringify(m7.body), /Anna Prova|Bea|Dott/);
+  // The request email gives the real deadline: 18:00 of the last working day before (Monday 16 Nov → Friday 13 Nov).
+  assert.match(deps.mailer.sent.filter((m) => m.to === 'sette@example.it').at(-1).text, /will reply by Friday, 13 November 2026, 18:00 \(Italian time\) at the latest/);
+  await approvePending();
+  m7 = await pubCall('POST', '/manage', { t: tok7 });
+  assert.ok(m7.body.booking.professional && m7.body.booking.professional.name, 'once accepted, the name shows');
 });
 
 // ---------- security and privacy (verification of 7 November 2026) ----------
@@ -1070,7 +1084,7 @@ test('round 2: help me choose, notifications to the professional, passing a requ
   let since = deps.mailer.sent.length;
   r = await book('scelta1@example.it', { lang: 'en' });
   assert.equal(r.status, 201, JSON.stringify(r.body));
-  assert.equal(r.body.booking.professional.id, rita, 'in English only who works in English');
+  assert.equal(await assignedTo('scelta1@example.it'), String(rita), 'in English only who works in English');
   // Only Rita is told, at her notification email; never the studio inbox; nothing about the person.
   const notice = deps.mailer.sent.slice(since).filter((m) => m.to !== 'scelta1@example.it');
   assert.deepEqual(notice.map((m) => m.to), ['rita@example.it']);
@@ -1080,7 +1094,7 @@ test('round 2: help me choose, notifications to the professional, passing a requ
   since = deps.mailer.sent.length;
   r = await book('scelta2@example.it');
   assert.equal(r.status, 201, JSON.stringify(r.body));
-  assert.equal(r.body.booking.professional.id, sara, 'the one with fewer upcoming appointments');
+  assert.equal(await assignedTo('scelta2@example.it'), String(sara), 'the one with fewer upcoming appointments');
   const toAdmins = deps.mailer.sent.slice(since).filter((m) => m.to !== 'scelta2@example.it').map((m) => m.to);
   assert.ok(toAdmins.includes(adminUser.email) && !toAdmins.includes('studio@example.it'), 'no notification email: the administrators are told, not the studio inbox');
 
@@ -1207,7 +1221,8 @@ test('round 2: an organisations first meeting can be requested with "help me cho
   assert.equal(r.status, 201, JSON.stringify(r.body));
   assert.equal(r.body.booking.pending, true);
   assert.equal(r.body.booking.assigned, true);
-  assert.ok([rita, sara].includes(r.body.booking.professional.id));
+  assert.ok([rita, sara].map(String).includes(await assignedTo('hr-round2@example.it')));
+  assert.equal(r.body.booking.professional, null, 'the name stays hidden until she accepts');
 });
 
 // ---------- statistics (research 23): counters only ----------
