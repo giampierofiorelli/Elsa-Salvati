@@ -56,6 +56,11 @@ Servizi e professionisti stanno nel database: le prenotazioni li usano subito; l
 6. Nell'area riservata: crea i **servizi**, i **professionisti** (con servizi e modalità) e i loro **account**; ogni professionista imposta i propri **orari**.
 7. Su Google Business Profile collega il link `https://<sito>/prenota/`.
 
+## Rami e anteprime
+
+- `staging`: si lavora qui. Ogni push crea un'anteprima gratuita su https://staging--elsa-salvati.netlify.app (stesse variabili d'ambiente della produzione).
+- `main`: produzione. Ogni push su `main` pubblica il sito e consuma crediti Netlify: si unisce `staging` in `main` solo su decisione esplicita.
+
 ## Sviluppo
 
 ```bash
