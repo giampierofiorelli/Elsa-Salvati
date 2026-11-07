@@ -11,6 +11,8 @@
   var fmtLong = new Intl.DateTimeFormat('it-IT', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   var fmtTime = new Intl.DateTimeFormat('it-IT', { timeZone: TZ, hour: '2-digit', minute: '2-digit' });
   var MODE_LABEL = { studio: 'In studio', online: 'Online' };
+  var LANG_LABEL = { it: 'Italiano', en: 'English' };
+  var ANY = 'any'; // "Aiutami a scegliere": the studio assigns the professional at confirmation
 
   function $(root, sel) { return root.querySelector(sel); }
   function el(tag, attrs, children) {
@@ -164,7 +166,8 @@
   // ---------- booking ----------
 
   function initBooking(root) {
-    var state = { services: [], service: null, pro: null, mode: null };
+    var state = { services: [], service: null, pro: null, mode: null, lang: null, assignedName: null };
+    var pageLang = (document.documentElement.lang || 'it').slice(0, 2) === 'en' ? 'en' : 'it';
     var catalog;
     var picker = new SlotPicker(root, function (slot) {
       $(root, '[data-next]').disabled = !slot;
@@ -175,7 +178,8 @@
     function rows() {
       return [
         ['Servizio', state.service && state.service.name],
-        ['Con', state.pro && state.pro.name],
+        ['Con', state.assignedName || (state.pro && (state.pro.id === ANY ? 'La professionista più adatta, assegnata alla conferma' : state.pro.name))],
+        ['Lingua', LANG_LABEL[state.lang]],
         ['Modalità', MODE_LABEL[state.mode]],
         ['Quando', picker.slot && longDate(picker.slot.start)],
         ['Durata', state.service && state.service.durationMinutes + ' minuti'],
@@ -183,7 +187,7 @@
     }
 
     function hideFrom(name) {
-      var order = ['service', 'pro', 'mode', 'slot'];
+      var order = ['service', 'pro', 'lang', 'mode', 'slot'];
       order.slice(order.indexOf(name)).forEach(function (k) { $(root, '[data-' + k + '-box]').hidden = true; });
     }
 
@@ -243,7 +247,19 @@
       hideFrom('pro');
       var box = $(root, '[data-pros]');
       box.textContent = '';
-      state.service.professionals.forEach(function (p) {
+      var pros = state.service.professionals;
+      if (pros.length > 1) {
+        var helper = el('button', { type: 'button', class: 'pro', 'data-pro': ANY, 'aria-pressed': 'false' }, [
+          el('span', { class: 'pro-photo' }, [el('img', { src: '/assets/img/logo-icon.webp', alt: '', width: '56', height: '56', class: 'pro-logo' })]),
+          el('span', { class: 'pro-text' }, [
+            el('strong', { text: 'Aiutami a scegliere' }),
+            el('span', { text: 'Vedi gli orari di tutte; la professionista più adatta ti viene assegnata alla conferma' }),
+          ]),
+        ]);
+        helper.addEventListener('click', function () { selectPro(ANY); });
+        box.appendChild(helper);
+      }
+      pros.forEach(function (p) {
         var photo = p.photo
           ? el('img', { src: '/assets/img/' + p.photo + '-480.webp', alt: '', width: '56', height: '56', loading: 'lazy' })
           : el('img', { src: '/assets/img/logo-icon.webp', alt: '', width: '56', height: '56', class: 'pro-logo' });
@@ -259,31 +275,67 @@
         box.appendChild(b);
       });
       $(root, '[data-pro-box]').hidden = false;
-      var pre = preset && state.service.professionals.find(function (p) { return p.id === preset.pro; });
+      // Preset by id or by page address (slug), e.g. from a professional's page.
+      var pre = preset && preset.pro && pros.find(function (p) { return p.id === preset.pro || p.slug === preset.pro; });
       if (pre) selectPro(pre.id);
-      else if (state.service.professionals.length === 1) selectPro(state.service.professionals[0].id);
+      else if (pros.length === 1) selectPro(pros[0].id);
+      else selectPro(ANY);
+    }
+
+    function langsOf(pro) { return (pro && pro.languages && pro.languages.length) ? pro.languages : ['it']; }
+
+    // The professionals behind the current choice (all of them for "help me choose").
+    function chosenPros() {
+      return state.pro.id === ANY ? state.service.professionals : [state.pro];
     }
 
     function selectPro(id) {
-      state.pro = state.service.professionals.find(function (p) { return p.id === id; });
+      state.pro = id === ANY
+        ? { id: ANY, name: 'Aiutami a scegliere' }
+        : state.service.professionals.find(function (p) { return p.id === id; });
+      state.assignedName = null;
       setPressed($(root, '[data-pros]'), 'data-pro', id);
+      hideFrom('lang');
+      // Languages: those of the professional, or of anyone for "help me choose".
+      var langs = [];
+      chosenPros().forEach(function (p) { langsOf(p).forEach(function (l) { if (langs.indexOf(l) < 0) langs.push(l); }); });
+      langs.sort(function (a, b) { return a === pageLang ? -1 : b === pageLang ? 1 : 0; });
+      var box = $(root, '[data-langs]');
+      box.textContent = '';
+      langs.forEach(function (l) {
+        var b = el('button', { type: 'button', 'data-lang': l, 'aria-pressed': 'false', text: LANG_LABEL[l] });
+        b.addEventListener('click', function () { selectLang(l); });
+        box.appendChild(b);
+      });
+      $(root, '[data-lang-box]').hidden = false;
+      selectLang(langs.indexOf(pageLang) >= 0 ? pageLang : langs[0]);
+    }
+
+    function selectLang(l) {
+      state.lang = l;
+      setPressed($(root, '[data-langs]'), 'data-lang', l);
       hideFrom('mode');
+      // Modes offered by the professionals who work in that language.
+      var modes = [];
+      chosenPros().filter(function (p) { return langsOf(p).indexOf(l) >= 0; }).forEach(function (p) {
+        p.modes.forEach(function (m) { if (modes.indexOf(m) < 0) modes.push(m); });
+      });
       var box = $(root, '[data-modes]');
       box.textContent = '';
-      state.pro.modes.forEach(function (m) {
+      modes.forEach(function (m) {
         var b = el('button', { type: 'button', 'data-mode': m, 'aria-pressed': 'false', text: MODE_LABEL[m] });
         b.addEventListener('click', function () { selectMode(m); });
         box.appendChild(b);
       });
       $(root, '[data-mode-box]').hidden = false;
-      selectMode(state.pro.modes.indexOf('studio') >= 0 ? 'studio' : state.pro.modes[0]);
+      selectMode(modes.indexOf('online') >= 0 ? 'online' : modes[0]);
     }
 
     function selectMode(m) {
       state.mode = m;
       setPressed($(root, '[data-modes]'), 'data-mode', m);
       $(root, '[data-slot-box]').hidden = false;
-      var q = '/slots?service=' + state.service.id + '&professional=' + state.pro.id + '&mode=' + m;
+      var q = '/slots?service=' + state.service.id + '&professional=' + state.pro.id + '&mode=' + m + '&lang=' + state.lang;
       picker.load(function () { return api(q); });
     }
 
@@ -302,6 +354,18 @@
       if (wantService) {
         var cat = c.categories.find(function (x) { return x.services.some(function (s) { return s.id === wantService; }); });
         if (cat) selectNeed(needForCategory(cat.slug), { service: wantService, pro: wantPro });
+      } else if (wantPro) {
+        // From a professional's page: start from her first-meeting service if any, else her first service.
+        var pro = c.professionals.find(function (p) { return p.id === wantPro || p.slug === wantPro; });
+        if (pro && pro.services.length) {
+          var s0 = null;
+          c.categories.forEach(function (cat) { cat.services.forEach(function (sv) {
+            if (!s0 && sv.firstMeeting && sv.professionals.some(function (x) { return x.id === pro.id; })) s0 = sv;
+          }); });
+          var svc = s0 || pro.services[0];
+          var cat2 = c.categories.find(function (x) { return x.services.some(function (sv) { return sv.id === svc.id; }); });
+          if (cat2) selectNeed(needForCategory(cat2.slug), { service: svc.id, pro: pro.id });
+        }
       } else if (param('bisogno')) {
         selectNeed(param('bisogno'));
       } else if (param('area')) {
@@ -334,9 +398,10 @@
       btn.disabled = true;
       btn.textContent = 'Conferma in corso…';
       api('/book', {
-        start: picker.slot.start, mode: state.mode, service: state.service.id, professional: state.pro.id,
+        start: picker.slot.start, mode: state.mode, service: state.service.id, professional: state.pro.id, lang: state.lang,
         name: name, email: email, phone: form.phone.value.trim(), privacy: true, website: form.website.value,
       }).then(function (res) {
+        if (res.booking.assigned) state.assignedName = res.booking.professional.name;
         fillSummary($(root, '[data-summary-3]'), rows());
         $(root, '[data-ics]').href = icsHref(res.booking.start, res.booking.end, res.booking.mode);
         $(root, '[data-manage]').href = res.manageUrl.replace(/^https?:\/\/[^/]+/, '');
@@ -490,6 +555,7 @@
       api('/request', {
         name: name, email: email, phone: phone, mode: form.mode.value,
         category: form.category ? form.category.value : 'da_definire',
+        lang: (document.documentElement.lang || 'it').slice(0, 2) === 'en' ? 'en' : 'it',
         professional: proSelect && !proField.hidden ? proSelect.value : '',
         preference: form.preference ? form.preference.value.trim() : '',
         organization: form.organization ? form.organization.value.trim() : '',
