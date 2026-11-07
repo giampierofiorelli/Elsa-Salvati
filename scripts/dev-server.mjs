@@ -62,7 +62,7 @@ createServer(async (nodeReq, res) => {
   if (nodeReq.method === 'GET' && (blockPaths.has(url.pathname) || url.pathname.startsWith('/media/'))) {
     const r = url.pathname.startsWith('/media/')
       ? await media(new Request(url))
-      : await pageResponse(new Request(`http://localhost/.netlify/functions/page?p=${encodeURIComponent(url.pathname)}`), { kit, env: { CONTEXT: 'dev' }, store: deps.store, loadCatalog: () => kit.loadCatalog(), createSite });
+      : await pageResponse(new Request(`http://localhost/.netlify/functions/page?p=${encodeURIComponent(url.pathname)}`), { kit, env: { CONTEXT: 'dev', SITE_URL: env.SITE_URL }, store: deps.store, loadCatalog: () => kit.loadCatalog(), createSite });
     res.writeHead(r.status, Object.fromEntries(r.headers));
     res.end(Buffer.from(await r.arrayBuffer()));
     return;
