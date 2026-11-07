@@ -58,37 +58,48 @@
 <!--content-->
 </main>
 
-<footer class="site-footer">
-  <div class="wrap footer-grid">
-    <div>
-      <p class="footer-name">{{studioName}}</p>
-      <p class="footer-tagline">{{studioTagline}}</p>
-      <p>{{studioLegal}} · P.IVA {{vat}}<br>Psicologi e psicoterapeuti iscritti all'{{albo}}. <a href="/team/">I professionisti</a></p>
+<footer class="site-footer footer-v4" data-theme-section="dark">
+  <div class="wrap footer-v4-grid">
+    <div class="footer-v4-brand">
+      <p class="footer-v4-sign">Fiorire, con i tuoi tempi.</p>
+      <p>{{studioFullName}}. Psicologhe iscritte all'Albo degli Psicologi. Online, da tutta Italia, in italiano e in inglese.</p>
+      <a class="btn btn-light" href="/prenota/">Prenota il primo colloquio gratuito</a>
     </div>
-    <div>
-      <p class="footer-label">Studio</p>
-      <p>{{studio.address}}<br><a href="/studio/">Come raggiungere lo studio</a></p>
+    <nav class="footer-v4-col" aria-label="Pagine del sito">
+      <p class="footer-v4-label">Pagine</p>
+      <ul role="list">
+        <li><a href="/servizi/">Come possiamo aiutarti</a></li>
+        <li><a href="/lavoro/">Orientamento e carriera</a></li>
+        <li><a href="/aziende/">Aziende</a></li>
+        <li><a href="/team/">Chi siamo</a></li>
+        <li><a href="/costi-e-faq/">Costi e FAQ</a></li>
+      </ul>
+    </nav>
+    <div class="footer-v4-col">
+      <p class="footer-v4-label">Contatti</p>
+      <ul role="list">
+        <li><a href="tel:{{contact.phoneHref}}">{{contact.phone}}</a></li>
+        <li><a href="mailto:{{contact.email}}">{{contact.email}}</a></li>
+        <li><a href="/contatti/">Scrivici</a></li>
+      </ul>
     </div>
-    <div>
-      <p class="footer-label">Contatti</p>
-      <p><a href="tel:{{contact.phoneHref}}">{{contact.phone}}</a><br><a href="mailto:{{contact.email}}">{{contact.email}}</a></p>
-    </div>
-    <div>
-      <p class="footer-label">Informazioni</p>
-      <ul role="list" class="footer-links">
-        <li><a href="/primo-colloquio/">Il primo colloquio</a></li>
-        <li><a href="/lavoro/">Lavoro e carriera</a></li>
-        <li><a href="/aziende/">Per le aziende</a></li>
-        <li><a href="/online/">Colloqui online</a></li>
+    <div class="footer-v4-col">
+      <p class="footer-v4-label">Informazioni</p>
+      <ul role="list">
         <li><a href="/privacy/">Privacy</a></li>
         <li><a href="/cookie/">Cookie</a></li>
+        <li><!--langswitch--></li>
       </ul>
     </div>
   </div>
   <div class="wrap">
     <p class="emergency"><strong>Non è un servizio di emergenza.</strong> Questo sito, l'email, WhatsApp e il sistema di prenotazione non sono adatti alle emergenze. In caso di pericolo immediato chiama il <a href="tel:112">112</a> o il <a href="tel:118">118</a>, oppure rivolgiti al Pronto Soccorso più vicino.</p>
-    <p class="footer-small">© {{studioFullName}} · Questo sito non usa cookie di profilazione né strumenti di tracciamento.</p>
+    <div class="footer-v4-bottom">
+      <p>© 2026 {{studioLegal}} · P.IVA {{vat}}</p>
+      <p>Questo sito non usa cookie di profilazione né strumenti di tracciamento.</p>
+    </div>
   </div>
+  <p class="giant-word footer-v4-giant" aria-hidden="true">Blooming</p>
 </footer>
 
 </body>

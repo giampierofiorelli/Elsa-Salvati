@@ -55,32 +55,46 @@
 <!--content-->
 </main>
 
-<footer class="site-footer">
-  <div class="wrap footer-grid">
-    <div>
-      <p class="footer-name">{{studioName}}</p>
-      <p class="footer-tagline">Psychology and coaching practice</p>
-      <p>Online sessions in English and Italian, for people living in Italy or moving here.</p>
+<footer class="site-footer footer-v4" data-theme-section="dark">
+  <div class="wrap footer-v4-grid">
+    <div class="footer-v4-brand">
+      <p class="footer-v4-sign">Bloom in your own time.</p>
+      <p>Blooming – Psychology and coaching practice. Registered psychologists. Online sessions in English and Italian, for people living in Italy or moving here.</p>
+      <a class="btn btn-light" href="/en/book/">Book a free first meeting</a>
     </div>
-    <div>
-      <p class="footer-label">Contact</p>
-      <p><a href="tel:{{contact.phoneHref}}">{{contact.phone}}</a><br><a href="mailto:{{contact.email}}">{{contact.email}}</a></p>
-    </div>
-    <div>
-      <p class="footer-label">Information</p>
-      <ul role="list" class="footer-links">
+    <nav class="footer-v4-col" aria-label="Site pages">
+      <p class="footer-v4-label">Pages</p>
+      <ul role="list">
         <li><a href="/en/how-we-can-help/">How we can help</a></li>
         <li><a href="/en/career-guidance/">Career coaching &amp; guidance</a></li>
-        <li><a href="/en/book/">Book a free first meeting</a></li>
-        <li><a href="/privacy/" hreflang="it">Privacy (Italian)</a></li>
+        <li><a href="/en/contact/">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="footer-v4-col">
+      <p class="footer-v4-label">Contact</p>
+      <ul role="list">
+        <li><a href="tel:{{contact.phoneHref}}">{{contact.phone}}</a></li>
+        <li><a href="mailto:{{contact.email}}">{{contact.email}}</a></li>
+        <li><a href="/en/contact/">Write to us</a></li>
+      </ul>
+    </div>
+    <div class="footer-v4-col">
+      <p class="footer-v4-label">Information</p>
+      <ul role="list">
+        <li><a href="/privacy/" hreflang="it">Privacy (in Italian)</a></li>
+        <li><a href="/cookie/" hreflang="it">Cookies (in Italian)</a></li>
         <li><!--langswitch--></li>
       </ul>
     </div>
   </div>
   <div class="wrap">
     <p class="emergency"><strong>This is not an emergency service.</strong> This website, email, WhatsApp and the booking system are not suitable for emergencies. If you are in immediate danger, call <a href="tel:112">112</a> or <a href="tel:118">118</a>, or go to the nearest emergency department (Pronto Soccorso).</p>
-    <p class="footer-small">© Blooming · Psychology and coaching practice · This site uses no profiling cookies or tracking tools.</p>
+    <div class="footer-v4-bottom">
+      <p>© 2026 Blooming – Psychology and coaching practice · VAT no. {{vat}}</p>
+      <p>This site uses no profiling cookies or tracking tools.</p>
+    </div>
   </div>
+  <p class="giant-word footer-v4-giant" aria-hidden="true">Blooming</p>
 </footer>
 
 </body>

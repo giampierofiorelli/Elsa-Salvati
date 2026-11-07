@@ -860,3 +860,28 @@ html[data-palette]:not([data-palette="x"]) .hero-v4-bg::after { background: line
 /* The dark header follows the palette's dark colour. */
 .site-header.hdr.on-dark { background: color-mix(in srgb, var(--night) 92%, transparent); }
 html[data-palette]:not([data-palette="x"]) .lang-notice { background: var(--night-2); }
+
+/* ---------- Footer v4 ----------
+   Dark band in the palette's dark colour, four columns on desktop (signature
+   and booking, pages, contacts, information), the emergency notice, legal
+   line, and the giant name at the very bottom like the opening. */
+.footer-v4 { background: var(--night); color: rgba(250, 246, 240, .82); padding: clamp(64px, 9vw, 120px) 0 0; overflow: hidden; }
+.footer-v4 a { color: var(--ivory); text-decoration: none; }
+.footer-v4-grid { display: grid; gap: 40px; margin-bottom: clamp(40px, 6vw, 72px); }
+@media (min-width: 900px) { .footer-v4-grid { grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 48px; } }
+.footer-v4-sign { font-family: var(--serif); font-size: clamp(1.7rem, 3vw, 2.4rem); line-height: 1.1; letter-spacing: -.02em; color: var(--ivory); margin-bottom: 16px; }
+.footer-v4-brand p:not(.footer-v4-sign) { max-width: 42ch; margin-bottom: 24px; }
+.footer-v4-label { font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.footer-v4-col li { margin-bottom: 10px; }
+.footer-v4-col a { border-bottom: 1px solid rgba(250, 246, 240, .25); padding-bottom: 1px; transition: border-color .2s; }
+.footer-v4-col a:hover { border-color: var(--ivory); }
+.footer-v4 .emergency { border: 1px solid rgba(250, 246, 240, .22); border-radius: var(--radius-sm); padding: 18px 20px; color: rgba(250, 246, 240, .9); margin: 0; }
+.footer-v4 .emergency a { border-bottom: 1px solid rgba(250, 246, 240, .5); }
+.footer-v4-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 24px; padding: 24px 0 8px; font-size: .82rem; color: rgba(250, 246, 240, .62); }
+.footer-v4-bottom p { margin: 0; }
+.footer-v4-giant { color: var(--ivory); opacity: .95; margin: clamp(24px, 4vw, 48px) 0 0; padding-bottom: .1em; line-height: .85; }
+@media (max-width: 699px) {
+  .footer-v4 .btn { width: 100%; justify-content: space-between; text-align: left; padding-left: 24px; }
+  .footer-v4-col li { margin-bottom: 12px; }
+}
+.footer-v4 a.btn-light { color: var(--night); }
