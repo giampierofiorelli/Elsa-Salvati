@@ -6,11 +6,11 @@ key: prenota
 nav: book
 scripts: booking
 ---
-<section class="page-hero">
+<section class="section page-v4-hero" data-theme-section="light">
   <div class="wrap">
     <p class="eyebrow">Booking</p>
     <h1>Book a free first meeting.</h1>
-    <p class="lead">Choose what you need, then who you'd like to see (or let us match you), the language and a free time. You get an instant confirmation by email. You don't need to explain your situation to book.</p>
+    <p class="lead">Choose what you need, then who you'd like to see (or "Help me choose"), the language and a free time. You get an instant confirmation by email. You don't need to explain your situation to book.</p>
   </div>
 </section>
 
@@ -139,12 +139,7 @@ scripts: booking
         <label for="r-pro">Professional <span class="hint">(optional)</span></label>
         <select id="r-pro" name="professional"><option value="">No preference</option></select>
       </div>
-      <div class="field">
-        <label for="r-mode">Format</label>
-        <select id="r-mode" name="mode">
-          <option value="online">Online</option>
-        </select>
-      </div>
+      <input type="hidden" name="mode" value="da_definire">
       <div class="field">
         <label for="r-pref">Preferred days and times <span class="hint">(optional)</span></label>
         <input id="r-pref" name="preference" type="text" maxlength="200" placeholder="e.g. Tuesday afternoon">

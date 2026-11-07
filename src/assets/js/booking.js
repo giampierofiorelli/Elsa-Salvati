@@ -376,6 +376,9 @@
       chosenPros().filter(function (p) { return langsOf(p).indexOf(l) >= 0; }).forEach(function (p) {
         p.modes.forEach(function (m) { if (modes.indexOf(m) < 0) modes.push(m); });
       });
+      // The practice works online until it has premises (decided): when online
+      // is available, in-person is not offered and the choice is not shown.
+      if (modes.indexOf('online') >= 0) modes = ['online'];
       var box = $(root, '[data-modes]');
       box.textContent = '';
       modes.forEach(function (m) {
@@ -383,7 +386,7 @@
         b.addEventListener('click', function () { selectMode(m); });
         box.appendChild(b);
       });
-      $(root, '[data-mode-box]').hidden = false;
+      $(root, '[data-mode-box]').hidden = modes.length < 2;
       selectMode(modes.indexOf('online') >= 0 ? 'online' : modes[0]);
     }
 

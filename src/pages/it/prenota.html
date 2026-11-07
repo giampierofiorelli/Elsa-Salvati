@@ -1,15 +1,15 @@
 ---
 title: Prenota un primo colloquio – {{studioName}}
-description: Scegli un orario libero per il primo colloquio, in studio a {{city}} o online. Conferma immediata, bastano nome ed email.
+description: Scegli un orario libero per il primo colloquio gratuito di 30 minuti, online. Conferma immediata, bastano nome ed email.
 path: /prenota/
 nav: prenota
 scripts: booking
 ---
-<section class="page-hero">
+<section class="section page-v4-hero" data-theme-section="light">
   <div class="wrap">
     <p class="eyebrow">Prenotazione</p>
     <h1>Prenota un primo colloquio.</h1>
-    <p class="lead">Dicci di cosa hai bisogno, poi scegli il professionista, la modalità e un orario libero. La conferma è immediata e ricevi un'email con il riepilogo. Non serve raccontare nulla della tua situazione.</p>
+    <p class="lead">Dicci di cosa hai bisogno, poi scegli la professionista, oppure «Aiutami a scegliere», e un orario libero. La conferma è immediata e ricevi un'email con il riepilogo. Non serve raccontare nulla della tua situazione.</p>
   </div>
 </section>
 
@@ -98,12 +98,12 @@ scripts: booking
     <aside class="panel panel-mint aside-sticky">
       <h2 class="h3">Il primo colloquio</h2>
       <dl class="summary">
-        <dt>Durata</dt><dd>{{fees.sessionMinutes}} minuti</dd>
-        <dt>Tariffa</dt><dd>Secondo il servizio</dd>
-        <dt>Studio</dt><dd>{{studio.address}}</dd>
+        <dt>Durata</dt><dd>30 minuti</dd>
+        <dt>Costo</dt><dd>Gratuito</dd>
+        <dt>Dove</dt><dd>Online, in videochiamata</dd>
       </dl>
-      <p>{{fees.cancellation}}</p>
-      <p><a href="/tariffe-e-prenotazioni/#come-si-prenota">Cosa succede al primo colloquio</a></p>
+      <p>Puoi spostarlo o annullarlo dal link nell'email di conferma.</p>
+      <p><a href="/tariffe-e-prenotazioni/#come-si-prenota">Come funziona il primo colloquio</a></p>
     </aside>
   </div>
 </section>
@@ -139,14 +139,7 @@ scripts: booking
         <label for="r-pro">Professionista <span class="hint">(facoltativo)</span></label>
         <select id="r-pro" name="professional"><option value="">Indifferente</option></select>
       </div>
-      <div class="field">
-        <label for="r-mode">Preferenza</label>
-        <select id="r-mode" name="mode">
-          <option value="da_definire">Da definire</option>
-          <option value="studio">In studio</option>
-          <option value="online">Online</option>
-        </select>
-      </div>
+      <input type="hidden" name="mode" value="da_definire">
       <div class="field">
         <label for="r-pref">Giorni e orari preferiti <span class="hint">(facoltativo)</span></label>
         <input id="r-pref" name="preference" type="text" maxlength="200" placeholder="es. martedì pomeriggio">
