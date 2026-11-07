@@ -136,10 +136,11 @@
   // ---------- loading ----------
   function renderStats() {
     var box = $('[data-panel="statistiche"]');
-    if (!isAdmin() && st.tab !== 'studio') st.tab = 'studio';
+    var allTabs = isAdmin() || A.isTech();
+    if (!allTabs && st.tab !== 'studio') st.tab = 'studio';
     box.textContent = '';
     var tabs = el('div', { class: 'seg', role: 'group', 'aria-label': 'Sezione' }, [['studio', 'Studio'], ['site', 'Sito'], ['email', 'Email']]
-      .filter(function (t) { return t[0] === 'studio' || isAdmin(); })
+      .filter(function (t) { return t[0] === 'studio' || allTabs; })
       .map(function (t) { return el('button', { type: 'button', 'aria-pressed': String(st.tab === t[0]), 'data-stat-tab': t[0], text: t[1], onclick: function () { st.tab = t[0]; renderStats(); } }); }));
     var period = el('select', { 'aria-label': 'Periodo', 'data-stat-period': true }, [['7', 'Ultimi 7 giorni'], ['30', 'Ultimi 30 giorni'], ['90', 'Ultimi 90 giorni'], ['mese', 'Questo mese'], ['mese-scorso', 'Mese scorso'], ['anno', 'Ultimi 12 mesi']]
       .map(function (o) { return el('option', { value: o[0], text: o[1] }); }));
@@ -166,7 +167,7 @@
   function studio(box, d) {
     var c = d.current;
     var p = d.previous;
-    var who = !isAdmin() ? 'I tuoi numeri.' : (d.professional ? (String(d.professional) === String(myPro()) ? 'I tuoi numeri.' : 'I numeri della professionista scelta.') : 'Tutto lo studio.');
+    var who = A.isTech() ? 'Tutto lo studio.' : !isAdmin() ? 'I tuoi numeri.' : (d.professional ? (String(d.professional) === String(myPro()) ? 'I tuoi numeri.' : 'I numeri della professionista scelta.') : 'Tutto lo studio.');
     box.appendChild(el('p', { class: 'hint', text: who + (d.shared ? ' Nei dettagli, i gruppi con meno di 5 casi sono nascosti (anche quelli che si potrebbero ricavare per sottrazione).' : '') }));
     var rq = c.requests;
     if (d.insights) box.appendChild(attention(d.insights.alerts));

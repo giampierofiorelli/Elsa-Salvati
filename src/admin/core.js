@@ -15,6 +15,7 @@
   A.hhmm = hhmm;
   A.icon = icon;
   A.isAdmin = isAdmin;
+  A.isTech = isTech;
   A.iso = iso;
   A.loadCatalog = loadCatalog;
   A.minutes = minutes;
@@ -57,6 +58,10 @@
     return n;
   }
   function isAdmin() { return state.me && state.me.user.role === 'admin'; }
+  // Technical role: site, settings (read only), aggregated statistics and the activity log. Never agendas or people.
+  function isTech() { return !!(state.me && state.me.user.role === 'tecnico'); }
+  var TECH_VIEWS = ['sito/pagine', 'sito/intestazione', 'sito/media', 'sito/email', 'statistiche', 'impostazioni/prenotazione', 'impostazioni/sicurezza'];
+  function homeHash() { return isTech() ? '#/sito/pagine' : '#/agenda/calendario'; }
   function myPro() { return state.me && state.me.user.professionalId; }
 
   // ---------- dates ----------
@@ -152,11 +157,12 @@
       showOnly('app');
       buildNav();
       buildProSwitch();
-      return Promise.all([loadCatalog(), A.loadSettings(), A.loadRequests()]);
+      $$('[data-staff-only]').forEach(function (n) { n.hidden = isTech(); });
+      return Promise.all([loadCatalog(), A.loadSettings(), isTech() ? null : A.loadRequests()]);
     }).then(function () {
-      if (!/^#\//.test(location.hash)) history.replaceState(null, '', location.pathname + '#/agenda/calendario');
+      if (!/^#\//.test(location.hash)) history.replaceState(null, '', location.pathname + homeHash());
       onRoute();
-      A.loadPendingCount();
+      if (!isTech()) A.loadPendingCount();
     }).catch(function () { showLogin(); });
   }
 
@@ -246,6 +252,10 @@
     { label: 'Il mio account', perm: 'staff', items: ['profilo', 'impostazioni/calendario'] },
     { label: '', items: ['statistiche'] },
   ];
+  function allowedRoute(key) {
+    if (isTech()) return TECH_VIEWS.indexOf(key) !== -1;
+    return allowed(ROUTES[key].perm);
+  }
   function allowed(perm) {
     if (!perm) return true;
     if (perm === 'admin') return isAdmin();
@@ -261,8 +271,9 @@
     $('[data-user-initials]').textContent = initials;
     $('[data-user-name]').textContent = u.name;
     $('[data-user-name2]').textContent = u.name;
-    $('[data-user-role]').textContent = isAdmin() ? 'Amministratore' : (u.canEditSite ? 'Professionista · sito' : 'Professionista');
-    $('[data-session-info]').textContent = (isAdmin() ? 'Amministratore' : 'Professionista') + ' · accesso valido fino alle '
+    var roleName = isAdmin() ? 'Amministratore' : (isTech() ? 'Tecnico' : 'Professionista');
+    $('[data-user-role]').textContent = isTech() ? 'Tecnico · sito e statistiche' : (isAdmin() ? 'Amministratore' : (u.canEditSite ? 'Professionista · sito' : 'Professionista'));
+    $('[data-session-info]').textContent = roleName + ' · accesso valido fino alle '
       + new Date(state.me.expiresAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
     $('[data-user-profile]').hidden = !myPro();
   }
@@ -271,8 +282,8 @@
     var nav = $('[data-nav]');
     nav.textContent = '';
     NAV.forEach(function (g) {
-      if (!allowed(g.perm)) return;
-      var items = g.items.filter(function (r) { return allowed(ROUTES[r].perm); });
+      if (!isTech() && !allowed(g.perm)) return;
+      var items = g.items.filter(allowedRoute);
       if (!items.length) return;
       var ul = el('ul', { class: 'sb-list', role: 'list' });
       items.forEach(function (r) {
@@ -304,7 +315,7 @@
   function onRoute() {
     if (!state.me || document.getElementById('app').hidden) return;
     var r = routeKey();
-    if (!r.key || !allowed(ROUTES[r.key].perm)) { location.replace('#/agenda/calendario'); return; }
+    if (!r.key || !allowedRoute(r.key)) { location.replace(homeHash()); return; }
     var meta = ROUTES[r.key];
     var wasRoute = state.route;
     state.route = r.key;

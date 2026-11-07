@@ -165,6 +165,9 @@ async function seed() {
   // Admin account (already activated) and a pending invitation for Marco.
   const adminId = await s.insertUser({ email: 'admin@example.it', name: 'Direzione', role: 'admin', professional_id: pro.elsa, invite_token_hash: null, invite_expires_at: null });
   await s.updateUser(adminId, { password_hash: hashPassword(password), totp_secret_enc: deps.vault.encrypt({ secret: adminSecret }), enrolled_at: new Date() });
+  // Technical account (site, settings, aggregated statistics, log): same password and code as the admin.
+  const techId = await s.insertUser({ email: 'tecnico@example.it', name: 'Tecnico', role: 'tecnico', professional_id: null, invite_token_hash: null, invite_expires_at: null });
+  await s.updateUser(techId, { password_hash: hashPassword(password), totp_secret_enc: deps.vault.encrypt({ secret: adminSecret }), enrolled_at: new Date() });
   const marcoUser = await s.insertUser({ email: 'marco@example.it', name: 'Marco Neri', role: 'professionista', professional_id: pro.marco, invite_token_hash: null, invite_expires_at: null });
   const inviteToken = randomToken();
   await s.updateUser(marcoUser, { invite_token_hash: sha256(inviteToken), invite_expires_at: new Date(Date.now() + 7 * 86400000) });

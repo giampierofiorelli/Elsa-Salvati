@@ -111,7 +111,7 @@
           <div class="um-pop" data-user-pop hidden>
             <p class="um-head"><strong data-user-name2></strong><span class="hint" data-session-info></span></p>
             <a href="#/profilo" class="um-item" data-user-profile hidden>Il mio profilo</a>
-            <a href="#/impostazioni/calendario" class="um-item">Calendario sul telefono</a>
+            <a href="#/impostazioni/calendario" class="um-item" data-staff-only>Calendario sul telefono</a>
             <button type="button" class="um-item um-out" data-logout>Esci</button>
           </div>
         </div>
@@ -272,6 +272,7 @@
         <p class="hint">Se cambi i mesi di conservazione, va aggiornata anche l'informativa privacy (oggi dice: recapiti cancellati 24 mesi dopo l'ultimo appuntamento, richieste dopo 6 mesi).</p>
       </div>
       <div class="sticky-save">
+        <p class="hint" data-settings-readonly hidden>Il ruolo tecnico vede le impostazioni ma non le cambia.</p>
         <p class="status" role="status" data-settings-status></p>
         <button type="submit" class="btn btn-primary btn-small">Salva impostazioni</button>
       </div>

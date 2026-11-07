@@ -1551,3 +1551,62 @@ test('booking: the page never tells whether an email already has a first meeting
   assert.equal((await pubCall('POST', '/manage', { t: oldToken })).status, 404, 'earlier links stop working');
   clock.now = saved;
 });
+
+test('role "tecnico": site, settings (read), aggregated statistics and log; every personal-data endpoint refused', opts, async () => {
+  tick();
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  // The admin creates the account in «Account e permessi»; it is never linked to an agenda.
+  let r = await as('admin')('POST', '/users', { email: 'tecnico@example.it', name: 'Tecnico Prova', role: 'tecnico', professionalId: ids.laura });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  const techId = r.body.id;
+  assert.equal((await sql`select professional_id from users where id = ${techId}`)[0].professional_id, null);
+  const tech = await createEnrolledUser(deps, { email: 'tecnico2@example.it', name: 'Tecnica', role: 'tecnico' });
+  cookies.tech = cookieOf(await login(tech.email, tech.secret));
+  const t = as('tech');
+
+  r = await t('GET', '/me');
+  assert.equal(r.status, 200);
+  assert.equal(r.body.user.role, 'tecnico');
+  assert.equal(r.body.user.canEditSite, true);
+  assert.deepEqual(r.body.professionals, []);
+  assert.equal((await t('GET', '/settings')).status, 200);
+  assert.equal((await t('GET', '/audit')).status, 200);
+  assert.equal((await t('GET', '/email-texts')).status, 200);
+  assert.equal((await t('GET', '/site/media')).status, 200, 'site editing (pages and header/footer need the site kit, not loaded here)');
+  const cat = await t('GET', '/catalog');
+  assert.equal(cat.status, 200);
+  assert.ok(cat.body.professionals.every((p) => p.notifyEmail === undefined), 'no staff addresses');
+  // Statistics: the studio's totals only, always with small groups hidden, whatever is asked.
+  for (const q of ['/stats/studio', `/stats/studio?professional=${ids.laura}`, '/stats/site', '/stats/email']) {
+    r = await t('GET', q);
+    assert.equal(r.status, 200, q);
+    assert.equal(r.body.shared, true, q);
+  }
+  assert.equal((await t('GET', `/stats/studio?professional=${ids.laura}`)).body.professional, null);
+
+  // Every endpoint with names, contacts, notes, agendas, rights tools, exports or accounts: 403.
+  const ev = (await sql`select id::text as id from events where kind <> 'blocco' order by id limit 1`)[0].id;
+  const rq = (await sql`select id::text as id from contact_requests order by id limit 1`)[0];
+  const refused = [
+    ['GET', '/events?from=2026-10-01&to=2026-12-31&professional=all'], ['POST', '/events', {}], ['PATCH', `/events/${ev}`, { note: 'x' }],
+    ['GET', '/events/pending'], ['POST', `/events/${ev}/approve`, {}], ['POST', `/events/${ev}/decline`, {}],
+    ['POST', `/events/${ev}/cancel`, {}], ['POST', `/events/${ev}/reassign`, {}], ['POST', `/events/${ev}/no-show`, {}],
+    ['GET', '/requests'], ['POST', `/requests/${rq ? rq.id : 1}`, {}], ['DELETE', `/requests/${rq ? rq.id : 1}`],
+    ['GET', '/people?email=giulia@example.it'], ['POST', '/people/forget', { email: 'giulia@example.it', confirm: true }],
+    ['GET', '/export'], ['POST', '/me/calendar', {}],
+    ['GET', '/rules'], ['PUT', '/rules', {}], ['PUT', '/settings', { settings: {} }], ['PUT', '/stats/note', { month: '2026-11-01', note: 'x' }],
+    ['GET', '/users'], ['POST', '/users', {}], ['PATCH', `/users/${techId}`, { role: 'admin' }], ['POST', `/users/${techId}/invite`, {}],
+    ['POST', '/services', {}], ['PATCH', `/professionals/${ids.laura}`, {}], ['PUT', `/professionals/${ids.laura}/services`, {}],
+    ['POST', '/publish', {}],
+  ];
+  for (const [m, p, b] of refused) {
+    r = await t(m, p, b);
+    assert.equal(r.status, 403, `${m} ${p} → ${r.status}`);
+  }
+  // An admin turned into a technician loses the phone-calendar link and the agenda link.
+  const exAdmin = await createEnrolledUser(deps, { email: 'ex.admin@example.it', name: 'Ex Admin', role: 'admin' });
+  await sql`update users set ics_token_hash = 'x', professional_id = ${ids.laura} where id = ${exAdmin.id}`;
+  assert.equal((await as('admin')('PATCH', `/users/${exAdmin.id}`, { role: 'tecnico' })).status, 200);
+  const row = (await sql`select role, ics_token_hash, professional_id from users where id = ${exAdmin.id}`)[0];
+  assert.deepEqual({ ...row }, { role: 'tecnico', ics_token_hash: null, professional_id: null });
+});

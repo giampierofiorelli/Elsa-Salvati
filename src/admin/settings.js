@@ -48,8 +48,8 @@
     var pros = [['', '— nessuno —']].concat(state.catalog.professionals.map(function (p) { return [p.id, p.name]; }));
     var specs = [
       { name: 'name', label: 'Nome', max: 80 },
-      { name: 'role', label: 'Ruolo', type: 'select', options: [['professionista', 'Professionista (vede solo la sua agenda)'], ['admin', 'Amministratore (gestisce tutto)']] },
-      { name: 'professionalId', label: 'Collegato al professionista', type: 'select', options: pros },
+      { name: 'role', label: 'Ruolo', type: 'select', options: [['professionista', 'Professionista (vede solo la sua agenda)'], ['admin', 'Amministratore (gestisce tutto)'], ['tecnico', 'Tecnico (sito, impostazioni in lettura, statistiche aggregate e registro; mai agende né dati delle persone)']] },
+      { name: 'professionalId', label: 'Collegato al professionista (non per il ruolo tecnico)', type: 'select', options: pros },
       { name: 'canEditSite', label: 'Può modificare il sito (testi e immagini delle pagine; gli amministratori possono sempre)', type: 'checkbox' },
     ];
     if (!u) specs.splice(1, 0, { name: 'email', label: 'Email', type: 'email' });
@@ -106,6 +106,11 @@
       Object.keys(res.settings).forEach(function (k) { if (f.elements[k]) f.elements[k].value = res.settings[k]; });
       var wd = res.settings.approvalWorkdays || [1, 2, 3, 4, 5];
       $$('[data-workday]', f).forEach(function (c) { c.checked = wd.indexOf(Number(c.value)) !== -1; });
+      // The technical role reads the settings only.
+      var ro = A.isTech();
+      $$('input', f).forEach(function (i) { i.disabled = ro; });
+      $$('button[type="submit"]', f).forEach(function (b) { b.hidden = ro; });
+      $('[data-settings-readonly]').hidden = !ro;
     });
   }
   $('[data-settings-form]').addEventListener('submit', function (e) {
