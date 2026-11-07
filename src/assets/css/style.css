@@ -696,3 +696,11 @@ main > section:first-child:not(.hero-v4) { padding-top: calc(var(--section) + 70
   .hero-v4 .cta-row .btn-primary { font-size: .95rem; padding-left: 20px; text-align: left; }
   .hdr-toggle { min-width: 62px; }
 }
+/* Giant word fully inside the opening (no negative margin: the "g" must not be cut). */
+.giant-word { margin: 0; padding-bottom: .14em; line-height: .9; }
+/* The opening fades into the ivory of the next section: no hard edge. */
+.hero-v4-bg { background:
+  radial-gradient(60% 55% at 85% 20%, rgba(242, 214, 196, .9) 0%, rgba(242, 214, 196, 0) 70%),
+  radial-gradient(45% 45% at 15% 70%, rgba(203, 173, 133, .22) 0%, rgba(203, 173, 133, 0) 70%),
+  #FAF6F0; }
+.hero-v4-bg::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 32%; background: linear-gradient(to bottom, rgba(250, 246, 240, 0), #FAF6F0); pointer-events: none; }

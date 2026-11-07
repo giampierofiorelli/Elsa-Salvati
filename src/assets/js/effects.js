@@ -49,7 +49,8 @@
       ' col=mix(col,sand,body*.55);',
       ' col=mix(col,light,rim*max(lit,0.)*.75);',
       ' col=mix(col,sand*.92,rim*max(-lit,0.)*.35);',
-      ' col+=(h(gl_FragCoord.xy+fract(t)*91.)-.5)*.035;',
+      ' col=mix(ivory,col,smoothstep(.0,.35,uv.y));',
+      ' col+=(h(gl_FragCoord.xy+fract(t)*91.)-.5)*.035*smoothstep(.0,.35,uv.y);',
       ' gl_FragColor=vec4(col,1.);}',
     ].join('\n');
     function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
