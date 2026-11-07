@@ -15,6 +15,11 @@ import { createVault, hashPassword, base32Encode, totpCode, randomToken, sha256 
 import { createMailer } from '../lib/email.mjs';
 import { createPublicApi } from '../lib/public-api.mjs';
 import { createAdminApi } from '../lib/admin-api.mjs';
+import { loadCatalog } from '../lib/public-api.mjs';
+import { readKitFiles, withCatalog } from '../lib/site-kit.mjs';
+import { createMediaHandler } from '../lib/site-api.mjs';
+import { pageResponse } from '../lib/page-server.mjs';
+import { createSite } from '../lib/site.mjs';
 import { siteFromEnv } from '../lib/app.mjs';
 import { addDays, zonedParts, zonedToUtc, mondayOf } from '../lib/time.mjs';
 
@@ -40,7 +45,11 @@ await sql.unsafe(readFileSync(new URL('../db/schema.sql', import.meta.url), 'utf
 
 const deps = { store: createStore(sql), vault: createVault(env.DATA_KEY), mailer: createMailer(env), site: siteFromEnv(env), env };
 const pub = createPublicApi(deps);
-const admin = createAdminApi(deps);
+// Page editor: starting content and templates from the repository files.
+const kit = withCatalog(readKitFiles(join(dirname(fileURLToPath(import.meta.url)), '..')), () => loadCatalog(deps.store));
+const admin = createAdminApi({ ...deps, kit, purge: async (tags) => console.log('[editor] cache purge (simulated):', tags.join(', ')) });
+const media = createMediaHandler({ store: deps.store });
+const blockPaths = new Set(kit.content.map((p) => p.path));
 
 if (demo) await seed();
 
@@ -48,6 +57,15 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
 
 createServer(async (nodeReq, res) => {
   const url = new URL(nodeReq.url, `http://localhost:${port}`);
+  // Editable pages come from the database, as on staging (drafts, with internal notes).
+  if (nodeReq.method === 'GET' && (blockPaths.has(url.pathname) || url.pathname.startsWith('/media/'))) {
+    const r = url.pathname.startsWith('/media/')
+      ? await media(new Request(url))
+      : await pageResponse(new Request(`http://localhost/.netlify/functions/page?p=${encodeURIComponent(url.pathname)}`), { kit, env: { CONTEXT: 'dev' }, store: deps.store, loadCatalog: () => kit.loadCatalog(), createSite });
+    res.writeHead(r.status, Object.fromEntries(r.headers));
+    res.end(Buffer.from(await r.arrayBuffer()));
+    return;
+  }
   if (url.pathname.startsWith('/api/')) {
     const chunks = [];
     for await (const c of nodeReq) chunks.push(c);
