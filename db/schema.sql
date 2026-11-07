@@ -234,6 +234,51 @@ alter table events enable row level security;
 alter table contact_requests enable row level security;
 alter table rate_events enable row level security;
 
+-- ---------- pagine modificabili dall'amministrazione ----------
+-- Una riga per pagina e lingua. Bozza e pubblicato separati: { title, description, blocks }.
+create table if not exists site_pages (
+  id                bigserial primary key,
+  key               text not null,
+  lang              text not null check (lang in ('it', 'en')),
+  path              text not null unique,
+  nav               text not null default '',
+  noindex           boolean not null default false,
+  draft             jsonb not null,
+  published         jsonb,
+  draft_updated_at  timestamptz not null default now(),
+  draft_updated_by  bigint references users(id) on delete set null,
+  published_at      timestamptz,
+  published_by      bigint references users(id) on delete set null,
+  unique (key, lang)
+);
+-- Storico: ogni pubblicazione e ogni ripristino lasciano una copia.
+create table if not exists site_page_versions (
+  id          bigserial primary key,
+  page_id     bigint not null references site_pages(id) on delete cascade,
+  content     jsonb not null,
+  kind        text not null check (kind in ('pubblicazione', 'ripristino', 'iniziale')),
+  created_at  timestamptz not null default now(),
+  created_by  bigint references users(id) on delete set null
+);
+create index if not exists site_page_versions_page_idx on site_page_versions (page_id, created_at desc);
+-- Immagini caricate: ogni formato è un file a sé (webp 480/800, jpg 800).
+create table if not exists site_images (
+  id          text not null,
+  variant     text not null check (variant in ('480.webp', '800.webp', '800.jpg')),
+  mime        text not null check (mime in ('image/webp', 'image/jpeg')),
+  width       integer not null,
+  height      integer not null,
+  bytes       bytea not null,
+  created_at  timestamptz not null default now(),
+  created_by  bigint references users(id) on delete set null,
+  primary key (id, variant)
+);
+-- Permesso di modificare il sito (non dà accesso ai dati delle persone).
+alter table users add column if not exists can_edit_site boolean not null default false;
+alter table site_pages enable row level security;
+alter table site_page_versions enable row level security;
+alter table site_images enable row level security;
+
 -- Il sito usa solo la connessione diretta al database: i ruoli pubblici di Supabase non devono leggere nulla.
 do $$ begin
   if exists (select 1 from pg_roles where rolname = 'anon') and exists (select 1 from pg_roles where rolname = 'authenticated') then
