@@ -1348,3 +1348,53 @@ test('statistics: the admin sees the studio, site and email tabs with the previo
   assert.equal((await as('laura')('GET', '/stats/email')).status, 403);
   assert.equal((await as('admin')('GET', '/stats/studio?from=2020-01-01&to=2026-10-22')).status, 400, 'periods over about two years are refused');
 });
+
+test('statistics v2: source kept on the first meeting until the cohort matures, then frozen and erased; which invitation confirmed; insights with suppression', opts, async () => {
+  const { createStats } = await import('../lib/stats.mjs');
+  const { sha256 } = await import('../lib/crypto.mjs');
+  const at = (iso) => new Date(iso);
+  // A first meeting in August with its source, and a session three weeks later (same person).
+  const hash = deps.vault.lookupHash('contact:coorte@example.it');
+  const firstId = await deps.store.insertEvent({ professional_id: ids.laura, service_id: ids.consulenza, kind: 'primo_colloquio', source: 'sito', mode: 'online',
+    start_at: at('2026-08-10T08:00:00Z'), end_at: at('2026-08-10T08:30:00Z'), contact_hash: hash, heard_from: 'instagram', created_at: at('2026-08-01T08:00:00Z') });
+  await deps.store.insertEvent({ professional_id: ids.laura, service_id: ids.consulenza, kind: 'seduta', source: 'manuale', mode: 'online',
+    start_at: at('2026-08-31T08:00:00Z'), end_at: at('2026-08-31T08:50:00Z'), contact_hash: hash });
+  assert.equal((await sql`select heard_from from events where id = ${firstId}`)[0].heard_from, 'instagram');
+  await createStats(sql).freezeAndRollup(clock.now);
+  const rows = await sql`select area, metric, n from stats_monthly where month = '2026-08-01' and professional_id = ${ids.laura} and metric like 'coorte-%' order by area, metric`;
+  const get = (area, metric) => (rows.find((r) => r.area === area && r.metric === metric) || {}).n;
+  assert.equal(get('fonte:internet', 'coorte-base'), 1);
+  assert.equal(get('fonte:internet', 'coorte-30'), 1);
+  assert.equal(get('tutti', 'coorte-presentata'), 1);
+  assert.equal((await sql`select heard_from from events where id = ${firstId}`)[0].heard_from, null, 'erased once counted');
+
+  // Confirmation from the second invitation's link: confirmed_via = 24h.
+  const token = 'tok-confirm-via-test-0123456789';
+  const evId = await deps.store.insertEvent({ professional_id: ids.laura, service_id: ids.consulenza, kind: 'seduta', source: 'manuale', mode: 'online',
+    start_at: new Date(clock.now.getTime() + 3 * 86400000), end_at: new Date(clock.now.getTime() + 3 * 86400000 + 3000000), manage_token_hash: sha256(token),
+    contact_enc: deps.vault.encrypt({ name: 'V', email: 'via@example.it' }), notify_client: true });
+  await sql`update events set reminder_sent_at = ${clock.now}, confirm_nudge_sent_at = ${clock.now} where id = ${evId}`;
+  const r = await pubCall('POST', '/manage/confirm', { t: token, e: 'conferma-2' });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.equal((await sql`select confirmed_via from events where id = ${evId}`)[0].confirmed_via, '24h');
+
+  // The Studio tab carries alerts, crossings, capacity and cohorts; the shared view hides small cells.
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  const s = await as('admin')('GET', '/stats/studio?professional=all');
+  assert.equal(s.status, 200, JSON.stringify(s.body));
+  const I = s.body.insights;
+  assert.ok(Array.isArray(I.alerts) && Array.isArray(I.lead) && Array.isArray(I.resp) && Array.isArray(I.conf) && I.cohorts.length === 12 && Array.isArray(I.capacity.areas));
+  const cells = [].concat(...I.lead.map((x) => [x.presented, x.absent, x.cancelled, x.freed, x.cont]));
+  assert.ok(!cells.some((v) => v > 0 && v < 5), 'no visible count between 1 and 4 in the shared view');
+  // Her own view is complete; the export of the same figures follows the shared rules.
+  const laura = await createEnrolledUser(deps, { email: 'laura.v2@example.it', name: 'Laura', role: 'professionista', professionalId: ids.laura });
+  cookies.laura2 = cookieOf(await login(laura.email, laura.secret));
+  const own = await as('laura2')('GET', '/stats/studio');
+  assert.equal(own.body.shared, false);
+  const exp = await as('laura2')('GET', '/stats/studio?export=1');
+  assert.equal(exp.body.shared, true);
+  // Note of the month: admin only.
+  assert.equal((await as('laura2')('PUT', '/stats/note', { month: '2026-11-01', note: 'x' })).status, 403);
+  const note = await as('admin')('PUT', '/stats/note', { month: '2026-11-01', note: 'Novembre: due settimane di ferie.' });
+  assert.equal(note.status, 200);
+});

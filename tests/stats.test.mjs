@@ -36,3 +36,20 @@ test('bots and empty user agents are not counted', () => {
   assert.ok(isBot('curl/8.1'));
   assert.ok(!isBot('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1'));
 });
+
+import { wilson, suppressRows, heardGroup } from '../lib/stats.mjs';
+
+test('Wilson interval matches the research table; small groups and secondary suppression', () => {
+  const w = wilson(6, 10);
+  assert.equal(Math.round(w.lo * 100), 31);
+  assert.equal(Math.round(w.hi * 100), 83);
+  const w2 = wilson(1, 20);
+  assert.equal(Math.round(w2.hi * 100), 24);
+  // A row showing its total with one hidden cell gets a second hidden cell: no subtraction possible.
+  const rows = suppressRows([{ n: 20, a: 3, b: 9, c: 8 }, { n: 3, a: 1, b: 2 }, { n: 12, a: 0, b: 12 }], ['a', 'b', 'c'], 'n');
+  assert.deepEqual(rows[0], { n: 20, a: -1, b: 9, c: -1 });
+  assert.deepEqual(rows[1], { n: -1, a: -1, b: -1 }, 'a group under 5 is hidden entirely');
+  assert.deepEqual(rows[2], { n: 12, a: 0, b: 12 }, 'zeros say nothing about anyone and stay');
+  assert.equal(heardGroup('instagram'), 'internet');
+  assert.equal(heardGroup(null), 'altro');
+});
