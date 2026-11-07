@@ -59,3 +59,20 @@ test('every block type renders with empty optional fields', () => {
     assert.equal(typeof html, 'string', type);
   }
 });
+
+test('library images: every version in srcset, sizes by role, the first picture loads at once', () => {
+  const photo = (id, extra) => ({ type: 'profile', data: { title: 'Elsa', photo: { id, alt: 'Elsa Salvati', w: 1200, h: 1600, role: 'content', variants: [480, 800, 1200], format: 'webp', fallback: 800, ...extra } } });
+  const blocks = cleanBlocks([photo('a'.repeat(24)), photo('b'.repeat(24))]);
+  const html = renderBlocks(blocks, ctx());
+  assert.match(html, /srcset="\/media\/a{24}-480\.webp 480w, \/media\/a{24}-800\.webp 800w, \/media\/a{24}-1200\.webp 1200w"/);
+  assert.match(html, /sizes="\(min-width: 960px\) 420px, 92vw"/);
+  assert.match(html, /<img src="\/media\/a{24}-800\.jpg" alt="Elsa Salvati" width="800" height="1067" fetchpriority="high">/);
+  assert.match(html, /<img src="\/media\/b{24}-800\.jpg" alt="Elsa Salvati" width="800" height="1067" loading="lazy">/);
+  // A JPEG-only upload (browser without any WebP encoder): srcset of JPEGs, no <source>.
+  const jpg = renderBlocks(cleanBlocks([photo('c'.repeat(24), { format: 'jpg' })]), ctx());
+  assert.match(jpg, /<img src="\/media\/c{24}-800\.jpg" srcset="\/media\/c{24}-480\.jpg 480w, \/media\/c{24}-800\.jpg 800w, \/media\/c{24}-1200\.jpg 1200w"/);
+  assert.doesNotMatch(jpg, /<source/);
+  // Invented versions are refused.
+  assert.throws(() => cleanBlocks([photo('d'.repeat(24), { variants: [333] })]), /versioni dell'immagine non valide/);
+  assert.throws(() => cleanBlocks([photo('d'.repeat(24), { role: 'hero' })]), /uso dell'immagine non valido/);
+});

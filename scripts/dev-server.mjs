@@ -17,7 +17,8 @@ import { createPublicApi } from '../lib/public-api.mjs';
 import { createAdminApi } from '../lib/admin-api.mjs';
 import { loadCatalog } from '../lib/public-api.mjs';
 import { readKitFiles, withCatalog } from '../lib/site-kit.mjs';
-import { createMediaHandler } from '../lib/site-api.mjs';
+import { createMediaStore } from '../lib/media-store.mjs';
+import { createMediaDelivery } from '../lib/media-api.mjs';
 import { pageResponse } from '../lib/page-server.mjs';
 import { createSite } from '../lib/site.mjs';
 import { siteFromEnv } from '../lib/app.mjs';
@@ -43,17 +44,17 @@ const sql = postgres(env.DATABASE_URL || 'postgres://postgres@127.0.0.1:54329/ag
 });
 await sql.unsafe(readFileSync(new URL('../db/schema.sql', import.meta.url), 'utf8'));
 
-const deps = { store: createStore(sql), vault: createVault(env.DATA_KEY), mailer: createMailer(env), site: siteFromEnv(env), env };
+const deps = { store: createStore(sql), mediaStore: createMediaStore(sql), vault: createVault(env.DATA_KEY), mailer: createMailer(env), site: siteFromEnv(env), env };
 const pub = createPublicApi(deps);
 // Page editor: starting content and templates from the repository files.
 const kit = withCatalog(readKitFiles(join(dirname(fileURLToPath(import.meta.url)), '..')), () => loadCatalog(deps.store));
 const admin = createAdminApi({ ...deps, kit, purge: async (tags) => console.log('[editor] cache purge (simulated):', tags.join(', ')) });
-const media = createMediaHandler({ store: deps.store });
+const media = createMediaDelivery({ store: deps.store, mediaStore: deps.mediaStore });
 const blockPaths = new Set(kit.content.map((p) => p.path));
 
 if (demo) await seed();
 
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.txt': 'text/plain', '.xml': 'application/xml' };
+const TYPES = { '.wasm': 'application/wasm', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.json': 'application/json', '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.txt': 'text/plain', '.xml': 'application/xml' };
 
 createServer(async (nodeReq, res) => {
   const url = new URL(nodeReq.url, `http://localhost:${port}`);

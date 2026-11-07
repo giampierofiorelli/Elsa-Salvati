@@ -1065,7 +1065,7 @@
     return p ? p.path : null;
   }
   function safeHref(h) {
-    return typeof h === 'string' && (/^\/(?!\/)[a-z0-9\-/]*(#[a-z0-9-]+)?(\?[a-z0-9=&_-]+)?$/i.test(h) || /^https?:\/\/[a-z0-9.-]+\.[a-z]{2,}/i.test(h) || /^mailto:[^\s<>"'?&]+@/i.test(h) || /^tel:\+?[0-9 ]{6,20}$/.test(h));
+    return typeof h === 'string' && (/^\/media\/[a-f0-9]{24}\.pdf$/.test(h) || /^\/(?!\/)[a-z0-9\-/]*(#[a-z0-9-]+)?(\?[a-z0-9=&_-]+)?$/i.test(h) || /^https?:\/\/[a-z0-9.-]+\.[a-z]{2,}/i.test(h) || /^mailto:[^\s<>"'?&]+@/i.test(h) || /^tel:\+?[0-9 ]{6,20}$/.test(h));
   }
   function isExternalOk(h) { return /^https?:\/\/[a-z0-9.-]+\.[a-z]{2,}(?::\d+)?(\/[^\s<>"']*)?$/i.test(h) || /^mailto:[^\s<>"'?&]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(h) || /^tel:\+?[0-9 ]{6,20}$/.test(h); }
 
@@ -1240,6 +1240,14 @@
     var url = el('input', { id: 'ld-url', type: 'url', placeholder: 'https://…', maxlength: 500 });
     var kindPage = el('input', { type: 'radio', name: 'ld-kind', value: 'page', checked: true });
     var kindUrl = el('input', { type: 'radio', name: 'ld-kind', value: 'url' });
+    var kindPdf = el('input', { type: 'radio', name: 'ld-kind', value: 'pdf' });
+    var pdfSel = el('select', { id: 'ld-pdf' }, [el('option', { value: '', text: 'Carico i PDF della libreria…' })]);
+    api('GET', '/site/media').then(function (res) {
+      var pdfs = res.media.filter(function (m) { return m.kind === 'pdf'; });
+      pdfSel.textContent = '';
+      if (!pdfs.length) { pdfSel.appendChild(el('option', { value: '', text: 'Nessun PDF: caricali da «Media»' })); return; }
+      pdfs.forEach(function (m) { pdfSel.appendChild(el('option', { value: m.url, text: m.name + ' (' + kb(m.bytes) + ')' })); });
+    }).catch(function () { pdfSel.textContent = ''; pdfSel.appendChild(el('option', { value: '', text: 'Libreria non disponibile' })); });
     var err = el('p', { class: 'status form-error', role: 'alert' });
     var form = el('form', { class: 'dlg-inner', method: 'dialog' }, [
       el('div', { class: 'dlg-head' }, [el('h2', { text: 'Aggiungi un link' })]),
@@ -1247,6 +1255,8 @@
       el('div', { class: 'field' }, [el('label', { for: 'ld-page', text: 'Pagina' }), sel]),
       el('label', { class: 'check' }, [kindUrl, el('span', { text: 'Indirizzo esterno (si apre in una nuova scheda)' })]),
       el('div', { class: 'field' }, [el('label', { for: 'ld-url', text: 'Indirizzo (https://…, mailto:… o tel:…)' }), url]),
+      el('label', { class: 'check' }, [kindPdf, el('span', { text: 'Documento PDF della libreria (si apre in una nuova scheda)' })]),
+      el('div', { class: 'field' }, [el('label', { for: 'ld-pdf', text: 'Documento' }), pdfSel]),
       err,
       el('div', { class: 'cta-row dlg-actions' }, [
         el('button', { type: 'submit', class: 'btn btn-primary btn-small', text: 'Aggiungi' }),
@@ -1255,6 +1265,7 @@
     ]);
     url.addEventListener('focus', function () { kindUrl.checked = true; });
     sel.addEventListener('focus', function () { kindPage.checked = true; });
+    pdfSel.addEventListener('focus', function () { kindPdf.checked = true; });
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var href;
@@ -1262,6 +1273,9 @@
         href = url.value.trim();
         if (/^www\./i.test(href)) href = 'https://' + href;
         if (!isExternalOk(href)) { err.textContent = 'Scrivi un indirizzo completo, che inizi con https://, mailto: o tel:'; return; }
+      } else if (kindPdf.checked) {
+        href = pdfSel.value;
+        if (!/^\/media\/[a-f0-9]{24}\.pdf$/.test(href)) { err.textContent = 'Scegli un PDF dalla libreria.'; return; }
       } else href = sel.value;
       dlg.close();
       onPick(href);
@@ -1336,7 +1350,9 @@
     var wrap = el('div', { class: 'se-target' });
     function render() {
       wrap.textContent = '';
-      wrap.appendChild(selectInput('Destinazione', [['page', 'Pagina del sito'], ['anchor', 'Punto di questa pagina'], ['book', 'Prenotazione'], ['url', 'Indirizzo esterno']], to.kind, function (k) {
+      var isPdf = to.kind === 'url' && /^\/media\/[a-f0-9]{24}\.pdf$/.test(to.href || '');
+      wrap.appendChild(selectInput('Destinazione', [['page', 'Pagina del sito'], ['anchor', 'Punto di questa pagina'], ['book', 'Prenotazione'], ['url', 'Indirizzo esterno'], ['pdf', 'Documento PDF della libreria']], isPdf ? 'pdf' : to.kind, function (k) {
+        if (k === 'pdf') { pickMedia({ kind: 'pdf' }, function (m) { to = { kind: 'url', href: m.url }; onChange(to); render(); }); return; }
         to = k === 'page' ? { kind: 'page', key: (se.linkTargets[0] || {}).key || '' } : k === 'anchor' ? { kind: 'anchor', anchor: '' } : k === 'book' ? { kind: 'book' } : { kind: 'url', href: 'https://' };
         onChange(to); render();
       }));
@@ -1357,6 +1373,9 @@
         wrap.appendChild(selectInput('Con la professionista già scelta', [['', 'Nessuna (sceglie chi prenota)']].concat(se.pros.map(function (p) { return [p.slug, p.name]; })), to.pro || '', function (v) {
           if (v) to.pro = v; else delete to.pro; onChange(to);
         }));
+      } else if (isPdf) {
+        wrap.appendChild(el('p', { class: 'hint', text: 'Documento: ' + to.href + ' (si apre in una nuova scheda).' }));
+        wrap.appendChild(el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Scegli un altro PDF', onclick: function () { pickMedia({ kind: 'pdf' }, function (m) { to = { kind: 'url', href: m.url }; onChange(to); render(); }); } }));
       } else {
         var hint = el('span', { class: 'hint' });
         var f = textInput('Indirizzo (si apre in una nuova scheda)', to.href || '', 500, function (v) {
@@ -1428,71 +1447,273 @@
   }
   function emptyData(fields) { var d = {}; fields.forEach(function (f) { d[f.name] = emptyValue(f); }); return d; }
 
-  // ---------- images: resized in the browser, checked again by the server ----------
-  function imageUrl(id, w) { return id.indexOf('static-') === 0 ? '/assets/img/' + id.slice(7) + '-' + w + '.webp' : '/media/' + id + '-' + w + '.webp'; }
+  // ---------- media: photos converted in the browser (the original never leaves the computer) ----------
+  // Research 20: WebP q 0.80 + JPEG q 0.82; widths per use; never wider than the photo itself.
+  var ROLE_WIDTHS = { content: [480, 800, 1200], wide: [640, 960, 1280, 1920, 2560] };
+  var ROLE_FALLBACK = { content: 800, wide: 1280 };
+  var ROLE_NAMES = { content: 'Foto o immagine nel testo', wide: 'Immagine a tutta larghezza', social: 'Immagine per i social' };
+  var WEBP_Q = 0.80;
+  var JPEG_Q = 0.82;
+  var MAX_INPUT = 40 * 1024 * 1024;
+  // Test switch: ?webp=wasm forces the WebAssembly encoder (what Safari uses).
+  var FORCE_WASM = /[?&]webp=wasm\b/.test(location.search);
 
-  function resizeTo(img, width, type, quality) {
-    var w = Math.min(width, img.naturalWidth);
-    var h = Math.round(img.naturalHeight * w / img.naturalWidth);
+  /** Thumbnail URL of an image value stored in a block (library, older uploads, files in /assets/img). */
+  function thumbUrl(v) {
+    if (!v || !v.id) return '';
+    if (v.id.indexOf('static-') === 0) return '/assets/img/' + v.id.slice(7) + '-480.webp';
+    if (v.social) return '/media/' + v.id + '-1200x630.jpg';
+    if (v.variants && v.variants.length) return '/media/' + v.id + '-' + v.variants[0] + '.' + (v.format === 'jpg' ? 'jpg' : 'webp');
+    return '/media/' + v.id + '-480.webp';
+  }
+  function kb(n) { return n >= 1048576 ? (n / 1048576).toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+
+  // Decode the photo with the right rotation (EXIF). Big phone photos are reduced right away to the widest
+  // version needed (sizes depend on the width), so the browser never holds the full 12–48 MP picture.
+  function decodePhoto(file, maxWidth) {
+    if (!window.createImageBitmap) return Promise.reject(new Error('Questo browser è troppo vecchio per preparare le foto. Aggiornalo e riprova.'));
+    return createImageBitmap(file, { imageOrientation: 'from-image' }).then(function (bmp) {
+      if (bmp.width <= maxWidth) return bmp;
+      var k = maxWidth / bmp.width;
+      var opts = { imageOrientation: 'from-image', resizeWidth: Math.round(bmp.width * k), resizeHeight: Math.round(bmp.height * k), resizeQuality: 'high' };
+      bmp.close && bmp.close();
+      return createImageBitmap(file, opts);
+    }).catch(function () {
+      throw new Error('Non riesco ad aprire questa foto. Se viene dall\'iPhone (HEIC), esportala in JPG e riprova.');
+    });
+  }
+
+  // Resize with good quality everywhere: halve step by step, then draw at the final size.
+  function drawScaled(src, sx, sy, sw, sh, w, h, jpeg) {
+    var cur = src; var cx = sx; var cy = sy; var cw = sw; var ch = sh;
+    while (cw / 2 >= w && ch / 2 >= h) {
+      var half = document.createElement('canvas');
+      half.width = Math.round(cw / 2); half.height = Math.round(ch / 2);
+      var hc = half.getContext('2d');
+      hc.imageSmoothingEnabled = true; hc.imageSmoothingQuality = 'high';
+      hc.drawImage(cur, cx, cy, cw, ch, 0, 0, half.width, half.height);
+      cur = half; cx = 0; cy = 0; cw = half.width; ch = half.height;
+    }
     var c = document.createElement('canvas');
     c.width = w; c.height = h;
     var ctx = c.getContext('2d');
-    if (type === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); }
-    ctx.drawImage(img, 0, 0, w, h);
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    if (jpeg) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); }
+    ctx.drawImage(cur, cx, cy, cw, ch, 0, 0, w, h);
+    return c;
+  }
+
+  function toBlob(canvas, type, q) {
+    return new Promise(function (resolve) { canvas.toBlob(function (b) { resolve(b); }, type, q); });
+  }
+  function blobToBase64(b) {
     return new Promise(function (resolve, reject) {
-      c.toBlob(function (b) {
-        if (!b || b.type !== type) { reject(new Error('Questo browser non riesce a preparare l\'immagine. Prova con Chrome, Edge o Firefox aggiornati.')); return; }
-        if (b.size > 1400000 && quality > 0.5) { resolve(resizeTo(img, width, type, quality - 0.15)); return; }
-        var fr = new FileReader();
-        fr.onload = function () { resolve({ data: String(fr.result).split(',')[1], w: w, h: h }); };
-        fr.onerror = function () { reject(new Error('Lettura dell\'immagine non riuscita')); };
-        fr.readAsDataURL(b);
-      }, type, quality);
+      var fr = new FileReader();
+      fr.onload = function () { resolve(String(fr.result).split(',')[1]); };
+      fr.onerror = function () { reject(new Error('Lettura del file non riuscita')); };
+      fr.readAsDataURL(b);
     });
   }
 
-  function uploadImage(file) {
-    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return Promise.reject(new Error('Usa una foto JPG, PNG o WebP.'));
-    if (file.size > 25 * 1024 * 1024) return Promise.reject(new Error('La foto è troppo grande (massimo 25 MB).'));
+  // WebP: the browser's own encoder when it really makes WebP; otherwise libwebp in a worker (Safari).
+  var nativeWebp = null;
+  function canNativeWebp() {
+    if (FORCE_WASM) return Promise.resolve(false);
+    if (nativeWebp !== null) return Promise.resolve(nativeWebp);
+    var c = document.createElement('canvas'); c.width = 2; c.height = 2;
+    return toBlob(c, 'image/webp', 0.8).then(function (b) { nativeWebp = !!(b && b.type === 'image/webp'); return nativeWebp; });
+  }
+  var worker = null; var jobs = {}; var jobId = 0;
+  function wasmWebp(canvas, q) {
     return new Promise(function (resolve, reject) {
-      var img = new Image();
-      var url = URL.createObjectURL(file);
-      img.onload = function () { URL.revokeObjectURL(url); resolve(img); };
-      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('Il file non sembra un\'immagine valida.')); };
-      img.src = url;
-    }).then(function (img) {
-      if (img.naturalWidth < 300 || img.naturalHeight < 300) throw new Error('La foto è troppo piccola: serve almeno 300 × 300 pixel.');
-      return Promise.all([resizeTo(img, 480, 'image/webp', 0.82), resizeTo(img, 800, 'image/webp', 0.82), resizeTo(img, 800, 'image/jpeg', 0.85)]);
-    }).then(function (v) {
-      return api('POST', '/site/images', { '480.webp': v[0].data, '800.webp': v[1].data, '800.jpg': v[2].data });
+      try {
+        if (!worker) {
+          worker = new Worker('/admin/vendor/jsquash/webp-worker.js', { type: 'module' });
+          worker.onmessage = function (e) {
+            var j = jobs[e.data.id]; delete jobs[e.data.id];
+            if (!j) return;
+            if (e.data.error) j.reject(new Error(e.data.error)); else j.resolve(new Blob([e.data.buffer], { type: 'image/webp' }));
+          };
+          worker.onerror = function (e) {
+            Object.keys(jobs).forEach(function (k) { jobs[k].reject(new Error(e.message || 'convertitore non disponibile')); delete jobs[k]; });
+            worker = null;
+          };
+        }
+        var img = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
+        jobId += 1;
+        jobs[jobId] = { resolve: resolve, reject: reject };
+        worker.postMessage({ id: jobId, data: img.data, width: img.width, height: img.height, quality: q * 100 }, [img.data.buffer]);
+      } catch (err) { reject(err); }
+    });
+  }
+  function encodeWebp(canvas, q) {
+    return canNativeWebp().then(function (ok) {
+      if (ok) return toBlob(canvas, 'image/webp', q).then(function (b) { if (b && b.type === 'image/webp') return b; return wasmWebp(canvas, q); });
+      return wasmWebp(canvas, q);
+    });
+  }
+  // A version over 1.4 MB is encoded again a little lighter.
+  function encodeFit(canvas, type, q) {
+    var job = type === 'image/webp' ? encodeWebp(canvas, q) : toBlob(canvas, 'image/jpeg', q);
+    return job.then(function (b) {
+      if (!b) throw new Error('Preparazione della foto non riuscita');
+      if (b.size > 1400000 && q > 0.5) return encodeFit(canvas, type, q - 0.12);
+      return b;
     });
   }
 
-  function imageEditor(value, onChange) {
+  /**
+   * Prepare every version for a use ("role") and upload them. onStep(text) shows the progress.
+   * Returns the library item from the server.
+   */
+  function uploadPhoto(file, role, onStep) {
+    onStep = onStep || function () {};
+    if (!/^image\/(jpeg|png|webp|heic|heif)$/i.test(file.type || '') && !/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name || '')) return Promise.reject(new Error('Usa una foto JPG, PNG o WebP.'));
+    if (file.size > MAX_INPUT) return Promise.reject(new Error('La foto è troppo grande (massimo 40 MB).'));
+    var social = role === 'social';
+    var widths = social ? [] : ROLE_WIDTHS[role];
+    onStep('Apro la foto…');
+    return decodePhoto(file, social ? 2400 : Math.max.apply(null, widths)).then(function (bmp) {
+      var W = bmp.width; var H = bmp.height;
+      var files = {}; var plan = [];
+      if (social) {
+        if (W < 600 || H < 315) throw new Error('Per i social serve una foto di almeno 600 × 315 pixel.');
+        // Centre crop to 1200 × 630 (1.91:1).
+        var r = 1200 / 630; var cw = W; var ch = Math.round(W / r);
+        if (ch > H) { ch = H; cw = Math.round(H * r); }
+        plan.push({ name: '1200x630.jpg', type: 'image/jpeg', q: JPEG_Q, canvas: function () { return drawScaled(bmp, Math.round((W - cw) / 2), Math.round((H - ch) / 2), cw, ch, 1200, 630, true); } });
+      } else {
+        var usable = widths.filter(function (w) { return w <= W; });
+        if (!usable.length) throw new Error('La foto è troppo piccola: serve almeno ' + widths[0] + ' pixel di larghezza.');
+        var fb = usable.indexOf(ROLE_FALLBACK[role]) >= 0 ? ROLE_FALLBACK[role] : usable[usable.length - 1];
+        usable.forEach(function (w) {
+          plan.push({ name: w + '.webp', w: w, type: 'image/webp', q: WEBP_Q });
+        });
+        plan.push({ name: fb + '.jpg', w: fb, type: 'image/jpeg', q: JPEG_Q });
+        plan.forEach(function (x) { var h = Math.round(H * x.w / W); x.canvas = function () { return drawScaled(bmp, 0, 0, W, H, x.w, h, x.type === 'image/jpeg'); }; });
+      }
+      var n = 0; var total = 0; var noWebp = false;
+      function step(i) {
+        if (i >= plan.length) return Promise.resolve();
+        var x = plan[i];
+        n += 1;
+        onStep('Preparo la versione ' + n + ' di ' + plan.length + ' (' + x.name.replace('.', ' ') + ')…');
+        var c = x.canvas();
+        var job = encodeFit(c, x.type, x.q).catch(function (err) {
+          if (x.type !== 'image/webp') throw err;
+          // No WebP encoder at all (e.g. WebAssembly blocked): JPEG versions instead, the page still gets every size.
+          noWebp = true;
+          return encodeFit(c, 'image/jpeg', JPEG_Q).then(function (b) { x.name = x.w + '.jpg'; return b; });
+        });
+        return job.then(function (b) {
+          total += b.size;
+          return blobToBase64(b).then(function (data) { files[x.name] = data; return step(i + 1); });
+        });
+      }
+      return step(0).then(function () {
+        bmp.close && bmp.close();
+        // Keep the upload under the server's limit: drop the widest versions if needed.
+        var order = Object.keys(files).filter(function (k) { return /\.webp$/.test(k); }).sort(function (a, b) { return parseInt(b, 10) - parseInt(a, 10); });
+        function size() { return Object.keys(files).reduce(function (t, k) { return t + files[k].length * 0.75; }, 0); }
+        while (size() > 4200000 && order.length > 1) delete files[order.shift()];
+        onStep('Carico ' + kb(size()) + (noWebp ? ' (versioni JPEG)' : '') + '…');
+        return api('POST', '/site/media', { role: role, name: file.name, files: files });
+      });
+    }).then(function (res) { return res.media; });
+  }
+
+  function uploadPdf(file, onStep) {
+    if (!/\.pdf$/i.test(file.name || '') && file.type !== 'application/pdf') return Promise.reject(new Error('Scegli un file PDF.'));
+    if (file.size > 4 * 1024 * 1024) return Promise.reject(new Error('Il PDF è troppo grande (massimo 4 MB). Prova a esportarlo con una qualità inferiore.'));
+    (onStep || function () {})('Carico il PDF…');
+    return blobToBase64(file).then(function (data) { return api('POST', '/site/media', { kind: 'pdf', name: file.name, data: data }); })
+      .then(function (res) { return res.media; });
+  }
+
+  function usedText(m) {
+    if (!m.usedIn || !m.usedIn.length) return 'Non usato in nessuna pagina';
+    return 'Usato in: ' + m.usedIn.map(function (u) {
+      var where = u.type === 'page' ? pageName(u.key) + (u.lang ? ' (' + u.lang.toUpperCase() + ')' : '') : u.title + (u.lang ? ' (' + u.lang.toUpperCase() + ')' : '');
+      return where + (u.published ? '' : ' – solo bozza');
+    }).join(', ');
+  }
+
+  function mediaCard(m, actions) {
+    var visual = m.kind === 'pdf'
+      ? el('div', { class: 'md-pdf', 'aria-hidden': 'true', text: 'PDF' })
+      : el('img', { class: 'md-thumb', src: m.thumb, alt: '', loading: 'lazy' });
+    var meta = m.kind === 'pdf' ? 'PDF · ' + kb(m.bytes) : ROLE_NAMES[m.role] + ' · ' + m.width + ' × ' + m.height + ' · ' + kb(m.bytes) + ' in ' + m.variants.length + (m.variants.length === 1 ? ' versione' : ' versioni');
+    return el('li', { class: 'md-card' }, [visual, el('div', { class: 'md-body' }, [
+      el('strong', { class: 'md-name', text: m.name || '(senza nome)' }),
+      el('span', { class: 'hint', text: meta }),
+      el('span', { class: 'hint md-used', text: usedText(m) }),
+      actions ? el('div', { class: 'md-actions' }, actions) : null,
+    ])]);
+  }
+
+  /** Choose a file from the library. filter: { kind: 'image'|'pdf', role? } */
+  function pickMedia(filter, onPick) {
+    var dlg = el('dialog', { class: 'dlg md-dialog' });
+    var list = el('ul', { class: 'md-grid', role: 'list' }, [el('li', { class: 'hint', text: 'Carico la libreria…' })]);
+    dlg.appendChild(el('div', { class: 'dlg-inner' }, [
+      el('div', { class: 'dlg-head' }, [el('h2', { text: filter.kind === 'pdf' ? 'Scegli un PDF' : 'Scegli un\'immagine' }),
+        el('button', { type: 'button', class: 'round', 'aria-label': 'Chiudi', text: '×', onclick: function () { dlg.close(); } })]),
+      filter.role ? el('p', { class: 'hint', text: 'Solo i file caricati come «' + ROLE_NAMES[filter.role] + '».' }) : null,
+      list,
+    ]));
+    dlg.addEventListener('close', function () { dlg.remove(); });
+    document.body.appendChild(dlg);
+    dlg.showModal();
+    api('GET', '/site/media').then(function (res) {
+      var items = res.media.filter(function (m) { return m.kind === filter.kind && (!filter.role || m.role === filter.role); });
+      list.textContent = '';
+      if (!items.length) { list.appendChild(el('li', { class: 'hint', text: 'Nessun file adatto nella libreria. Caricane uno nuovo.' })); return; }
+      items.forEach(function (m) {
+        list.appendChild(mediaCard(m, [el('button', { type: 'button', class: 'btn btn-primary btn-small', text: 'Usa questo', onclick: function () { dlg.close(); onPick(m); } })]));
+      });
+    }).catch(function (e) { list.textContent = ''; list.appendChild(el('li', { class: 'form-error', text: e.message })); });
+  }
+
+  /** Image field: choose from the library or upload a new one; then the description for who can't see it. */
+  function imageEditor(value, onChange, opts) {
+    opts = opts || {};
+    var role = opts.role || 'content';
+    var lang = se.page ? se.page.lang : 'it';
     var box = el('div', { class: 'se-image' });
+    function useItem(m) {
+      var v = Object.assign({}, m.value);
+      v.alt = (value && value.alt) || (lang === 'en' ? m.altEn : m.altIt) || '';
+      v.decorative = value ? !!value.decorative : false;
+      value = v; onChange(value); render();
+    }
     function render() {
       box.textContent = '';
       var status = el('p', { class: 'status', role: 'status' });
-      var file = el('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', class: 'se-file', 'aria-label': 'Scegli una foto' });
+      var file = el('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', class: 'se-file', 'aria-label': 'Carica una nuova foto' });
       file.addEventListener('change', function () {
         if (!file.files[0]) return;
-        status.className = 'status'; status.textContent = 'Preparo e carico la foto…';
-        uploadImage(file.files[0]).then(function (r) {
-          value = { id: r.id, w: r.w, h: r.h, alt: value ? value.alt : '', decorative: value ? !!value.decorative : false };
-          onChange(value); render();
+        status.className = 'status';
+        uploadPhoto(file.files[0], role, function (t) { status.textContent = t; }).then(function (m) {
+          status.textContent = 'Fatto: ' + m.variants.length + ' versioni, ' + kb(m.bytes) + ' in tutto.';
+          useItem(m);
         }).catch(function (e) { status.className = 'status form-error'; status.textContent = e.message; });
       });
+      var pick = el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Scegli dalla libreria', onclick: function () { pickMedia({ kind: 'image', role: role }, useItem); } });
+      var upload = el('label', { class: 'btn btn-ghost btn-small se-file-label' }, [value && value.id ? 'Carica un\'altra foto' : 'Carica nuova', file]);
       if (value && value.id) {
-        box.appendChild(el('img', { class: 'se-thumb', src: imageUrl(value.id, 480), alt: '' }));
-        box.appendChild(textInput('Descrizione per chi non vede l\'immagine (testo alternativo)', value.alt, 200, function (v) { value.alt = v; onChange(value); }, { required: !value.decorative, hint: 'Per esempio: «Elsa Salvati sorride, seduta alla scrivania».' }));
-        box.appendChild(checkInput('Immagine decorativa (non serve descriverla)', value.decorative, function (on) { value.decorative = on; onChange(value); render(); }));
-        box.appendChild(el('div', { class: 'cta-row' }, [
-          el('label', { class: 'btn btn-ghost btn-small se-file-label' }, ['Cambia foto', file]),
-          el('button', { type: 'button', class: 'btn btn-danger btn-small', text: 'Togli la foto', onclick: function () { if (window.confirm('Togliere la foto da questo blocco?')) { value = null; onChange(null); render(); } } }),
+        box.appendChild(el('img', { class: 'se-thumb', src: thumbUrl(value), alt: '' }));
+        if (!value.social) {
+          box.appendChild(textInput('Descrizione per chi non vede l\'immagine (testo alternativo)', value.alt, 200, function (v) { value.alt = v; onChange(value); }, { required: !value.decorative, hint: 'Per esempio: «Elsa Salvati sorride, seduta alla scrivania».' }));
+          box.appendChild(checkInput('Immagine decorativa (non serve descriverla)', value.decorative, function (on) { value.decorative = on; onChange(value); render(); }));
+        }
+        box.appendChild(el('div', { class: 'cta-row' }, [pick, upload,
+          el('button', { type: 'button', class: 'btn btn-danger btn-small', text: 'Togli', onclick: function () { if (window.confirm('Togliere l\'immagine da qui? Resta nella libreria.')) { value = null; onChange(null); render(); } } }),
         ]));
       } else {
-        box.appendChild(el('label', { class: 'btn btn-ghost btn-small se-file-label' }, ['Scegli una foto', file]));
-        box.appendChild(el('p', { class: 'hint', text: 'JPG, PNG o WebP. La foto viene ridimensionata prima del caricamento.' }));
+        box.appendChild(el('div', { class: 'cta-row' }, [pick, upload]));
+        box.appendChild(el('p', { class: 'hint', text: role === 'social'
+          ? 'Viene tagliata al centro a 1200 × 630 pixel, la misura chiesta da Facebook, LinkedIn e WhatsApp.'
+          : 'JPG, PNG o WebP. Il sito crea da solo le misure giuste per ogni schermo; l\'originale non viene caricato.' }));
       }
       box.appendChild(status);
     }
@@ -1511,7 +1732,7 @@
       case 'select': return selectInput(f.label, f.options, v, set);
       case 'bool': return checkInput(f.label, v, set);
       case 'rich': return el('div', { class: 'field se-field' }, [el('span', { class: 'label', text: f.label + (f.required ? ' *' : '') }), richEditor(v, { multiline: f.multiline !== false, max: f.max, label: f.label }, set)]);
-      case 'image': return el('div', { class: 'field se-field' }, [el('span', { class: 'label', text: f.label }), imageEditor(v, set)]);
+      case 'image': return el('div', { class: 'field se-field' }, [el('span', { class: 'label', text: f.label }), imageEditor(v, set, { role: f.role || 'content' })]);
       case 'link': return linkEditor(v, { optional: true, label: f.label }, set);
       case 'button': return linkEditor(v, { optional: true, label: f.label, styles: f.styles }, set);
       case 'links': case 'buttons': {
@@ -1604,6 +1825,9 @@
       el('span', { class: 'se-langs' }, [gBtn('it', 'IT', 'Intestazione e piè di pagina, italiano'), gBtn('en', 'EN', 'Intestazione e piè di pagina, inglese')])]));
     gl.appendChild(el('li', { class: 'se-pageitem' }, [el('span', { class: 'se-pagename', text: 'Dati dello studio' }),
       el('span', { class: 'se-langs' }, [gBtn('studio', 'Apri', 'Dati dello studio')])]));
+    var mediaCurrent = se.mode === 'media';
+    gl.appendChild(el('li', { class: 'se-pageitem' }, [el('span', { class: 'se-pagename', text: 'Immagini e PDF' }),
+      el('span', { class: 'se-langs' }, [el('button', { type: 'button', class: 'se-lang' + (mediaCurrent ? ' current' : ''), 'aria-current': mediaCurrent ? 'page' : null, 'aria-label': 'Libreria di immagini e PDF', onclick: openMedia, text: 'Apri' })])]));
     box.appendChild(el('h2', { class: 'se-h', text: 'Tutto il sito' }));
     box.appendChild(gl);
     box.appendChild(el('h2', { class: 'se-h', text: 'Pagine' }));
@@ -1634,10 +1858,11 @@
       sel.appendChild(el('option', { value: 'g:en', text: 'Intestazione e piè di pagina · EN' }));
       sel.appendChild(el('option', { value: 'g:studio', text: 'Dati dello studio' }));
     }
+    sel.appendChild(el('option', { value: 'media', text: 'Immagini e PDF' }));
     siteGroups().forEach(function (g) {
       ['it', 'en'].forEach(function (l) { if (g[l]) sel.appendChild(el('option', { value: g[l].id, text: pageName(g.key) + ' · ' + l.toUpperCase() + (g[l].hasChanges ? ' •' : '') })); });
     });
-    sel.value = se.mode === 'global' ? 'g:' + se.gscope : (se.page ? se.page.id : '');
+    sel.value = se.mode === 'media' ? 'media' : se.mode === 'global' ? 'g:' + se.gscope : (se.page ? se.page.id : '');
   }
 
   function loadGlobals() {
@@ -1731,6 +1956,7 @@
   function renderEditor() {
     var p = se.page;
     var global = se.mode === 'global';
+    $('[data-se-media]').hidden = true;
     $('[data-se-empty]').hidden = !!(p || global);
     $('[data-se-editor]').hidden = !(p || global);
     $('[data-se-tabs]').hidden = global;
@@ -1773,7 +1999,7 @@
       cTitle.textContent = cut(se.draft.title, 80);
       cDesc.textContent = cut(se.draft.description, 120);
       cImg.textContent = '';
-      if (seo.image && seo.image.id) cImg.appendChild(el('img', { src: imageUrl(seo.image.id, 800), alt: '' }));
+      if (seo.image && seo.image.id) cImg.appendChild(el('img', { src: thumbUrl(seo.image), alt: '' }));
       else cImg.appendChild(el('span', { class: 'hint', text: 'Nessuna immagine: i social useranno quella predefinita del sito.' }));
     }
     box.appendChild(el('p', { class: 'hint', text: 'Come la pagina compare su Google e quando qualcuno la condivide. L\'indirizzo ' + se.page.path + ' non si cambia da qui.' }));
@@ -1784,7 +2010,7 @@
       el('span', { class: 'se-g-url', text: domain + se.page.path }), gTitle, gDesc,
     ]));
     box.appendChild(el('div', { class: 'field se-field' }, [el('span', { class: 'label', text: 'Immagine per la condivisione sui social' }),
-      imageEditor(seo.image, function (v) { seo.image = v; refresh(); changed(); })]));
+      imageEditor(seo.image, function (v) { seo.image = v; refresh(); changed(); }, { role: 'social' })]));
     box.appendChild(el('p', { class: 'se-sub', text: 'Anteprima della condivisione' }));
     box.appendChild(el('div', { class: 'se-card' }, [cImg, el('div', { class: 'se-card-text' }, [el('span', { class: 'se-g-url', text: domain }), cTitle, cDesc])]));
     var warn = el('p', { class: 'status form-error', role: 'status' });
@@ -1793,6 +2019,102 @@
     box.appendChild(warn);
     warnNoindex();
     refresh();
+  }
+
+  // ---------- media library: every image and PDF, reusable on any page ----------
+  function openMedia() {
+    return flushSave().then(function () {
+      se.mode = 'media';
+      hideBanner();
+      $('[data-se-empty]').hidden = true;
+      $('[data-se-editor]').hidden = true;
+      $('[data-se-media]').hidden = false;
+      renderPageList();
+      return renderMedia();
+    });
+  }
+
+  function renderMedia() {
+    var box = $('[data-se-media]');
+    box.textContent = '';
+    var status = el('p', { class: 'status', role: 'status', 'aria-live': 'polite' });
+    var roleSel = el('select', { id: 'md-role' }, ['content', 'wide', 'social'].map(function (r) { return el('option', { value: r, text: ROLE_NAMES[r] }); }));
+    var photo = el('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', class: 'se-file', 'aria-label': 'Carica un\'immagine' });
+    var pdf = el('input', { type: 'file', accept: 'application/pdf,.pdf', class: 'se-file', 'aria-label': 'Carica un PDF' });
+    function done(m) { status.className = 'status form-ok'; status.textContent = 'Caricato: ' + m.name + (m.kind === 'image' ? ' (' + m.variants.length + ' versioni, ' + kb(m.bytes) + ')' : ''); load(); }
+    function fail(e) { status.className = 'status form-error'; status.textContent = e.message; }
+    photo.addEventListener('change', function () {
+      if (!photo.files[0]) return;
+      status.className = 'status';
+      uploadPhoto(photo.files[0], roleSel.value, function (t) { status.textContent = t; }).then(done).catch(fail);
+      photo.value = '';
+    });
+    pdf.addEventListener('change', function () {
+      if (!pdf.files[0]) return;
+      status.className = 'status';
+      uploadPdf(pdf.files[0], function (t) { status.textContent = t; }).then(done).catch(fail);
+      pdf.value = '';
+    });
+    box.appendChild(el('div', { class: 'se-bar' }, [el('div', { class: 'se-bar-title' }, [
+      el('h2', { text: 'Immagini e PDF' }),
+      el('p', { class: 'hint', text: 'Carichi un file una volta e lo usi in tutte le pagine che vuoi. Delle foto il sito tiene solo le misure che servono a ogni schermo.' }),
+    ])]));
+    box.appendChild(el('div', { class: 'md-upload' }, [
+      el('div', { class: 'field' }, [el('label', { for: 'md-role', text: 'Dove userai la foto' }), roleSel]),
+      el('label', { class: 'btn btn-primary btn-small se-file-label' }, ['Carica un\'immagine', photo]),
+      el('label', { class: 'btn btn-ghost btn-small se-file-label' }, ['Carica un PDF (massimo 4 MB)', pdf]),
+    ]));
+    box.appendChild(status);
+    var grid = el('ul', { class: 'md-grid', role: 'list' }, [el('li', { class: 'hint', text: 'Carico la libreria…' })]);
+    box.appendChild(grid);
+    function rename(m) {
+      var name = window.prompt('Nome del file', m.name);
+      if (name === null) return;
+      api('PATCH', '/site/media/' + m.id, { name: name }).then(load).catch(fail);
+    }
+    function altDialog(m) {
+      var dlg = el('dialog', { class: 'dlg' });
+      var it = el('input', { id: 'md-alt-it', maxlength: 200 }); it.value = m.altIt || '';
+      var en = el('input', { id: 'md-alt-en', maxlength: 200 }); en.value = m.altEn || '';
+      var form = el('form', { class: 'dlg-inner', method: 'dialog' }, [
+        el('div', { class: 'dlg-head' }, [el('h2', { text: 'Descrizione predefinita' })]),
+        el('p', { class: 'hint', text: 'Proposta quando inserisci l\'immagine in una pagina; lì puoi sempre cambiarla.' }),
+        el('div', { class: 'field' }, [el('label', { for: 'md-alt-it', text: 'In italiano' }), it]),
+        el('div', { class: 'field' }, [el('label', { for: 'md-alt-en', text: 'In inglese' }), en]),
+        el('div', { class: 'cta-row dlg-actions' }, [
+          el('button', { type: 'submit', class: 'btn btn-primary btn-small', text: 'Salva' }),
+          el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Annulla', onclick: function () { dlg.close(); } }),
+        ]),
+      ]);
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        api('PATCH', '/site/media/' + m.id, { alt_it: it.value, alt_en: en.value }).then(function () { dlg.close(); load(); }).catch(fail);
+      });
+      dlg.appendChild(form);
+      dlg.addEventListener('close', function () { dlg.remove(); });
+      document.body.appendChild(dlg);
+      dlg.showModal();
+    }
+    function remove(m) {
+      if (m.usedIn && m.usedIn.length) { window.alert('Non si può cancellare: ' + usedText(m).replace('Usato in: ', 'è usato in ') + '. Toglilo prima da quelle pagine.'); return; }
+      if (!window.confirm('Cancellare «' + m.name + '»? Non si può annullare.')) return;
+      api('DELETE', '/site/media/' + m.id).then(function () { status.className = 'status form-ok'; status.textContent = 'Cancellato.'; load(); })
+        .catch(fail);
+    }
+    function load() {
+      return api('GET', '/site/media').then(function (res) {
+        grid.textContent = '';
+        if (!res.media.length) { grid.appendChild(el('li', { class: 'hint', text: 'La libreria è vuota.' })); return; }
+        res.media.forEach(function (m) {
+          var actions = [el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Rinomina', onclick: function () { rename(m); } })];
+          if (m.kind === 'image' && m.role !== 'social') actions.push(el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Descrizione', onclick: function () { altDialog(m); } }));
+          if (m.kind === 'pdf') actions.push(el('a', { class: 'btn btn-ghost btn-small', href: m.url, target: '_blank', rel: 'noopener', text: 'Apri' }));
+          actions.push(el('button', { type: 'button', class: 'btn btn-danger btn-small', text: 'Cancella', onclick: function () { remove(m); } }));
+          grid.appendChild(mediaCard(m, actions));
+        });
+      }).catch(function (e) { grid.textContent = ''; grid.appendChild(el('li', { class: 'form-error', text: e.message })); });
+    }
+    return load();
   }
 
   // ---------- header, footer and studio details ----------
@@ -2110,6 +2432,7 @@
 
   function renderPreview() {
     var body;
+    if (se.mode === 'media') return;
     if (se.mode === 'global') {
       if (!se.gpreview) return;
       var d = se.gpreview.draft;
@@ -2269,7 +2592,7 @@
     $('[data-se-pagesel]').addEventListener('change', function (e) {
       var v = e.target.value;
       if (!v) return;
-      if (v.indexOf('g:') === 0) openGlobal(v.slice(2)); else openSitePage(v);
+      if (v === 'media') openMedia(); else if (v.indexOf('g:') === 0) openGlobal(v.slice(2)); else openSitePage(v);
     });
     $$('[data-se-tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.getAttribute('data-se-tab')); }); });
     $('[data-se-add]').addEventListener('click', addBlockDialog);

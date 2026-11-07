@@ -36,3 +36,10 @@ test('limits on length and paragraphs', () => {
   assert.throws(() => cleanRich({ p: [[{ t: 'a' }], [{ t: 'b' }]] }, { multiline: false }), /troppi paragrafi/);
   assert.throws(() => cleanRich('<b>html</b>'), /formato/);
 });
+
+test('PDF documents of the media library open in a new tab; other /media paths are refused', () => {
+  const id = 'f'.repeat(24);
+  const v = cleanRich({ p: [[{ t: 'Scarica il modulo', href: `/media/${id}.pdf` }]] });
+  assert.equal(richBlocks(v), `<p><a href="/media/${id}.pdf" target="_blank" rel="noopener noreferrer">Scarica il modulo</a></p>`);
+  assert.throws(() => cleanRich({ p: [[{ t: 'x', href: '/media/../../etc/passwd.pdf' }]] }), RangeError);
+});

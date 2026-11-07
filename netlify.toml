@@ -25,6 +25,9 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
     Cache-Control = "no-store"
+    # Same policy as the site plus 'wasm-unsafe-eval': only the admin runs the WebP encoder
+    # (WebAssembly) that Safari needs to prepare photos. Never on the public pages.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'"
 
 [[headers]]
   for = "/en/book/manage/*"

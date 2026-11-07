@@ -273,3 +273,22 @@ code { background: var(--paper); border: 1px solid var(--line); padding: 8px 10p
 .se-block, .se-item, .se-list > *, .se-fields > * { min-width: 0; }
 .se-block-text { overflow: hidden; }
 .se-field input, .se-field select, .se-field textarea { max-width: 100%; min-width: 0; }
+
+/* ---------- media library ---------- */
+.md-upload { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin: 8px 0 4px; }
+.md-upload .field { margin: 0; min-width: 220px; }
+.md-grid { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.md-card { display: grid; grid-template-columns: 96px 1fr; gap: 12px; padding: 12px; border: 1px solid var(--line, #e5ddd2); border-radius: 14px; background: var(--paper, #fff); align-items: start; }
+.md-thumb { width: 96px; height: 96px; object-fit: cover; border-radius: 10px; background: #f1ece5; }
+.md-pdf { width: 96px; height: 96px; border-radius: 10px; display: grid; place-items: center; font-weight: 700; letter-spacing: .06em; background: #f6e7e2; color: #8a2d1b; }
+.md-body { display: grid; gap: 4px; min-width: 0; }
+.md-name { overflow-wrap: anywhere; }
+.md-used { font-size: .82rem; }
+.md-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.md-dialog .dlg-inner { width: min(860px, 92vw); max-height: 86vh; overflow: auto; }
+.se-image .cta-row { flex-wrap: wrap; gap: 8px; }
+@media (max-width: 600px) {
+  .md-grid { grid-template-columns: 1fr; }
+  .md-card { grid-template-columns: 72px 1fr; }
+  .md-thumb, .md-pdf { width: 72px; height: 72px; }
+}

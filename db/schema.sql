@@ -279,6 +279,33 @@ alter table site_pages enable row level security;
 alter table site_page_versions enable row level security;
 alter table site_images enable row level security;
 
+-- ---------- libreria dei media (immagini e PDF caricati dall'editor) ----------
+-- Si conservano solo le versioni pronte per il sito: l'originale non lascia mai il computer di chi carica.
+create table if not exists media (
+  id           text primary key check (id ~ '^[a-f0-9]{24}$'),
+  kind         text not null check (kind in ('image', 'pdf')),
+  name         text not null default '',
+  role         text check (role in ('content', 'wide', 'social')),
+  width        integer,
+  height       integer,
+  alt_it       text not null default '',
+  alt_en       text not null default '',
+  bytes_total  integer not null default 0,
+  created_at   timestamptz not null default now(),
+  created_by   bigint references users(id) on delete set null
+);
+create table if not exists media_files (
+  media_id  text not null references media(id) on delete cascade,
+  variant   text not null check (variant ~ '^([0-9]{3,4}\.(webp|jpg)|1200x630\.jpg|file\.pdf)$'),
+  mime      text not null check (mime in ('image/webp', 'image/jpeg', 'application/pdf')),
+  width     integer,
+  height    integer,
+  bytes     bytea not null,
+  primary key (media_id, variant)
+);
+alter table media enable row level security;
+alter table media_files enable row level security;
+
 -- Il sito usa solo la connessione diretta al database: i ruoli pubblici di Supabase non devono leggere nulla.
 do $$ begin
   if exists (select 1 from pg_roles where rolname = 'anon') and exists (select 1 from pg_roles where rolname = 'authenticated') then

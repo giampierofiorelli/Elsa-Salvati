@@ -623,3 +623,83 @@ test('page editor: images are checked from their bytes; fakes and oversized file
   assert.equal(r.status, 400);
   assert.equal((await media(new Request('https://studio.example.it/media/../../etc/passwd'))).status, 404);
 });
+
+// ---------- media library ----------
+
+const fakeJpeg = (w, h, pad = 200) => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xc0, 0x00, 0x11, 0x08, h >> 8, h & 255, w >> 8, w & 255]), Buffer.alloc(pad)]).toString('base64');
+const fakeWebp = (w, h) => {
+  const b = Buffer.alloc(40);
+  b.write('RIFF', 0); b.writeUInt32LE(32, 4); b.write('WEBPVP8X', 8); b.writeUInt32LE(10, 16);
+  b.writeUIntLE(w - 1, 24, 3); b.writeUIntLE(h - 1, 27, 3);
+  return b.toString('base64');
+};
+
+test('media library: upload once, see where it is used, delete only when unused; PDFs served safely', opts, async () => {
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  const media = (await import('../lib/media-api.mjs')).createMediaDelivery({ store: deps.store, mediaStore: deps.mediaStore });
+
+  // An image in the "content" role: WebP 480/800/1200 + JPEG 800, made in the browser.
+  let r = await as('admin')('POST', '/site/media', {
+    role: 'content', name: 'C:\\Foto\\elsa<script>.jpg', alt_it: 'Elsa Salvati', alt_en: 'Elsa Salvati',
+    files: { '480.webp': fakeWebp(480, 640), '800.webp': fakeWebp(800, 1067), '1200.webp': fakeWebp(1200, 1600), '800.jpg': fakeJpeg(800, 1067) },
+  });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  const img = r.body.media;
+  assert.equal(img.name, 'elsascript.jpg', 'no path, no markup in the name');
+  assert.deepEqual(img.value.variants, [480, 800, 1200]);
+  assert.equal(img.value.format, 'webp');
+  assert.equal(img.value.fallback, 800);
+  let f = await media(new Request(`https://studio.example.it/media/${img.id}-1200.webp`));
+  assert.equal(f.status, 200);
+  assert.equal(f.headers.get('content-type'), 'image/webp');
+  assert.match(f.headers.get('cache-control'), /immutable/);
+
+  // Wrong width, wrong type, unknown version, mixed proportions, no JPEG fallback: refused.
+  const bad = async (files, role = 'content') => (await as('admin')('POST', '/site/media', { role, name: 'x.jpg', files })).status;
+  assert.equal(await bad({ '800.webp': fakeWebp(790, 1067), '800.jpg': fakeJpeg(800, 1067) }), 400);
+  assert.equal(await bad({ '800.webp': fakeJpeg(800, 1067), '800.jpg': fakeJpeg(800, 1067) }), 400);
+  assert.equal(await bad({ '333.webp': fakeWebp(333, 400), '800.jpg': fakeJpeg(800, 1067) }), 400);
+  assert.equal(await bad({ '480.webp': fakeWebp(480, 480), '800.jpg': fakeJpeg(800, 1067) }), 400);
+  assert.equal(await bad({ '800.webp': fakeWebp(800, 1067) }), 400);
+  assert.equal(await bad({ '1200x630.jpg': fakeJpeg(1200, 700) }, 'social'), 400);
+  assert.equal(await bad({ '800.jpg': fakeJpeg(800, 1067, 1_600_000) }), 413);
+
+  // Social image: one JPEG 1200×630.
+  r = await as('admin')('POST', '/site/media', { role: 'social', name: 'condivisione.jpg', files: { '1200x630.jpg': fakeJpeg(1200, 630) } });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  assert.deepEqual([r.body.media.value.w, r.body.media.value.h, r.body.media.value.social], [1200, 630, true]);
+
+  // PDF: checked from its bytes, served inline with a safe name.
+  const pdf = Buffer.from('%PDF-1.4\n1 0 obj << >> endobj\ntrailer << >>\n%%EOF\n').toString('base64');
+  r = await as('admin')('POST', '/site/media', { kind: 'pdf', name: 'Modulo consenso è.pdf', data: pdf });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  const doc = r.body.media;
+  assert.equal(doc.url, `/media/${doc.id}.pdf`);
+  f = await media(new Request(`https://studio.example.it${doc.url}`));
+  assert.equal(f.headers.get('content-type'), 'application/pdf');
+  assert.equal(f.headers.get('x-content-type-options'), 'nosniff');
+  assert.match(f.headers.get('content-disposition'), /^inline; filename="Modulo consenso _\.pdf"; filename\*=UTF-8''Modulo%20consenso%20%C3%A8\.pdf$/);
+  assert.equal((await as('admin')('POST', '/site/media', { kind: 'pdf', name: 'finto.pdf', data: Buffer.from('<html>not a pdf</html>').toString('base64') })).status, 400);
+  assert.equal((await as('admin')('POST', '/site/media', { kind: 'pdf', name: 'tronco.pdf', data: Buffer.from('%PDF-1.4 no end').toString('base64') })).status, 400);
+
+  // Used in a page draft: the list says where, and deleting is refused until it is removed.
+  await sql`update site_pages set draft = jsonb_set(draft, '{seo}', ${sql.json({ image: { id: img.id } })}) where key = 'prova' and lang = 'it'`;
+  r = await as('admin')('GET', '/site/media');
+  assert.equal(r.status, 200);
+  const listed = r.body.media.find((m) => m.id === img.id);
+  assert.deepEqual(listed.usedIn.map((u) => [u.key, u.lang, u.draft]), [['prova', 'it', true]]);
+  assert.match(listed.thumb, new RegExp(`/media/${img.id}-480\\.webp`));
+  r = await as('admin')('DELETE', `/site/media/${img.id}`);
+  assert.equal(r.status, 409);
+  assert.equal(r.body.usedIn[0].key, 'prova');
+  await sql`update site_pages set draft = draft - 'seo' where key = 'prova' and lang = 'it'`;
+  r = await as('admin')('DELETE', `/site/media/${img.id}`);
+  assert.equal(r.status, 200);
+  assert.equal((await media(new Request(`https://studio.example.it/media/${img.id}-800.jpg`))).status, 404);
+
+  // Rename and default alt text; an account without the editor permission cannot touch the library.
+  r = await as('admin')('PATCH', `/site/media/${doc.id}`, { name: 'Modulo.pdf', alt_it: 'Modulo' });
+  assert.equal(r.body.media.name, 'Modulo.pdf');
+  const log = (await as('admin')('GET', '/audit')).body.entries.map((e) => e.action);
+  assert.ok(log.includes('immagine caricata') && log.includes('immagine cancellata') && log.includes('PDF caricato'));
+});
