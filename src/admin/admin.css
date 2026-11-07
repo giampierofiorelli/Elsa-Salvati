@@ -749,3 +749,14 @@ body.is-editor .sb-scrim { z-index: 72; }
   .tb-actions { display: contents; }
   .usermenu { order: 2; }
 }
+
+/* Collapsed rail: logo only, the expand arrow takes its place on hover or focus (always shown on touch screens). */
+body.sb-rail .sb-brand { position: relative; flex-direction: row; justify-content: center; padding: 0 6px; min-height: 0; box-sizing: border-box; }
+body.sb-rail .sb-brand img { transition: opacity .15s; }
+body.sb-rail .sb-collapse { position: absolute; inset: 0; margin: auto; width: 40px; height: 40px; opacity: 0; transition: opacity .15s; }
+body.sb-rail .sb-brand:hover .sb-collapse, body.sb-rail .sb-collapse:focus-visible { opacity: 1; }
+body.sb-rail .sb-brand:hover img, body.sb-rail .sb-brand:focus-within img { opacity: 0; }
+@media (hover: none) {
+  body.sb-rail .sb-brand img { opacity: 0; }
+  body.sb-rail .sb-collapse { opacity: 1; }
+}

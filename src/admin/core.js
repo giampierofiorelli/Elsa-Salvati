@@ -382,7 +382,17 @@
     var t = closed ? 'Espandi il menu' : 'Riduci il menu';
     btn.setAttribute('aria-label', t); btn.title = t;
     btn.setAttribute('aria-expanded', String(!closed));
+    // Collapsed rail (not the phone drawer): the logo box is exactly as tall as the bar next to it, so the lines meet.
+    var drawer = mqPhoneNav.matches || (b.contains('is-editor') && mqEditorDrawer.matches);
+    var rail = closed && !drawer;
+    if (b.contains('sb-rail') !== rail) b.toggle('sb-rail', rail);
+    var brand = $('.sb-brand');
+    var bar = b.contains('is-editor') ? $('.ed-top') : $('.topbar');
+    brand.style.height = rail && bar && bar.offsetHeight ? bar.offsetHeight + 'px' : '';
   }
+  var mqPhoneNav = window.matchMedia('(max-width: 900px)');
+  var mqEditorDrawer = window.matchMedia('(max-width: 1180px)');
+  window.addEventListener('resize', function () { clearTimeout(syncCollapse.t); syncCollapse.t = setTimeout(syncCollapse, 100); });
   new MutationObserver(syncCollapse).observe(document.body, { attributes: true, attributeFilter: ['class'] });
   if (mqTablet.addEventListener) mqTablet.addEventListener('change', syncCollapse);
   syncCollapse();
