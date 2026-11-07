@@ -477,7 +477,36 @@ body.sb-mini .sb-item .badge { position: absolute; top: 2px; right: 6px; min-wid
 .admin [hidden] { display: none !important; }
 
 /* ---------- site editor: full-screen workspace ---------- */
-body.is-editor .sb, body.is-editor .main, body.is-editor .sb-scrim { display: none; }
+body.is-editor .main { display: none; }
+/* Inside the editor the admin menu stays: an icon rail on computers, a drawer on tablets and phones. */
+body.is-editor .sb { z-index: 75; }
+body.is-editor .sb-scrim { z-index: 72; }
+.ed-menu { display: none; }
+@media (min-width: 1181px) {
+  body.is-editor .editor { left: 64px; }
+  body.is-editor:not(.sb-wide) .sb { width: 64px; }
+  body.is-editor:not(.sb-wide) .sb-brand-text, body.is-editor:not(.sb-wide) .sb-label, body.is-editor:not(.sb-wide) .sb-h, body.is-editor:not(.sb-wide) .sb-soon { display: none; }
+  body.is-editor:not(.sb-wide) .sb-brand { flex-direction: column; padding: 12px 6px; gap: 8px; min-height: 60px; }
+  body.is-editor:not(.sb-wide) .sb-brand img { width: 28px; }
+  body.is-editor:not(.sb-wide) .sb-nav { padding: 4px 8px 16px; }
+  body.is-editor:not(.sb-wide) .sb-group { padding: 6px 0; }
+  body.is-editor:not(.sb-wide) .sb-item { justify-content: center; padding: 6px; min-height: 36px; }
+  body.is-editor:not(.sb-wide) .sb-item .badge { position: absolute; top: 1px; right: 2px; min-width: 16px; line-height: 16px; font-size: .62rem; padding: 0 4px; }
+  body.is-editor.sb-wide .sb { width: 264px; box-shadow: var(--shadow-lg); }
+}
+@media (max-width: 1180px) {
+  .ed-menu { display: inline-grid; }
+  body.is-editor .sb { transform: translateX(-100%); width: min(300px, 86vw); box-shadow: none; }
+  body.is-editor.nav-open .sb { transform: none; box-shadow: var(--shadow-lg); }
+  body.is-editor .sb-collapse { display: none; }
+  body.is-editor .sb-brand { flex-direction: row; padding: 16px 16px 16px 20px; }
+  body.is-editor .sb-brand-text, body.is-editor .sb-h { display: flex; }
+  body.is-editor .sb-h { display: block; }
+  body.is-editor .sb-label { display: block; }
+  body.is-editor .sb-soon { display: inline; }
+  body.is-editor .sb-item { justify-content: flex-start; padding: 6px 12px; }
+  body.is-editor .sb-item .badge { position: static; }
+}
 .editor { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; background: #ECE6DE; }
 .ed-top { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: var(--s2) var(--s3); background: var(--card); border-bottom: 1px solid var(--line); flex: none; }
 .ed-exit { display: inline-flex; align-items: center; gap: var(--s2); min-height: 38px; padding: 6px 12px 6px 8px; border-radius: 10px; color: var(--ink); text-decoration: none; font-weight: 500; font-size: .875rem; flex: none; border: 1px solid transparent; }
@@ -553,6 +582,18 @@ body.is-editor .sb, body.is-editor .main, body.is-editor .sb-scrim { display: no
 .se-refbox { background: #FAF6F0; border: 1px dashed var(--line); border-radius: 10px; padding: 10px 12px; font-size: .82rem; }
 .se-reflist { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; }
 .se-reflist .hint { display: block; }
+/* header and footer rows: shared by the whole site, not movable */
+.se-shared { background: #F7F3EE; border: 1px dashed #D6C8B8; }
+.se-shared:hover { background: #F2ECE4; }
+.se-blocks .se-shared:first-child { margin-bottom: 4px; }
+.se-blocks .se-shared:last-child { margin-top: 4px; }
+.se-shared .se-block-text strong { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.se-shared-ic { background: #fff; border: 1px solid var(--line); color: var(--muted); }
+.se-shared-tag { font: 600 .62rem/1 var(--sans); letter-spacing: .04em; text-transform: uppercase; padding: 3px 6px; border-radius: 6px; background: var(--blue-bg); color: var(--blue); }
+.se-backpage { position: sticky; top: -12px; z-index: 3; box-shadow: 0 0 0 6px var(--card); display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 0 0 12px; padding: 6px 10px 6px 6px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); font: 500 .85rem var(--sans); cursor: pointer; }
+.se-backpage:hover { background: var(--mint-soft); }
+.se-backpage strong { font-weight: 600; }
+.se-global-part.is-target { box-shadow: 0 0 0 2px var(--teal); }
 
 /* right: inspector */
 .ed-empty { text-align: center; padding: var(--s6) var(--s3); }

@@ -952,6 +952,7 @@
     }).then(function (res) {
       se.mode = 'page';
       se.page = res.page;
+      se.returnPage = res.page.id;
       se.draft = clone(res.page.draft);
       if (!se.draft.seo || typeof se.draft.seo !== 'object') se.draft.seo = { image: null, noindex: false };
       se.expected = res.page.draftUpdatedAt;
@@ -1190,7 +1191,7 @@
   }
 
   // ---------- header, footer and studio details ----------
-  function openGlobal(scope) {
+  function openGlobal(scope, part) {
     return flushSave().then(function () { return loadGlobals(); }).then(function () {
       if (!se.globals || !se.globals.scopes[scope]) { showBanner('Questa parte non è ancora disponibile.'); return null; }
       var s = se.globals.scopes[scope];
@@ -1206,15 +1207,45 @@
       // The preview shows a page of that language (the last one opened, else the home) with these header and footer.
       var lang = scope === 'en' ? 'en' : 'it';
       var target = se.page && se.page.lang === lang ? se.page : (se.pages.find(function (p) { return p.key === 'index' && p.lang === lang; }) || se.pages.find(function (p) { return p.lang === lang; }));
+      se.gpreview = target ? { id: target.id, draft: null } : null;
       renderEditor();
       renderPageList();
       syncHash();
+      if (part) focusGlobalPart(part);
       if (!target) return null;
       return api('GET', '/site/pages/' + target.id).then(function (res) {
+        if (se.mode !== 'global' || se.gscope !== scope) return;
         se.gpreview = { id: res.page.id, draft: res.page.draft };
         schedulePreview(0);
       });
     }).catch(function (e) { showBanner(e.message); });
+  }
+
+  // Opens the header or the footer section of the shared editor and brings it into view.
+  function focusGlobalPart(part) {
+    var box = $('[data-se-tab-global]');
+    $$('.se-global-part', box).forEach(function (d) {
+      var on = d.getAttribute('data-part') === part;
+      d.classList.toggle('is-target', on);
+      if (on) d.open = true;
+    });
+    var target = $('.se-global-part[data-part="' + part + '"]', box);
+    if (!target) return;
+    // The header is the first part: show the panel from the top, so "Torna alla pagina" stays in view.
+    var panel = target.closest('.ed-right');
+    if (part === 'header' && panel) panel.scrollTop = 0; else target.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    var sum = $('summary', target);
+    if (sum) sum.focus({ preventScroll: true });
+    clearTimeout(focusGlobalPart.t);
+    focusGlobalPart.t = setTimeout(function () { target.classList.remove('is-target'); }, 2400);
+  }
+
+  // The page to go back to from the shared parts: the one that was open, else the one in the preview.
+  function backPageId() {
+    var back = se.pages.find(function (p) { return p.id === se.returnPage; });
+    if (back && back.lang === se.gscope) return back.id;
+    var id = se.gpreview && se.gpreview.id;
+    return id && se.pages.some(function (p) { return p.id === id; }) ? id : null;
   }
 
   function renderGlobalEditor() {
@@ -1236,6 +1267,14 @@
     badge.className = 'se-badge' + (changes ? ' changes' : ' ok');
     var box = $('[data-se-tab-global]');
     box.textContent = '';
+    var backId = studio ? null : backPageId();
+    var backPage = backId && se.pages.find(function (p) { return p.id === backId; });
+    if (backPage) {
+      var twoLangs = se.pages.some(function (x) { return x.key === backPage.key && x.lang !== backPage.lang; });
+      box.appendChild(el('button', { type: 'button', class: 'se-backpage', 'data-se-backpage': true, onclick: function () { openSitePage(backPage.id); } }, [
+        icon('back', 16), el('span', { text: 'Torna alla pagina' }), el('strong', { text: pageName(backPage.key) + (twoLangs ? ' · ' + backPage.lang.toUpperCase() : '') }),
+      ]));
+    }
     box.appendChild(el('p', { class: 'hint', text: studio
       ? 'Telefono, email e WhatsApp compaiono in automatico nelle pagine e nel piè di pagina: cambiandoli qui cambiano ovunque.'
       : 'Il menu in alto e il piè di pagina sono uguali in tutte le pagine di questa lingua. L\'ordine delle voci è l\'ordine del menu.' }));
@@ -1244,7 +1283,7 @@
     sections.forEach(function (sec) {
       var data = studio ? se.gdata : (se.gdata[sec[0]] = se.gdata[sec[0]] || {});
       var fields = schema[sec[0]] || [];
-      var part = el('details', { class: 'se-global-part', open: true }, [el('summary', { text: sec[1] })]);
+      var part = el('details', { class: 'se-global-part', open: true, 'data-part': sec[0] }, [el('summary', { text: sec[1] })]);
       var wrap = el('div', { class: 'se-fields' });
       fields.forEach(function (f) {
         if (data[f.name] === undefined) data[f.name] = emptyValue(f);
@@ -1256,10 +1295,33 @@
     });
   }
 
+  // Header and footer: fixed rows at the ends of the list. They are shared by every page of the language,
+  // so a click opens their own editor instead of selecting a block.
+  function sharedRow(part) {
+    var label = part === 'header' ? 'Intestazione' : 'Piè di pagina';
+    return el('li', { class: 'se-block se-shared', 'data-se-shared': part }, [
+      el('div', { class: 'se-block-head' }, [
+        el('button', { type: 'button', class: 'se-block-pick', title: 'Modifica ' + label.toLowerCase() + ' (uguale in tutte le pagine)', onclick: function () { openShared(part); } }, [
+          el('span', { class: 'se-block-n se-shared-ic', 'aria-hidden': 'true' }, [icon('layout', 14)]),
+          el('span', { class: 'se-block-text' }, [
+            el('strong', {}, [label, el('span', { class: 'se-shared-tag', text: 'tutto il sito' })]),
+            el('span', { class: 'hint', text: part === 'header' ? 'Logo, menu e pulsante in alto' : 'Contatti, link e note in fondo' }),
+          ]),
+        ]),
+      ]),
+    ]);
+  }
+  function openShared(part) {
+    var lang = se.page ? se.page.lang : 'it';
+    if (se.page) se.returnPage = se.page.id;
+    return openGlobal(lang, part);
+  }
+
   function renderBlocks() {
     var box = $('[data-se-blocks]');
     box.textContent = '';
     var blocks = se.draft.blocks;
+    box.appendChild(sharedRow('header'));
     blocks.forEach(function (b, i) {
       var def = se.library[b.type] || { label: b.type, fields: [], bg: ['light'] };
       var open = se.selected === i;
@@ -1280,6 +1342,7 @@
       box.appendChild(item);
     });
     if (!blocks.length) box.appendChild(el('li', { class: 'empty', text: 'Nessun blocco. Aggiungine uno.' }));
+    box.appendChild(sharedRow('footer'));
     renderInspector();
   }
 
@@ -1532,7 +1595,7 @@
     var body;
     if (se.mode === 'media') return;
     if (se.mode === 'global') {
-      if (!se.gpreview) return;
+      if (!se.gpreview || !se.gpreview.draft) return;
       var d = se.gpreview.draft;
       body = { pageId: se.gpreview.id, title: d.title, description: d.description, seo: d.seo, blocks: d.blocks };
       if (se.gscope === 'studio') body.studio = se.gdata;
@@ -1554,7 +1617,7 @@
           try { f.contentWindow.scrollTo(0, y); } catch (e2) { /* ignore */ }
           // Clicking links inside the preview does nothing: it is only a picture of the page.
           try { f.contentDocument.addEventListener('click', function (ev) { if (ev.target.closest && ev.target.closest('a,button')) ev.preventDefault(); }, true); } catch (e3) { /* ignore */ }
-          if (se.mode === 'page') wirePreviewPick(f);
+          wirePreviewPick(f);
           fitFrame();
         };
         f.srcdoc = html;
@@ -1567,6 +1630,22 @@
   function wirePreviewPick(f) {
     try {
       var doc = f.contentDocument;
+      // Header and footer are shared by every page of the language: a click opens their editor.
+      [['header', doc.querySelector('.site-header')], ['footer', doc.querySelector('.site-footer')]].forEach(function (x) {
+        var n = x[1];
+        if (!n || se.mode === 'media' || (se.mode === 'global' && se.gscope === 'studio')) return;
+        n.title = (x[0] === 'header' ? 'Intestazione' : 'Piè di pagina') + ': uguale in tutte le pagine. Clic per modificarla.';
+        n.addEventListener('mouseenter', function () { n.style.outline = '2px solid rgba(31, 47, 58, .55)'; n.style.outlineOffset = '-2px'; n.style.cursor = 'pointer'; });
+        n.addEventListener('mouseleave', function () { n.style.outline = ''; });
+        n.addEventListener('click', function (ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          var dlg = $('[data-se-fullpreview]');
+          if (dlg.open) dlg.close();
+          if (se.mode === 'global') focusGlobalPart(x[0]); else openShared(x[0]);
+        });
+      });
+      if (se.mode !== 'page') return;
       var main = doc.querySelector('main') || doc.body;
       var secs = Array.prototype.filter.call(main.children, function (n) { return n.nodeName === 'SECTION'; });
       secs.forEach(function (sec, i) {

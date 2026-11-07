@@ -274,7 +274,7 @@
       var ul = el('ul', { class: 'sb-list', role: 'list' });
       items.forEach(function (r) {
         var meta = ROUTES[r];
-        var a = el('a', { href: '#/' + r, class: 'sb-item', 'data-route': r, title: meta.nav }, [icon(meta.icon), el('span', { class: 'sb-label', text: meta.nav })]);
+        var a = el('a', { href: '#/' + r, class: 'sb-item', 'data-route': r, title: meta.nav, 'aria-label': meta.nav + (meta.crumb && meta.crumb !== meta.nav ? ' (' + meta.crumb + ')' : '') }, [icon(meta.icon), el('span', { class: 'sb-label', text: meta.nav })]);
         if (meta.badge === 'req') a.appendChild(el('span', { class: 'badge', 'data-req-count': true, hidden: true, title: 'Richieste da gestire' }));
         if (meta.badge === 'pending') a.appendChild(el('span', { class: 'badge', 'data-pending-count': true, hidden: true, title: 'Richieste da accettare' }));
         if (meta.soon) a.appendChild(el('span', { class: 'sb-soon', text: 'presto' }));
@@ -345,18 +345,24 @@
   function closeNav() {
     document.body.classList.remove('nav-open', 'sb-wide');
     $('[data-menu-toggle]').setAttribute('aria-expanded', 'false');
+    $('[data-ed-menu]').setAttribute('aria-expanded', 'false');
     $('[data-scrim]').hidden = true;
   }
-  $('[data-menu-toggle]').addEventListener('click', function () {
+  // The same drawer opens from the top bar and, inside the site editor, from the editor's bar.
+  function toggleDrawer() {
     var open = !document.body.classList.contains('nav-open');
     document.body.classList.toggle('nav-open', open);
-    this.setAttribute('aria-expanded', String(open));
+    $('[data-menu-toggle]').setAttribute('aria-expanded', String(open));
+    $('[data-ed-menu]').setAttribute('aria-expanded', String(open));
     $('[data-scrim]').hidden = !open;
     if (open) { var first = $('.sb-item'); if (first) first.focus(); }
-  });
+  }
+  $('[data-menu-toggle]').addEventListener('click', toggleDrawer);
+  $('[data-ed-menu]').addEventListener('click', toggleDrawer);
   $('[data-scrim]').addEventListener('click', closeNav);
   $('[data-sb-collapse]').addEventListener('click', function () {
-    if (mqTablet.matches) {
+    // In the site editor the menu is an icon rail: the button opens it over the editor.
+    if (mqTablet.matches || document.body.classList.contains('is-editor')) {
       var wide = !document.body.classList.contains('sb-wide');
       document.body.classList.toggle('sb-wide', wide);
       $('[data-scrim]').hidden = !wide;
