@@ -939,3 +939,10 @@ html[data-palette]:not([data-palette="x"]) .lang-notice { background: var(--nigh
   .links-v4 .row-body { display: flex; align-items: center; justify-content: space-between; gap: 32px; max-width: none; }
   .links-v4 .row-links { margin-top: 0; flex: none; }
 }
+.area-who { font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: -2px 0 12px; }
+.anchor-alias { position: relative; top: -110px; display: block; height: 0; }
+[id] { scroll-margin-top: 110px; }
+.closing-v4-more { margin-top: 24px; color: rgba(250, 246, 240, .8); }
+.closing-v4-more a { color: var(--ivory); border-bottom: 1px solid rgba(250, 246, 240, .5); text-decoration: none; }
+.row { position: relative; }
+.anchor-alias { position: absolute; top: -110px; left: 0; height: 0; width: 0; }
