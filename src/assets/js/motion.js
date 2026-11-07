@@ -60,7 +60,21 @@
     });
   }
 
+  // Same treatment everywhere: every large heading rises line by line, every
+  // smaller heading fades up, unless it opts out (data-reveal="none") or sits in
+  // a part of the page that starts hidden (booking steps, menu).
+  function autoReveal() {
+    var skip = '.booking, .hdr-nav, [hidden], .loader, .lang-notice, .site-footer, form';
+    document.querySelectorAll('main h1, main h2').forEach(function (el) {
+      if (!el.hasAttribute('data-reveal') && !el.closest(skip)) el.setAttribute('data-reveal', 'lines');
+    });
+    document.querySelectorAll('main h3').forEach(function (el) {
+      if (!el.hasAttribute('data-reveal') && !el.closest(skip)) el.setAttribute('data-reveal', 'fade');
+    });
+  }
+
   function reveals() {
+    autoReveal();
     document.querySelectorAll('[data-reveal="lines"]').forEach(function (el) {
       if (!window.SplitText) {
         gsap.from(el, { autoAlpha: 0, y: 24, duration: 0.8, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 85%', once: true } });
