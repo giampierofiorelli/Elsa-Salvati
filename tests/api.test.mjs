@@ -1625,3 +1625,33 @@ test('role "tecnico": site, settings (read), aggregated statistics and log; ever
   const row = (await sql`select role, ics_token_hash, professional_id from users where id = ${exAdmin.id}`)[0];
   assert.deepEqual({ ...row }, { role: 'tecnico', ics_token_hash: null, professional_id: null });
 });
+
+test('DATA_KEY rotation: every encrypted column and the contact fingerprints move to the new key; resumable', opts, async () => {
+  const { rotate } = await import('../scripts/rotate-data-key.mjs');
+  const { createVault } = await import('../lib/crypto.mjs');
+  const { randomBytes } = await import('node:crypto');
+  const oldVault = deps.vault;
+  const newKey = randomBytes(32).toString('base64');
+  const ring = createVault(newKey, deps.env.DATA_KEY);
+  // The test vault's key: read it back through the ring by decrypting an existing value.
+  const sample = (await sql`select contact_enc from events where contact_enc is not null limit 1`)[0].contact_enc;
+  assert.ok(ring.decrypt(sample), 'the ring opens values of the old key');
+  const evBefore = (await sql`select count(*)::int as n from events where contact_enc is not null`)[0].n;
+  const report = await rotate(sql, ring, { batch: 7 });
+  assert.equal(report['events.contact_enc'].left, 0);
+  assert.equal(report['events.contact_enc'].done, evBefore);
+  assert.deepEqual(Object.values(report).flatMap((r) => r.failed), []);
+  assert.equal(report['users.totp_secret_enc'].left, 0);
+  // Contacts open with the new key alone, and fingerprints match the new key.
+  const alone = createVault(newKey);
+  const row = (await sql`select contact_enc, contact_hash from events where contact_hash is not null and contact_enc is not null limit 1`)[0];
+  const c = alone.decrypt(row.contact_enc);
+  assert.equal(row.contact_hash, alone.lookupHash(`email:${c.email.trim().toLowerCase()}`));
+  // Running it again changes nothing.
+  const again = await rotate(sql, ring);
+  assert.ok(Object.values(again).every((r) => r.done === 0 && r.left === 0));
+  // Put the original key back for the other tests.
+  const back = createVault(deps.env.DATA_KEY, newKey);
+  await rotate(sql, back);
+  assert.ok(oldVault.decrypt((await sql`select contact_enc from events where contact_enc is not null limit 1`)[0].contact_enc));
+});

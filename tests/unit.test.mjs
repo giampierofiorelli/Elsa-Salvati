@@ -175,3 +175,20 @@ test('the privacy version saved with each booking is the one printed on both pri
   assert.ok(readFileSync(new URL('../src/pages/it/privacy.html', import.meta.url), 'utf8').includes(`Versione ${PRIVACY_VERSION}.`), 'IT page');
   assert.ok(readFileSync(new URL('../src/pages/en/privacy.html', import.meta.url), 'utf8').includes(`Version ${PRIVACY_VERSION}.`), 'EN page');
 });
+
+test('key ring: new values use the current key; old keys and values written before the ring still open', () => {
+  const k1 = randomBytes(32).toString('base64');
+  const k2 = randomBytes(32).toString('base64');
+  const oldVault = createVault(k1);
+  const sealedOld = oldVault.encrypt({ name: 'Anna' });
+  assert.match(sealedOld, new RegExp(`^v2\\.${oldVault.keyId}\\.`));
+  const legacy = 'v1.' + sealedOld.split('.').slice(2).join('.'); // the format before the key ring
+  const ring = createVault(k2, `${k1}`);
+  assert.notEqual(ring.keyId, oldVault.keyId);
+  assert.deepEqual(ring.decrypt(sealedOld), { name: 'Anna' }, 'old key from DATA_KEY_OLD');
+  assert.deepEqual(ring.decrypt(legacy), { name: 'Anna' }, 'v1 values are tried with every key');
+  const sealedNew = ring.encrypt({ name: 'Bea' });
+  assert.ok(ring.isCurrent(sealedNew) && !ring.isCurrent(sealedOld));
+  assert.throws(() => createVault(k2).decrypt(sealedOld), /chiave di cifratura non disponibile/, 'without the old key, old values stay closed');
+  assert.notEqual(ring.lookupHash('email:a@b.it'), oldVault.lookupHash('email:a@b.it'), 'fingerprints follow the current key');
+});

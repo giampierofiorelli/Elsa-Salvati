@@ -38,7 +38,7 @@ export function testDeps(sql, clock) {
     env,
     store: createStore(sql),
     mediaStore: createMediaStore(sql),
-    vault: createVault(env.DATA_KEY),
+    vault: createVault(env.DATA_KEY, env.DATA_KEY_OLD),
     mailer: createMailer(env, globalThis.fetch, createStats(sql), emailTextsFrom(sql)),
     site: {
       siteUrl: 'https://studio.example.it',

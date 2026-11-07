@@ -56,6 +56,20 @@ Servizi e professionisti stanno nel database: le prenotazioni li usano subito; l
 6. Nell'area riservata: crea i **servizi**, i **professionisti** (con servizi e modalità) e i loro **account**; ogni professionista imposta i propri **orari**.
 7. Su Google Business Profile collega il link `https://<sito>/prenota/`.
 
+## Cambiare la chiave dei dati (DATA_KEY)
+
+Da fare se la chiave potrebbe essere finita in mani sbagliate (per esempio un portatile perso, una variabile copiata per errore), o come manutenzione.
+Nome, email, telefono e messaggi, e i segreti dell'app di autenticazione, sono cifrati con `DATA_KEY`; anche le impronte usate per ritrovare una persona dipendono da questa chiave.
+
+1. Genera una chiave nuova: `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`. Conservala nel gestore di password.
+2. Su Netlify (Project configuration › Environment variables): copia il valore attuale di `DATA_KEY` in una nuova variabile `DATA_KEY_OLD`, poi metti la chiave nuova in `DATA_KEY`. Con più chiavi vecchie: separale con una virgola in `DATA_KEY_OLD`. Avvia un deploy: da quel momento il sito cifra tutto con la chiave nuova e legge ancora i dati vecchi.
+3. Dal tuo computer, ricifra tutto (si può interrompere e rilanciare quante volte serve: tocca solo ciò che non è ancora sulla chiave nuova):
+   `DATABASE_URL=… DATA_KEY=<nuova> DATA_KEY_OLD=<vecchia> node scripts/rotate-data-key.mjs`
+   Alla fine stampa, colonna per colonna, quanti valori ha ricifrato, quanti ne restano (deve essere 0) e quali non è riuscito ad aprire. Con `--check` conta soltanto.
+4. Quando restano 0 valori su tutte le colonne: togli `DATA_KEY_OLD` da Netlify, avvia un deploy e cancella la chiave vecchia dal gestore di password.
+
+Note: i limiti anti abuso (impronte degli IP, al massimo 7 giorni) ripartono da zero; le sessioni dell'area riservata restano valide (usano `SESSION_SECRET`, che si cambia a parte e disconnette tutti).
+
 ## Rami e anteprime
 
 - `staging`: si lavora qui. Ogni push crea un'anteprima gratuita su https://staging--elsa-salvati.netlify.app (stesse variabili d'ambiente della produzione).

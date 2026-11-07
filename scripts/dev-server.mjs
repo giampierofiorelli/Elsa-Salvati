@@ -45,7 +45,7 @@ const sql = postgres(env.DATABASE_URL || 'postgres://postgres@127.0.0.1:54329/ag
 });
 await sql.unsafe(readFileSync(new URL('../db/schema.sql', import.meta.url), 'utf8'));
 
-const deps = { store: createStore(sql), mediaStore: createMediaStore(sql), vault: createVault(env.DATA_KEY), mailer: createMailer(env, globalThis.fetch, createStats(sql), emailTextsFrom(sql)), site: siteFromEnv(env), env };
+const deps = { store: createStore(sql), mediaStore: createMediaStore(sql), vault: createVault(env.DATA_KEY, env.DATA_KEY_OLD), mailer: createMailer(env, globalThis.fetch, createStats(sql), emailTextsFrom(sql)), site: siteFromEnv(env), env };
 const pub = createPublicApi(deps);
 // Page editor: starting content and templates from the repository files.
 const kit = withCatalog(readKitFiles(join(dirname(fileURLToPath(import.meta.url)), '..')), () => loadCatalog(deps.store));
