@@ -1316,3 +1316,35 @@ test('statistics: the site endpoint writes daily counters only, and drops bots, 
   const cols = (await sql`select table_name, column_name from information_schema.columns where table_name like 'stats_%'`).map((x) => x.column_name);
   assert.ok(!cols.some((c) => /^(ip|ip_\w+|user_agent|email|address|session\w*|visitor\w*|\w*_hash|token)$/.test(c)), cols.join(','));
 });
+
+test('statistics: the admin sees the studio, site and email tabs with the previous period; a professional only her own studio figures', opts, async () => {
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  const to = clock.now.toISOString().slice(0, 10);
+  let r = await as('admin')('GET', `/stats/studio?to=${to}&professional=all`);
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  const dayMs = 86400000;
+  assert.equal(r.body.from, new Date(Date.parse(to) - 29 * dayMs).toISOString().slice(0, 10), 'default: the last 30 days');
+  assert.equal(r.body.prevTo, new Date(Date.parse(to) - 30 * dayMs).toISOString().slice(0, 10));
+  assert.equal(r.body.prevFrom, new Date(Date.parse(to) - 59 * dayMs).toISOString().slice(0, 10));
+  assert.equal(r.body.shared, true);
+  for (const k of ['requests', 'response', 'lead', 'cancellations', 'noShow', 'continuity', 'occupancy', 'contacts', 'heard']) assert.ok(k in r.body.current, k);
+  assert.equal(typeof r.body.current.freeSlots, 'number');
+  // Small groups are hidden in the shared view: one LinkedIn answer becomes "meno di 5".
+  assert.equal(r.body.current.heard.linkedin, -1);
+  r = await as('admin')('GET', '/stats/site?from=2026-10-01&to=2026-10-31');
+  assert.equal(r.status, 200);
+  assert.ok(Array.isArray(r.body.current.rows));
+  r = await as('admin')('GET', '/stats/email');
+  assert.equal(r.status, 200);
+  assert.ok(Array.isArray(r.body.current.types));
+  // A professional: her own figures (not the studio's), and no site or email tabs.
+  const laura = await createEnrolledUser(deps, { email: 'laura.stat@example.it', name: 'Laura', role: 'professionista', professionalId: ids.laura });
+  cookies.laura = cookieOf(await login(laura.email, laura.secret));
+  const own = await as('laura')('GET', '/stats/studio?professional=all');
+  assert.equal(own.status, 200);
+  assert.equal(String(own.body.professional), String(ids.laura));
+  assert.equal(own.body.shared, false);
+  assert.equal((await as('laura')('GET', '/stats/site')).status, 403);
+  assert.equal((await as('laura')('GET', '/stats/email')).status, 403);
+  assert.equal((await as('admin')('GET', '/stats/studio?from=2020-01-01&to=2026-10-22')).status, 400, 'periods over about two years are refused');
+});

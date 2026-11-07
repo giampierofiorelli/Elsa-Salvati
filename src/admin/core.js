@@ -234,7 +234,7 @@
     'impostazioni/privacy': { title: 'Dati delle persone', crumb: 'Impostazioni', panel: 'imp-privacy', nav: 'Dati delle persone', icon: 'person', perm: 'admin' },
     'impostazioni/calendario': { title: 'Calendario sul telefono', crumb: 'Impostazioni', panel: 'imp-calendario', nav: 'Calendario sul telefono', icon: 'phone' },
     profilo: { title: 'Il mio profilo', crumb: 'Il mio account', panel: 'profilo', nav: 'Il mio profilo', icon: 'person', perm: 'pro' },
-    statistiche: { title: 'Statistiche', crumb: '', panel: 'statistiche', nav: 'Statistiche', icon: 'chart', perm: 'admin', soon: true },
+    statistiche: { title: 'Statistiche', crumb: '', panel: 'statistiche', nav: 'Statistiche', icon: 'chart', proSwitch: true },
   };
   var NAV = [
     { label: 'Agenda', items: ['agenda/calendario', 'agenda/da-accettare', 'agenda/orari', 'agenda/blocchi'] },
@@ -243,7 +243,7 @@
     { label: 'Studio', perm: 'admin', items: ['studio/professioniste', 'studio/servizi', 'studio/dati'] },
     { label: 'Impostazioni', perm: 'admin', items: ['impostazioni/prenotazione', 'impostazioni/account', 'impostazioni/sicurezza', 'impostazioni/privacy', 'impostazioni/calendario'] },
     { label: 'Il mio account', perm: 'staff', items: ['profilo', 'impostazioni/calendario'] },
-    { label: '', perm: 'admin', items: ['statistiche'] },
+    { label: '', items: ['statistiche'] },
   ];
   function allowed(perm) {
     if (!perm) return true;
@@ -338,6 +338,7 @@
     if (p === 'professionisti') job = A.renderPros();
     if (p === 'account') job = A.loadUsers();
     if (p === 'imp-prenotazione') job = A.loadSettings();
+    if (p === 'statistiche') job = A.renderStats();
     if (job && job.catch) job.catch(function () { /* the api() helper already shows the login when the session is over */ });
   }
   window.addEventListener('hashchange', onRoute);
@@ -440,6 +441,7 @@
       state.scope = sel.value;
       A.loadRules().then(function () {
         if (state.route === 'agenda/blocchi') return A.loadBlocks();
+        if (state.route === 'statistiche') return A.renderStats();
         return A.refresh();
       });
     };
