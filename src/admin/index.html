@@ -71,151 +71,325 @@
   </form>
 </main>
 
-<!-- App -->
-<div id="app" hidden>
-  <header class="admin-header">
-    <div class="admin-title">
-      <h1>Agenda</h1>
-      <p class="hint" data-session-info></p>
+<!-- App: sidebar, top bar, sections -->
+<div id="app" class="shell" hidden>
+  <a class="skip" href="#content">Vai al contenuto</a>
+  <aside class="sb" data-sidebar aria-label="Menu principale">
+    <div class="sb-brand">
+      <img src="/assets/img/logo-icon.webp" width="293" height="224" alt="">
+      <span class="sb-brand-text"><strong>Blooming</strong><small>Area riservata</small></span>
+      <button type="button" class="sb-collapse" data-sb-collapse data-icon="collapse" aria-label="Riduci il menu" title="Riduci il menu"></button>
     </div>
-    <div class="pro-switch" data-pro-switch hidden>
-      <label for="pro-select" class="hint">Agenda di</label>
-      <select id="pro-select" data-pro-select></select>
-    </div>
-    <nav class="admin-tabs" aria-label="Sezioni" data-tabs></nav>
-  </header>
+    <nav class="sb-nav" data-nav aria-label="Sezioni"></nav>
+  </aside>
+  <div class="sb-scrim" data-scrim hidden></div>
 
-  <section data-panel="agenda" class="admin-panel">
-    <div class="toolbar">
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn tb-menu" data-menu-toggle data-icon="menu" aria-label="Apri il menu" aria-expanded="false"></button>
+      <div class="tb-title">
+        <ol class="crumbs" data-crumbs aria-label="Percorso"></ol>
+        <h1 data-page-title>Agenda</h1>
+      </div>
+      <div class="tb-actions">
+        <div class="pro-switch" data-pro-switch hidden>
+          <label for="pro-select">Agenda di</label>
+          <select id="pro-select" data-pro-select></select>
+        </div>
+        <div class="usermenu">
+          <button type="button" class="um-btn" data-user-btn aria-haspopup="true" aria-expanded="false">
+            <span class="avatar" data-user-initials></span>
+            <span class="um-name"><strong data-user-name></strong><small data-user-role></small></span>
+          </button>
+          <div class="um-pop" data-user-pop hidden>
+            <p class="um-head"><strong data-user-name2></strong><span class="hint" data-session-info></span></p>
+            <a href="#/profilo" class="um-item" data-user-profile hidden>Il mio profilo</a>
+            <a href="#/impostazioni/calendario" class="um-item">Calendario sul telefono</a>
+            <button type="button" class="um-item um-out" data-logout>Esci</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content" id="content" tabindex="-1">
+
+  <!-- Agenda · Calendario -->
+  <section data-panel="agenda" class="admin-panel panel-wide" hidden>
+    <div class="toolbar card-bar">
       <div class="toolbar-nav">
-        <button type="button" class="round" data-prev aria-label="Periodo precedente">‹</button>
-        <button type="button" class="round" data-next aria-label="Periodo successivo">›</button>
-        <button type="button" class="link-btn" data-today>Oggi</button>
-        <strong data-range></strong>
+        <button type="button" class="btn btn-ghost btn-small" data-today>Oggi</button>
+        <button type="button" class="icon-btn" data-prev data-icon="left" aria-label="Periodo precedente"></button>
+        <button type="button" class="icon-btn" data-next data-icon="right" aria-label="Periodo successivo"></button>
+        <strong class="range" data-range></strong>
       </div>
       <div class="seg" role="group" aria-label="Vista">
         <button type="button" data-view="week" aria-pressed="true">Settimana</button>
+        <button type="button" data-view="month" aria-pressed="false">Mese</button>
         <button type="button" data-view="list" aria-pressed="false">Elenco</button>
       </div>
       <button type="button" class="btn btn-primary btn-small" data-new>+ Nuovo</button>
     </div>
     <div class="week-wrap" data-week></div>
+    <div class="month-wrap" data-month hidden></div>
     <div class="list-view" data-list hidden></div>
     <ul class="legend" role="list">
       <li><span class="sw sw-sito"></span>Dal sito</li>
-      <li><span class="sw sw-manuale"></span>Manuale</li>
-      <li><span class="sw sw-blocco"></span>Blocco</li>
+      <li><span class="sw sw-pending"></span>Da accettare</li>
+      <li><span class="sw sw-manuale"></span>Fissato da te</li>
+      <li><span class="sw sw-blocco"></span>Bloccato</li>
       <li><span class="sw sw-open"></span>Prenotabile online</li>
     </ul>
   </section>
 
+  <!-- Agenda · Da accettare -->
+  <section data-panel="pending" class="admin-panel" hidden>
+    <p class="intro">Richieste di primo colloquio arrivate dal sito. L'orario resta riservato finché non accetti o rifiuti; se nessuno risponde, la richiesta scade e la persona riceve un'email per scegliere un altro orario.</p>
+    <div data-pending-list></div>
+  </section>
+
+  <!-- Agenda · Orari settimanali -->
+  <section data-panel="orari" class="admin-panel" hidden>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>Fasce orarie <span class="hint" data-rules-who></span></h2>
+          <p class="hint">Nelle fasce “prenotabili online” le persone vedono gli orari liberi per il primo colloquio. Le altre restano riservate, per esempio per le sedute successive.</p>
+        </div>
+      </div>
+      <form data-rules-form>
+        <div class="rules" data-rules></div>
+        <div class="cta-row">
+          <button type="button" class="btn btn-ghost btn-small" data-add-rule>+ Aggiungi fascia</button>
+          <button type="submit" class="btn btn-primary btn-small">Salva orari</button>
+        </div>
+        <p class="status" role="status" data-rules-status></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- Agenda · Giorni e ore bloccati -->
+  <section data-panel="blocchi" class="admin-panel" hidden>
+    <div class="section-toolbar">
+      <p class="intro">Ferie, formazione, impegni: in questi periodi non si prenota online. Qui trovi quelli di oggi e dei prossimi dodici mesi.</p>
+      <button type="button" class="btn btn-primary btn-small" data-new-block>+ Blocca giorni o ore</button>
+    </div>
+    <div data-blocks-list></div>
+  </section>
+
+  <!-- Richieste -->
   <section data-panel="richieste" class="admin-panel" hidden>
-    <h2>Richieste di ricontatto</h2>
-    <p class="hint">Persone che hanno chiesto di essere ricontattate. Vengono cancellate automaticamente dopo il periodo impostato.</p>
+    <div class="section-toolbar">
+      <p class="intro">Persone e organizzazioni che hanno chiesto di essere ricontattate. Vengono cancellate in automatico dopo il periodo impostato.</p>
+      <div class="seg" role="group" aria-label="Filtro" data-req-filter>
+        <button type="button" data-req-show="open" aria-pressed="true">Da gestire</button>
+        <button type="button" data-req-show="all" aria-pressed="false">Tutte</button>
+      </div>
+    </div>
     <div data-requests></div>
   </section>
 
-  <section data-panel="orari" class="admin-panel" hidden>
-    <h2>Orari di lavoro <span class="hint" data-rules-who></span></h2>
-    <p class="hint">Nelle fasce “prenotabili online” i nuovi pazienti vedono gli orari liberi per il primo colloquio. Le altre fasce restano riservate (per esempio per le sedute successive).</p>
-    <form data-rules-form>
-      <div class="rules" data-rules></div>
-      <div class="cta-row">
-        <button type="button" class="btn btn-ghost btn-small" data-add-rule>+ Aggiungi fascia</button>
-        <button type="submit" class="btn btn-primary btn-small">Salva orari</button>
-      </div>
-      <p class="status" role="status" data-rules-status></p>
-    </form>
-  </section>
-
+  <!-- Il mio profilo -->
   <section data-panel="profilo" class="admin-panel" hidden>
-    <h2>Il mio profilo</h2>
-    <p class="hint">Come appari sul sito e in quali modalità offri i tuoi servizi. I servizi li assegna l'amministratore.</p>
-    <div data-profile></div>
+    <p class="intro">Come appari sul sito e in quali modalità offri i tuoi servizi. I servizi li assegna l'amministratore.</p>
+    <div class="card" data-profile></div>
   </section>
 
+  <!-- Studio · Servizi -->
   <section data-panel="servizi" class="admin-panel" hidden>
     <div class="section-toolbar">
-      <h2>Servizi</h2>
+      <p class="intro">Le aree e i servizi che compaiono sul sito e nell'agenda.</p>
       <button type="button" class="btn btn-primary btn-small" data-new-service>+ Nuovo servizio</button>
     </div>
     <div data-services></div>
-    <div class="publish-box" data-publish-box></div>
+    <div class="publish-box card" data-publish-box></div>
   </section>
 
+  <!-- Studio · Professioniste -->
   <section data-panel="professionisti" class="admin-panel" hidden>
     <div class="section-toolbar">
-      <h2>Professionisti</h2>
-      <button type="button" class="btn btn-primary btn-small" data-new-pro>+ Nuovo professionista</button>
+      <p class="intro">Le schede delle professioniste: nome, presentazione, lingue e servizi.</p>
+      <button type="button" class="btn btn-primary btn-small" data-new-pro>+ Nuova professionista</button>
     </div>
     <div data-pros></div>
   </section>
 
+  <!-- Impostazioni · Account e permessi -->
   <section data-panel="account" class="admin-panel" hidden>
     <div class="section-toolbar">
-      <h2>Account</h2>
+      <p class="intro">Ogni professionista ha il suo accesso e vede solo la propria agenda; con il permesso “Sito” può anche modificare le pagine. Gli amministratori vedono e gestiscono tutto.</p>
       <button type="button" class="btn btn-primary btn-small" data-new-user>+ Nuovo account</button>
     </div>
-    <p class="hint">Ogni professionista ha il suo accesso e vede solo la propria agenda. Gli amministratori gestiscono servizi, professionisti e account e vedono tutte le agende.</p>
     <div data-users></div>
   </section>
 
-  <section data-panel="sito" class="admin-panel site-panel" hidden>
-    <div class="se">
-      <aside class="se-pages" data-se-pages aria-label="Pagine del sito"></aside>
-      <div class="se-pagesel field">
-        <label for="se-pagesel">Pagina</label>
-        <select id="se-pagesel" data-se-pagesel></select>
-      </div>
-      <div class="se-main">
-        <p class="empty" data-se-empty>Scegli una pagina da modificare.</p>
-        <div class="se-media" data-se-media hidden></div>
-        <div data-se-editor hidden>
-          <div class="se-bar">
-            <div class="se-bar-title">
-              <h2 data-se-title></h2>
-              <p class="hint" data-se-path></p>
-            </div>
-            <div class="seg se-langswitch" role="group" aria-label="Lingua" data-se-langswitch></div>
-            <span class="se-badge" data-se-badge></span>
-            <div class="se-bar-actions">
-              <button type="button" class="btn btn-ghost btn-small se-openpreview" data-se-openpreview>Anteprima</button>
-              <button type="button" class="btn btn-ghost btn-small" data-se-history>Storico</button>
-              <button type="button" class="btn btn-primary btn-small" data-se-publish>Pubblica</button>
-            </div>
-            <p class="se-status" role="status" aria-live="polite" data-se-status></p>
-          </div>
-          <div class="se-banner" role="alert" data-se-banner hidden></div>
-          <div class="se-work">
-            <div class="se-preview">
-              <div class="seg se-device" role="group" aria-label="Dimensione dell'anteprima">
-                <button type="button" data-se-device="desktop" aria-pressed="true">Computer</button>
-                <button type="button" data-se-device="phone" aria-pressed="false">Telefono</button>
-              </div>
-              <div class="se-framewrap" data-se-framewrap>
-                <iframe class="se-frame" data-se-frame title="Anteprima della pagina" sandbox="allow-same-origin"></iframe>
-              </div>
-              <p class="hint" data-se-preview-msg></p>
-            </div>
-            <div class="se-side">
-              <div class="seg se-tabs" role="group" aria-label="Sezioni della pagina" data-se-tabs>
-                <button type="button" data-se-tab="blocks" aria-pressed="true">Blocchi</button>
-                <button type="button" data-se-tab="seo" aria-pressed="false">SEO e condivisione</button>
-              </div>
-              <div data-se-tab-blocks>
-                <div class="se-side-tools">
-                  <button type="button" class="btn btn-ghost btn-small" data-se-ref aria-pressed="false">Riferimento altra lingua</button>
-                </div>
-                <div class="se-refbox" data-se-refbox hidden></div>
-                <ol class="se-blocks" data-se-blocks></ol>
-                <button type="button" class="btn btn-primary btn-small se-addblock" data-se-add>+ Aggiungi blocco</button>
-              </div>
-              <div class="se-seo" data-se-tab-seo hidden></div>
-              <div class="se-global" data-se-tab-global hidden></div>
-            </div>
-          </div>
+  <!-- Impostazioni · Prenotazione e promemoria -->
+  <section data-panel="imp-prenotazione" class="admin-panel" hidden>
+    <form data-settings-form data-settings-admin class="settings-form">
+      <div class="card">
+        <h2>Orari prenotabili</h2>
+        <div class="settings-grid">
+          <div class="field"><label for="s-session">Durata seduta predefinita (minuti)</label><input id="s-session" name="sessionMinutes" type="number" min="15" max="240"></div>
+          <div class="field"><label for="s-step">Un orario prenotabile ogni (minuti)</label><input id="s-step" name="slotStepMinutes" type="number" min="15" max="240"></div>
+          <div class="field"><label for="s-buffer">Pausa minima tra appuntamenti (minuti)</label><input id="s-buffer" name="bufferMinutes" type="number" min="0" max="120"></div>
+          <div class="field"><label for="s-notice">Anticipo minimo per prenotare (ore)</label><input id="s-notice" name="minNoticeHours" type="number" min="0" max="336"></div>
+          <div class="field"><label for="s-horizon">Prenotabile fino a (giorni avanti)</label><input id="s-horizon" name="horizonDays" type="number" min="1" max="180"></div>
+          <div class="field"><label for="s-cancel">Annullabile online fino a (ore prima)</label><input id="s-cancel" name="cancelHours" type="number" min="0" max="168"></div>
         </div>
       </div>
+      <div class="card">
+        <h2>Richieste da accettare</h2>
+        <div class="settings-grid">
+          <div class="field"><label for="s-deadline">Le richieste non accettate scadono il giorno prima alle</label><input id="s-deadline" name="approvalDeadline" type="time" step="900"></div>
+          <fieldset class="field workdays"><legend>Giorni lavorativi per accettare le richieste</legend><div class="wd-row"><label class="wd"><input type="checkbox" data-workday value="1"> lun</label><label class="wd"><input type="checkbox" data-workday value="2"> mar</label><label class="wd"><input type="checkbox" data-workday value="3"> mer</label><label class="wd"><input type="checkbox" data-workday value="4"> gio</label><label class="wd"><input type="checkbox" data-workday value="5"> ven</label><label class="wd"><input type="checkbox" data-workday value="6"> sab</label><label class="wd"><input type="checkbox" data-workday value="7"> dom</label></div>
+            <span class="hint">Se il giorno prima non è lavorativo, la richiesta scade l'ultimo giorno lavorativo precedente (es. lunedì → venerdì).</span></fieldset>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Conferma della presenza e promemoria</h2>
+        <div class="settings-grid">
+          <div class="field"><label for="s-confirm">Richiesta di conferma della presenza (ore prima)</label><input id="s-confirm" name="confirmHours" type="number" min="2" max="120"></div>
+          <div class="field"><label for="s-nudge">Secondo invito a confermare, a chi non l'ha fatto (ore prima, 0 = nessuno)</label><input id="s-nudge" name="confirmNudgeHours" type="number" min="0" max="72"></div>
+          <div class="field"><label for="s-reminder2">Secondo promemoria (ore prima, 0 = nessuno)</label><input id="s-reminder2" name="reminder2Hours" type="number" min="0" max="12"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Conservazione dei dati</h2>
+        <div class="settings-grid">
+          <div class="field"><label for="s-retention">Cancella i recapiti dopo (mesi)</label><input id="s-retention" name="retentionMonths" type="number" min="1" max="120"></div>
+          <div class="field"><label for="s-req">Cancella le richieste dopo (mesi)</label><input id="s-req" name="requestRetentionMonths" type="number" min="1" max="24"></div>
+        </div>
+        <p class="hint">Se cambi i mesi di conservazione, va aggiornata anche l'informativa privacy (oggi dice: recapiti cancellati 24 mesi dopo l'ultimo appuntamento, richieste dopo 6 mesi).</p>
+      </div>
+      <div class="sticky-save">
+        <p class="status" role="status" data-settings-status></p>
+        <button type="submit" class="btn btn-primary btn-small">Salva impostazioni</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Impostazioni · Sicurezza e registro accessi -->
+  <section data-panel="imp-sicurezza" class="admin-panel" hidden>
+    <div class="card">
+      <h2>Come si entra</h2>
+      <p class="hint">Ogni accesso chiede email, password e il codice dell'app di autenticazione. La sessione dura poche ore; per cambiare telefono o password, da “Account e permessi” genera un nuovo link di attivazione.</p>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>Registro degli accessi ai dati</h2>
+          <p class="hint">Chi ha cercato, esportato o cancellato dati personali, e quando.</p>
+        </div>
+        <button type="button" class="btn btn-ghost btn-small" data-audit-load>Mostra il registro</button>
+      </div>
+      <div data-audit></div>
+    </div>
+  </section>
+
+  <!-- Impostazioni · Dati delle persone -->
+  <section data-panel="imp-privacy" class="admin-panel" hidden>
+    <div class="card" data-privacy-admin>
+      <h2>Dati di una persona</h2>
+      <p class="hint">Per rispondere a chi chiede di vedere, ricevere o cancellare i propri dati. Cerca con l'email usata per prenotare o per scrivere. Ogni ricerca, esportazione e cancellazione resta nel registro degli accessi.</p>
+      <form data-people-form class="inline-form" novalidate>
+        <div class="field"><label for="p-email">Email della persona</label><input id="p-email" name="email" type="email" autocomplete="off" required></div>
+        <button type="submit" class="btn btn-primary btn-small">Cerca</button>
+      </form>
+      <p class="status" role="status" data-people-status></p>
+      <div data-people-result></div>
+    </div>
+  </section>
+
+  <!-- Calendario sul telefono e copia di sicurezza -->
+  <section data-panel="imp-calendario" class="admin-panel" hidden>
+    <div class="card">
+      <h2>Calendario sul telefono</h2>
+      <p class="hint">Crea un indirizzo da aggiungere come “calendario in abbonamento” su iPhone, Google Calendar o Outlook: vedrai i tuoi appuntamenti anche se il sito non fosse raggiungibile. I titoli sono neutri, senza nomi delle persone. Tieni l'indirizzo riservato: crearne uno nuovo disattiva il precedente.</p>
+      <div class="cta-row"><button type="button" class="btn btn-ghost btn-small" data-make-feed>Crea indirizzo del calendario</button></div>
+      <p><code data-feed hidden></code></p>
+    </div>
+    <div class="card">
+      <h2>Copia di sicurezza</h2>
+      <p class="hint">Scarica gli appuntamenti in un file. Conservalo in un luogo protetto: contiene dati personali.</p>
+      <a class="btn btn-ghost btn-small" href="/api/admin/export" download>Scarica l'agenda</a>
+    </div>
+  </section>
+
+  <!-- Statistiche -->
+  <section data-panel="statistiche" class="admin-panel" hidden>
+    <div class="empty-state">
+      <div class="es-icon" data-icon="chart"></div>
+      <h2>Statistiche in arrivo</h2>
+      <p class="hint">Qui vedrai quante richieste arrivano, quante vengono accettate e quanti primi colloqui diventano un percorso. Nessun dato è ancora raccolto per questa sezione.</p>
+    </div>
+  </section>
+
+    </main>
+  </div>
+
+  <!-- Site editor: full-screen workspace -->
+  <section data-panel="sito" class="editor" hidden>
+    <header class="ed-top">
+      <a class="ed-exit" href="#/agenda/calendario" data-ed-exit><span class="ed-exit-ic" data-icon="back"></span><span class="ed-exit-text">Esci dall'editor</span></a>
+      <div class="ed-picker">
+        <button type="button" class="ed-pick-btn" data-ed-pick aria-haspopup="true" aria-expanded="false">
+          <span class="ed-pick-text"><strong data-se-title>Sito</strong><small data-se-path></small></span>
+          <span class="ed-caret" data-icon="down"></span>
+        </button>
+        <div class="ed-pop" data-ed-pop hidden>
+          <label class="sr-only" for="ed-search">Cerca una pagina</label>
+          <input id="ed-search" type="search" placeholder="Cerca una pagina…" autocomplete="off" data-ed-search>
+          <div class="ed-results" data-ed-results role="list"></div>
+        </div>
+      </div>
+      <div class="seg se-langswitch" role="group" aria-label="Lingua" data-se-langswitch></div>
+      <div class="seg se-device" role="group" aria-label="Dimensione dell'anteprima">
+        <button type="button" data-se-device="desktop" aria-pressed="true" aria-label="Computer" title="Computer"><span data-icon="desktop"></span><span class="seg-text">Computer</span></button>
+        <button type="button" data-se-device="phone" aria-pressed="false" aria-label="Telefono" title="Telefono"><span data-icon="mobile"></span><span class="seg-text">Telefono</span></button>
+      </div>
+      <div class="ed-state">
+        <span class="se-badge pill" data-se-badge></span>
+        <p class="se-status" role="status" aria-live="polite" data-se-status></p>
+      </div>
+      <div class="se-bar-actions">
+        <button type="button" class="btn btn-ghost btn-small se-openpreview" data-se-openpreview>Anteprima</button>
+        <button type="button" class="btn btn-ghost btn-small se-history-btn" data-se-history>Storico</button>
+        <button type="button" class="btn btn-primary btn-small" data-se-publish>Pubblica</button>
+      </div>
+    </header>
+    <div class="se-banner" role="alert" data-se-banner hidden></div>
+    <div class="ed-body" data-ed-body>
+      <aside class="ed-left" aria-label="Pagine e blocchi">
+        <div class="seg ed-ltabs" role="group" aria-label="Pannello">
+          <button type="button" data-ed-ltab="blocks" aria-pressed="true">Blocchi</button>
+          <button type="button" data-ed-ltab="pages" aria-pressed="false">Pagine</button>
+        </div>
+        <div class="ed-lpanel" data-ed-lpanel="blocks">
+          <ol class="se-blocks" data-se-blocks></ol>
+          <button type="button" class="btn btn-primary btn-small se-addblock" data-se-add>+ Aggiungi blocco</button>
+          <div class="se-side-tools">
+            <button type="button" class="btn btn-ghost btn-small" data-se-ref aria-pressed="false">Riferimento altra lingua</button>
+          </div>
+          <div class="se-refbox" data-se-refbox hidden></div>
+        </div>
+        <div class="ed-lpanel se-pages" data-ed-lpanel="pages" data-se-pages hidden></div>
+      </aside>
+      <div class="ed-canvas se-preview">
+        <p class="empty" data-se-empty hidden>Scegli una pagina da modificare.</p>
+        <div class="se-framewrap" data-se-framewrap>
+          <iframe class="se-frame" data-se-frame title="Anteprima della pagina" sandbox="allow-same-origin"></iframe>
+        </div>
+        <p class="hint ed-canvas-msg" data-se-preview-msg></p>
+      </div>
+      <aside class="ed-right" aria-label="Proprietà" data-se-editor>
+        <div class="seg se-tabs" role="group" aria-label="Pannello di destra" data-se-tabs>
+          <button type="button" data-se-tab="blocks" aria-pressed="true">Blocco</button>
+          <button type="button" data-se-tab="seo" aria-pressed="false">SEO e condivisione</button>
+        </div>
+        <div class="ed-inspector" data-se-tab-blocks></div>
+        <div class="se-seo" data-se-tab-seo hidden></div>
+        <div class="se-global" data-se-tab-global hidden></div>
+      </aside>
+      <div class="se-media" data-se-media hidden></div>
     </div>
     <dialog class="dlg se-fullpreview" data-se-fullpreview>
       <div class="se-fullbar">
@@ -224,56 +398,6 @@
       </div>
       <iframe class="se-frame se-frame-full" data-se-frame title="Anteprima della pagina a schermo intero" sandbox="allow-same-origin"></iframe>
     </dialog>
-  </section>
-
-  <section data-panel="impostazioni" class="admin-panel" hidden>
-    <div data-settings-admin>
-      <h2>Impostazioni della prenotazione</h2>
-      <form data-settings-form class="settings-grid">
-        <div class="field"><label for="s-session">Durata seduta predefinita (minuti)</label><input id="s-session" name="sessionMinutes" type="number" min="15" max="240"></div>
-        <div class="field"><label for="s-step">Un orario prenotabile ogni (minuti)</label><input id="s-step" name="slotStepMinutes" type="number" min="15" max="240"></div>
-        <div class="field"><label for="s-buffer">Pausa minima tra appuntamenti (minuti)</label><input id="s-buffer" name="bufferMinutes" type="number" min="0" max="120"></div>
-        <div class="field"><label for="s-notice">Anticipo minimo per prenotare (ore)</label><input id="s-notice" name="minNoticeHours" type="number" min="0" max="336"></div>
-        <div class="field"><label for="s-horizon">Prenotabile fino a (giorni avanti)</label><input id="s-horizon" name="horizonDays" type="number" min="1" max="180"></div>
-        <div class="field"><label for="s-cancel">Annullabile online fino a (ore prima)</label><input id="s-cancel" name="cancelHours" type="number" min="0" max="168"></div>
-        <div class="field"><label for="s-confirm">Richiesta di conferma della presenza (ore prima)</label><input id="s-confirm" name="confirmHours" type="number" min="2" max="120"></div>
-        <div class="field"><label for="s-nudge">Secondo invito a confermare, a chi non l'ha fatto (ore prima, 0 = nessuno)</label><input id="s-nudge" name="confirmNudgeHours" type="number" min="0" max="72"></div>
-        <div class="field"><label for="s-reminder2">Secondo promemoria (ore prima, 0 = nessuno)</label><input id="s-reminder2" name="reminder2Hours" type="number" min="0" max="12"></div>
-        <div class="field"><label for="s-deadline">Le richieste non approvate scadono il giorno prima alle</label><input id="s-deadline" name="approvalDeadline" type="time" step="900"></div>
-        <fieldset class="field workdays"><legend>Giorni lavorativi per accettare le richieste</legend><div class="wd-row"><label class="wd"><input type="checkbox" data-workday value="1"> lun</label><label class="wd"><input type="checkbox" data-workday value="2"> mar</label><label class="wd"><input type="checkbox" data-workday value="3"> mer</label><label class="wd"><input type="checkbox" data-workday value="4"> gio</label><label class="wd"><input type="checkbox" data-workday value="5"> ven</label><label class="wd"><input type="checkbox" data-workday value="6"> sab</label><label class="wd"><input type="checkbox" data-workday value="7"> dom</label></div>
-          <span class="hint">Se il giorno prima non è lavorativo, la richiesta scade l'ultimo giorno lavorativo precedente (es. lunedì → venerdì).</span></fieldset>
-        <div class="field"><label for="s-retention">Cancella i recapiti dopo (mesi)</label><input id="s-retention" name="retentionMonths" type="number" min="1" max="120"></div>
-        <div class="field"><label for="s-req">Cancella le richieste dopo (mesi)</label><input id="s-req" name="requestRetentionMonths" type="number" min="1" max="24"></div>
-        <p class="hint">Se cambi i mesi di conservazione, va aggiornata anche l'informativa privacy (oggi dice: recapiti cancellati 24 mesi dopo l'ultimo appuntamento, richieste dopo 6 mesi).</p>
-        <div class="cta-row"><button type="submit" class="btn btn-primary btn-small">Salva impostazioni</button></div>
-        <p class="status" role="status" data-settings-status></p>
-      </form>
-    </div>
-
-    <h2>Calendario sul telefono</h2>
-    <p class="hint">Crea un indirizzo da aggiungere come “calendario in abbonamento” su iPhone, Google Calendar o Outlook: vedrai i tuoi appuntamenti anche se il sito non fosse raggiungibile. I titoli sono neutri, senza nomi dei pazienti. Tieni l'indirizzo riservato: crearne uno nuovo disattiva il precedente.</p>
-    <div class="cta-row"><button type="button" class="btn btn-ghost btn-small" data-make-feed>Crea indirizzo del calendario</button></div>
-    <p><code data-feed hidden></code></p>
-
-    <h2>Copia di sicurezza</h2>
-    <p class="hint">Scarica gli appuntamenti in un file. Conservalo in un luogo protetto: contiene dati personali.</p>
-    <a class="btn btn-ghost btn-small" href="/api/admin/export" download>Scarica l'agenda</a>
-
-    <div data-privacy-admin hidden>
-      <h2>Dati di una persona</h2>
-      <p class="hint">Per rispondere a chi chiede di vedere, ricevere o cancellare i propri dati. Cerca con l'email usata per prenotare o per scrivere. Ogni ricerca, esportazione e cancellazione resta nel registro qui sotto.</p>
-      <form data-people-form class="settings-grid" novalidate>
-        <div class="field"><label for="p-email">Email della persona</label><input id="p-email" name="email" type="email" autocomplete="off" required></div>
-        <div class="cta-row"><button type="submit" class="btn btn-ghost btn-small">Cerca</button></div>
-        <p class="status" role="status" data-people-status></p>
-      </form>
-      <div data-people-result></div>
-
-      <h2>Registro degli accessi ai dati</h2>
-      <p class="hint">Chi ha cercato, esportato o cancellato dati personali, e quando.</p>
-      <div class="cta-row"><button type="button" class="btn btn-ghost btn-small" data-audit-load>Mostra il registro</button></div>
-      <div data-audit></div>
-    </div>
   </section>
 </div>
 
@@ -370,7 +494,7 @@
     </div>
     <p class="status form-error" role="alert" data-dlg-error></p>
     <div class="cta-row dlg-actions">
-      <button type="button" class="btn btn-primary btn-small" data-approve hidden>Approva la richiesta</button>
+      <button type="button" class="btn btn-primary btn-small" data-approve hidden>Accetta la richiesta</button>
       <button type="button" class="btn btn-ghost btn-small" data-decline hidden>Rifiuta</button>
       <a class="btn btn-ghost btn-small" data-write-person hidden href="#">Scrivi alla persona</a>
       <button type="button" class="btn btn-danger btn-small" data-free-slot hidden>Libera l'orario</button>

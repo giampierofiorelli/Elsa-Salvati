@@ -9,13 +9,14 @@
   var DAY_LONG = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
   var KIND_LABEL = { primo_colloquio: 'Primo colloquio', seduta: 'Seduta', blocco: 'Non disponibile' };
   var MODE_LABEL = { studio: 'studio', online: 'online' };
-  var CATEGORY_LABEL = { coaching: 'Coaching', psicologia: 'Psicologia', psicoterapia: 'Psicoterapia', aziende: 'Azienda', da_definire: 'Da definire' };
+  var CATEGORY_LABEL = { carriera: 'Orientamento e carriera', coaching: 'Coaching', psicologia: 'Psicologia', psicoterapia: 'Psicoterapia', aziende: 'Azienda', da_definire: 'Da definire' };
   var fmtDayMonth = new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short', timeZone: 'UTC' });
   var fmtLongDay = new Intl.DateTimeFormat('it-IT', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' });
 
   var state = {
     me: null, today: null, weekStart: null, view: 'week', events: [], rules: [], settings: null,
     catalog: null, scope: null, editing: null, kind: 'seduta',
+    month: null, route: null, lastShellRoute: null, pending: [], reqShow: 'open',
   };
 
   function $(sel, root) { return (root || document).querySelector(sel); }
@@ -121,68 +122,270 @@
       state.me = me;
       state.today = me.today;
       if (!state.weekStart) state.weekStart = monday(me.today);
+      if (!state.month) state.month = me.today.slice(0, 8) + '01';
       if (!state.scope) state.scope = myPro() || (isAdmin() ? 'all' : null);
-      $('[data-session-info]').textContent = me.user.name + ' · ' + (isAdmin() ? 'amministratore' : 'professionista')
-        + ' · fino alle ' + new Date(me.expiresAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      fillUser();
       showOnly('app');
-      buildTabs();
+      buildNav();
       buildProSwitch();
-      $('[data-settings-admin]').hidden = !isAdmin();
-      $('[data-privacy-admin]').hidden = !isAdmin();
       return Promise.all([loadCatalog(), loadSettings(), loadRequests()]);
-    }).then(function () { return Promise.all([loadRules(), refresh()]); })
-      .catch(function () { showLogin(); });
+    }).then(function () {
+      if (!/^#\//.test(location.hash)) history.replaceState(null, '', location.pathname + '#/agenda/calendario');
+      onRoute();
+      loadPendingCount();
+    }).catch(function () { showLogin(); });
   }
 
-  // ---------- navigation ----------
-  function buildTabs() {
-    var tabs = [['agenda', 'Agenda'], ['richieste', 'Richieste'], ['orari', 'Orari']];
-    if (myPro()) tabs.push(['profilo', 'Profilo']);
-    if (isAdmin()) tabs.push(['servizi', 'Servizi'], ['professionisti', 'Professionisti'], ['account', 'Account']);
-    if (state.me.user.canEditSite) tabs.push(['sito', 'Sito']);
-    tabs.push(['impostazioni', 'Impostazioni']);
-    var nav = $('[data-tabs]');
+  // ---------- icons (inline SVG, no external files) ----------
+  var ICONS = {
+    calendar: '<rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/>',
+    inbox: '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/>',
+    block: '<circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/>',
+    mail: '<rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="m21.5 7.5-9.5 6-9.5-6"/>',
+    pages: '<path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8z"/><path d="M14 2.5V8h5.5M8.5 13h7M8.5 17h4.5"/>',
+    layout: '<rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M3 8.5h18M3 15.5h18"/>',
+    image: '<rect x="3" y="3" width="18" height="18" rx="2.5"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+    grid: '<rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>',
+    building: '<path d="M3 21h18M5 21V8l7-4.5L19 8v13M9.5 21v-5.5h5V21"/>',
+    bell: '<path d="M6 8.5a6 6 0 0 1 12 0c0 6.5 3 8.5 3 8.5H3s3-2 3-8.5"/><path d="M10.3 21a2 2 0 0 0 3.4 0"/>',
+    key: '<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.3-9.3M17 6l3 3M14.5 8.5l2 2"/>',
+    shield: '<path d="M12 21.5s8-3.8 8-10V5l-8-3-8 3v6.5c0 6.2 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+    person: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    phone: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18h2"/>',
+    chart: '<path d="M3 3v18h18"/><path d="M7.5 16v-4M12 16V8M16.5 16v-6"/>',
+    back: '<path d="M19 12H5M11.5 18.5 5 12l6.5-6.5"/>',
+    down: '<path d="m6 9 6 6 6-6"/>',
+    left: '<path d="m15 18-6-6 6-6"/>',
+    right: '<path d="m9 18 6-6-6-6"/>',
+    menu: '<path d="M4 6.5h16M4 12h16M4 17.5h16"/>',
+    collapse: '<rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M9 3v18M16 9.5 13.5 12l2.5 2.5"/>',
+    desktop: '<rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 16.5v4"/>',
+    mobile: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18h2"/>',
+    check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+    cursor: '<path d="m4 4 7 16 2.5-6.5L20 11z"/>',
+  };
+  function svg(name, size) {
+    return '<svg viewBox="0 0 24 24" width="' + (size || 20) + '" height="' + (size || 20) + '" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + (ICONS[name] || '') + '</svg>';
+  }
+  function icon(name, size) {
+    var s = el('span', { class: 'ic' });
+    s.innerHTML = svg(name, size);
+    return s;
+  }
+  function paintIcons(root) {
+    $$('[data-icon]', root).forEach(function (n) { if (!n.firstChild) n.innerHTML = svg(n.getAttribute('data-icon')); });
+  }
+
+  // ---------- toasts ----------
+  var toastBox = null;
+  function toast(msg, kind) {
+    if (!toastBox) { toastBox = el('div', { class: 'toasts', role: 'status', 'aria-live': 'polite' }); document.body.appendChild(toastBox); }
+    var t = el('div', { class: 'toast' + (kind ? ' toast-' + kind : '') }, [icon(kind === 'error' ? 'block' : 'check', 18), el('span', { text: msg })]);
+    toastBox.appendChild(t);
+    setTimeout(function () { t.classList.add('out'); }, 3600);
+    setTimeout(function () { t.remove(); }, 4100);
+  }
+
+  // ---------- navigation: sidebar, top bar, routes in the address (#/agenda/calendario) ----------
+  var ROUTES = {
+    'agenda/calendario': { title: 'Calendario', crumb: 'Agenda', panel: 'agenda', nav: 'Calendario', icon: 'calendar', proSwitch: true, wide: true },
+    'agenda/da-accettare': { title: 'Da accettare', crumb: 'Agenda', panel: 'pending', nav: 'Da accettare', icon: 'inbox', badge: 'pending' },
+    'agenda/orari': { title: 'Orari settimanali', crumb: 'Agenda', panel: 'orari', nav: 'Orari settimanali', icon: 'clock', proSwitch: true },
+    'agenda/blocchi': { title: 'Giorni e ore bloccati', crumb: 'Agenda', panel: 'blocchi', nav: 'Giorni e ore bloccati', icon: 'block', proSwitch: true },
+    richieste: { title: 'Richieste di contatto', crumb: 'Richieste', panel: 'richieste', nav: 'Contatti e organizzazioni', icon: 'mail', badge: 'req' },
+    'sito/pagine': { title: 'Pagine', crumb: 'Sito', editor: 'page', nav: 'Pagine', icon: 'pages', perm: 'site' },
+    'sito/intestazione': { title: 'Intestazione e piè di pagina', crumb: 'Sito', editor: 'global', nav: 'Intestazione e piè di pagina', icon: 'layout', perm: 'site' },
+    'sito/media': { title: 'Immagini e PDF', crumb: 'Sito', editor: 'media', nav: 'Immagini e PDF', icon: 'image', perm: 'site' },
+    'studio/professioniste': { title: 'Professioniste', crumb: 'Studio', panel: 'professionisti', nav: 'Professioniste', icon: 'users', perm: 'admin' },
+    'studio/servizi': { title: 'Servizi', crumb: 'Studio', panel: 'servizi', nav: 'Servizi', icon: 'grid', perm: 'admin' },
+    'studio/dati': { title: 'Dati dello studio', crumb: 'Studio', editor: 'studio', nav: 'Dati dello studio', icon: 'building', perm: 'site' },
+    'impostazioni/prenotazione': { title: 'Prenotazione e promemoria', crumb: 'Impostazioni', panel: 'imp-prenotazione', nav: 'Prenotazione e promemoria', icon: 'bell', perm: 'admin' },
+    'impostazioni/account': { title: 'Account e permessi', crumb: 'Impostazioni', panel: 'account', nav: 'Account e permessi', icon: 'key', perm: 'admin' },
+    'impostazioni/sicurezza': { title: 'Sicurezza e registro accessi', crumb: 'Impostazioni', panel: 'imp-sicurezza', nav: 'Sicurezza e registro accessi', icon: 'shield', perm: 'admin' },
+    'impostazioni/privacy': { title: 'Dati delle persone', crumb: 'Impostazioni', panel: 'imp-privacy', nav: 'Dati delle persone', icon: 'person', perm: 'admin' },
+    'impostazioni/calendario': { title: 'Calendario sul telefono', crumb: 'Impostazioni', panel: 'imp-calendario', nav: 'Calendario sul telefono', icon: 'phone' },
+    profilo: { title: 'Il mio profilo', crumb: 'Il mio account', panel: 'profilo', nav: 'Il mio profilo', icon: 'person', perm: 'pro' },
+    statistiche: { title: 'Statistiche', crumb: '', panel: 'statistiche', nav: 'Statistiche', icon: 'chart', perm: 'admin', soon: true },
+  };
+  var NAV = [
+    { label: 'Agenda', items: ['agenda/calendario', 'agenda/da-accettare', 'agenda/orari', 'agenda/blocchi'] },
+    { label: 'Richieste', items: ['richieste'] },
+    { label: 'Sito', perm: 'site', items: ['sito/pagine', 'sito/intestazione', 'sito/media'] },
+    { label: 'Studio', perm: 'admin', items: ['studio/professioniste', 'studio/servizi', 'studio/dati'] },
+    { label: 'Impostazioni', perm: 'admin', items: ['impostazioni/prenotazione', 'impostazioni/account', 'impostazioni/sicurezza', 'impostazioni/privacy', 'impostazioni/calendario'] },
+    { label: 'Il mio account', perm: 'staff', items: ['profilo', 'impostazioni/calendario'] },
+    { label: '', perm: 'admin', items: ['statistiche'] },
+  ];
+  function allowed(perm) {
+    if (!perm) return true;
+    if (perm === 'admin') return isAdmin();
+    if (perm === 'site') return !!state.me.user.canEditSite;
+    if (perm === 'pro') return !!myPro();
+    if (perm === 'staff') return !isAdmin();
+    return false;
+  }
+
+  function fillUser() {
+    var u = state.me.user;
+    var initials = u.name.replace(/^(Dott\.ssa|Dott\.|Dr\.ssa|Dr\.)\s+/i, '').split(/\s+/).map(function (w) { return w.charAt(0); }).join('').slice(0, 2).toUpperCase();
+    $('[data-user-initials]').textContent = initials;
+    $('[data-user-name]').textContent = u.name;
+    $('[data-user-name2]').textContent = u.name;
+    $('[data-user-role]').textContent = isAdmin() ? 'Amministratore' : (u.canEditSite ? 'Professionista · sito' : 'Professionista');
+    $('[data-session-info]').textContent = (isAdmin() ? 'Amministratore' : 'Professionista') + ' · accesso valido fino alle '
+      + new Date(state.me.expiresAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    $('[data-user-profile]').hidden = !myPro();
+  }
+
+  function buildNav() {
+    var nav = $('[data-nav]');
     nav.textContent = '';
-    tabs.forEach(function (t, i) {
-      var b = el('button', { type: 'button', 'data-tab': t[0], 'aria-pressed': String(i === 0) }, [t[1]]);
-      if (t[0] === 'richieste') b.appendChild(el('span', { class: 'badge', 'data-req-count': true, hidden: true }));
-      if (t[0] === 'agenda') b.appendChild(el('span', { class: 'badge', 'data-pending-count': true, hidden: true, title: 'Richieste da approvare' }));
-      b.addEventListener('click', function () { openTab(t[0]); });
-      nav.appendChild(b);
+    NAV.forEach(function (g) {
+      if (!allowed(g.perm)) return;
+      var items = g.items.filter(function (r) { return allowed(ROUTES[r].perm); });
+      if (!items.length) return;
+      var ul = el('ul', { class: 'sb-list', role: 'list' });
+      items.forEach(function (r) {
+        var meta = ROUTES[r];
+        var a = el('a', { href: '#/' + r, class: 'sb-item', 'data-route': r, title: meta.nav }, [icon(meta.icon), el('span', { class: 'sb-label', text: meta.nav })]);
+        if (meta.badge === 'req') a.appendChild(el('span', { class: 'badge', 'data-req-count': true, hidden: true, title: 'Richieste da gestire' }));
+        if (meta.badge === 'pending') a.appendChild(el('span', { class: 'badge', 'data-pending-count': true, hidden: true, title: 'Richieste da accettare' }));
+        if (meta.soon) a.appendChild(el('span', { class: 'sb-soon', text: 'presto' }));
+        ul.appendChild(el('li', {}, [a]));
+      });
+      nav.appendChild(el('div', { class: 'sb-group' }, [g.label ? el('p', { class: 'sb-h', text: g.label }) : null, ul]));
     });
-    nav.appendChild(el('button', { type: 'button', text: 'Esci', onclick: function () { api('POST', '/logout', {}).then(showLogin, showLogin); } }));
-    openTab('agenda');
+    paintIcons(document);
   }
 
-  function openTab(tab) {
-    $$('[data-tab]').forEach(function (x) { x.setAttribute('aria-pressed', String(x.getAttribute('data-tab') === tab)); });
-    $$('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== tab; });
+  function showPanel(name) {
+    $$('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== name; });
+  }
+
+  function routeKey() {
+    var h = location.hash.replace(/^#\/?/, '');
+    var parts = h.split('/');
+    var two = parts.slice(0, 2).join('/');
+    if (ROUTES[two]) return { key: two, arg: parts.slice(2).join('/') };
+    if (ROUTES[parts[0]]) return { key: parts[0], arg: parts.slice(1).join('/') };
+    return { key: null, arg: '' };
+  }
+
+  function onRoute() {
+    if (!state.me || document.getElementById('app').hidden) return;
+    var r = routeKey();
+    if (!r.key || !allowed(ROUTES[r.key].perm)) { location.replace('#/agenda/calendario'); return; }
+    var meta = ROUTES[r.key];
+    var wasRoute = state.route;
+    state.route = r.key;
+    closeNav();
+    closeUserMenu();
+    $$('[data-route]').forEach(function (a) {
+      var on = a.getAttribute('data-route') === r.key;
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    if (meta.editor) { enterEditor(meta.editor, r.arg); return; }
+    if (document.body.classList.contains('is-editor')) { document.body.classList.remove('is-editor'); flushSave(); }
+    state.lastShellRoute = r.key;
+    showPanel(meta.panel);
+    document.body.classList.toggle('route-wide', !!meta.wide);
+    $('[data-page-title]').textContent = meta.title;
+    var crumbs = $('[data-crumbs]');
+    crumbs.textContent = '';
+    var crumb = r.key === 'impostazioni/calendario' && !isAdmin() ? 'Il mio account' : meta.crumb;
+    if (crumb) { crumbs.appendChild(el('li', { text: crumb })); crumbs.appendChild(el('li', { 'aria-current': 'page', text: meta.title })); }
+    document.title = meta.title + ' – Area riservata Blooming';
+    $('[data-pro-switch]').hidden = !(isAdmin() && meta.proSwitch);
+    if (wasRoute && wasRoute !== r.key) { var c = $('#content'); c.scrollTop = 0; window.scrollTo(0, 0); }
     var job = null;
-    if (tab === 'richieste') job = loadRequests();
-    if (tab === 'orari') job = loadRules();
-    if (tab === 'profilo') job = renderProfile();
-    if (tab === 'servizi') job = renderServices();
-    if (tab === 'professionisti') job = renderPros();
-    if (tab === 'account') job = loadUsers();
-    if (tab === 'sito') job = se.loaded ? null : loadSitePages();
-    if (tab === 'sito') setTimeout(fitFrame, 0);
+    var p = meta.panel;
+    if (p === 'agenda') job = refresh();
+    if (p === 'pending') job = loadPendingCount();
+    if (p === 'orari') job = loadRules();
+    if (p === 'blocchi') job = loadBlocks();
+    if (p === 'richieste') job = loadRequests();
+    if (p === 'profilo') job = renderProfile();
+    if (p === 'servizi') job = renderServices();
+    if (p === 'professionisti') job = renderPros();
+    if (p === 'account') job = loadUsers();
+    if (p === 'imp-prenotazione') job = loadSettings();
     if (job && job.catch) job.catch(function () { /* the api() helper already shows the login when the session is over */ });
   }
+  window.addEventListener('hashchange', onRoute);
+
+  // Sidebar: off-canvas on phones, icon rail on tablets (expandable), collapsible on computers.
+  var mqTablet = window.matchMedia('(max-width: 1200px)');
+  function closeNav() {
+    document.body.classList.remove('nav-open', 'sb-wide');
+    $('[data-menu-toggle]').setAttribute('aria-expanded', 'false');
+    $('[data-scrim]').hidden = true;
+  }
+  $('[data-menu-toggle]').addEventListener('click', function () {
+    var open = !document.body.classList.contains('nav-open');
+    document.body.classList.toggle('nav-open', open);
+    this.setAttribute('aria-expanded', String(open));
+    $('[data-scrim]').hidden = !open;
+    if (open) { var first = $('.sb-item'); if (first) first.focus(); }
+  });
+  $('[data-scrim]').addEventListener('click', closeNav);
+  $('[data-sb-collapse]').addEventListener('click', function () {
+    if (mqTablet.matches) {
+      var wide = !document.body.classList.contains('sb-wide');
+      document.body.classList.toggle('sb-wide', wide);
+      $('[data-scrim]').hidden = !wide;
+      return;
+    }
+    var mini = !document.body.classList.contains('sb-mini');
+    document.body.classList.toggle('sb-mini', mini);
+    try { localStorage.setItem('blooming-admin-mini', mini ? '1' : ''); } catch (e) { /* not available */ }
+  });
+  try { if (localStorage.getItem('blooming-admin-mini')) document.body.classList.add('sb-mini'); } catch (e) { /* not available */ }
+
+  // User menu
+  function closeUserMenu() {
+    $('[data-user-pop]').hidden = true;
+    $('[data-user-btn]').setAttribute('aria-expanded', 'false');
+  }
+  $('[data-user-btn]').addEventListener('click', function (e) {
+    e.stopPropagation();
+    var pop = $('[data-user-pop]');
+    pop.hidden = !pop.hidden;
+    this.setAttribute('aria-expanded', String(!pop.hidden));
+    if (!pop.hidden) { var f = $('a:not([hidden]), button', pop); if (f) f.focus(); }
+  });
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.usermenu')) closeUserMenu();
+    if (!e.target.closest('.ed-picker')) closePicker();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (!$('[data-user-pop]').hidden) { closeUserMenu(); $('[data-user-btn]').focus(); }
+    if (document.body.classList.contains('nav-open') || document.body.classList.contains('sb-wide')) closeNav();
+    if (!$('[data-ed-pop]').hidden) { closePicker(); $('[data-ed-pick]').focus(); }
+  });
+  $('[data-logout]').addEventListener('click', function () {
+    flushSave().then(function () { return api('POST', '/logout', {}); }).then(showLogin, showLogin);
+  });
 
   function buildProSwitch() {
     var box = $('[data-pro-switch]');
     var sel = $('[data-pro-select]');
-    box.hidden = !isAdmin();
+    box.hidden = true;
     if (!isAdmin()) return;
     sel.textContent = '';
-    sel.appendChild(el('option', { value: 'all', text: 'Tutti i professionisti' }));
+    sel.appendChild(el('option', { value: 'all', text: 'Tutte le professioniste' }));
     state.me.professionals.forEach(function (p) {
-      sel.appendChild(el('option', { value: p.id, text: p.name + (p.active ? '' : ' (non attivo)') }));
+      sel.appendChild(el('option', { value: p.id, text: p.name + (p.active ? '' : ' (non attiva)') }));
     });
     sel.value = state.scope;
     sel.onchange = function () {
       state.scope = sel.value;
-      loadRules().then(refresh);
+      loadRules().then(function () {
+        if (state.route === 'agenda/blocchi') return loadBlocks();
+        return refresh();
+      });
     };
   }
 
@@ -206,15 +409,36 @@
   }
 
   // ---------- agenda ----------
-  $('[data-prev]').addEventListener('click', function () { state.weekStart = addDays(state.weekStart, state.view === 'week' ? -7 : -28); refresh(); });
-  $('[data-next]').addEventListener('click', function () { state.weekStart = addDays(state.weekStart, state.view === 'week' ? 7 : 28); refresh(); });
-  $('[data-today]').addEventListener('click', function () { state.weekStart = monday(state.today); refresh(); });
+  var fmtMonth = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  function monthOf(d) { return d.slice(0, 8) + '01'; }
+  function addMonths(m, n) { var dt = parse(m); dt.setUTCMonth(dt.getUTCMonth() + n); return iso(dt); }
+  function monthWeeks(m) {
+    var start = monday(m);
+    var next = addMonths(m, 1);
+    var days = Math.round((parse(next) - parse(start)) / 86400000);
+    return Math.ceil(days / 7);
+  }
+  function setView(v) {
+    if (v === state.view) return;
+    if (v === 'month') state.month = monthOf(addDays(state.weekStart, 3));
+    else if (state.view === 'month') state.weekStart = monthOf(state.today) === state.month ? monday(state.today) : monday(state.month);
+    state.view = v;
+    $$('[data-view]').forEach(function (x) { x.setAttribute('aria-pressed', String(x.getAttribute('data-view') === v)); });
+    refresh();
+  }
+  $('[data-prev]').addEventListener('click', function () {
+    if (state.view === 'month') state.month = addMonths(state.month, -1);
+    else state.weekStart = addDays(state.weekStart, state.view === 'week' ? -7 : -28);
+    refresh();
+  });
+  $('[data-next]').addEventListener('click', function () {
+    if (state.view === 'month') state.month = addMonths(state.month, 1);
+    else state.weekStart = addDays(state.weekStart, state.view === 'week' ? 7 : 28);
+    refresh();
+  });
+  $('[data-today]').addEventListener('click', function () { state.weekStart = monday(state.today); state.month = monthOf(state.today); refresh(); });
   $$('[data-view]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      state.view = b.getAttribute('data-view');
-      $$('[data-view]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
-      refresh();
-    });
+    b.addEventListener('click', function () { setView(b.getAttribute('data-view')); });
   });
   $('[data-new]').addEventListener('click', function () {
     var inWeek = state.today >= state.weekStart && state.today <= addDays(state.weekStart, 6);
@@ -222,6 +446,10 @@
   });
 
   function range() {
+    if (state.view === 'month') {
+      var from = monday(state.month);
+      return { from: from, to: addDays(from, monthWeeks(state.month) * 7 - 1) };
+    }
     return state.view === 'week'
       ? { from: state.weekStart, to: addDays(state.weekStart, 6) }
       : { from: state.weekStart, to: addDays(state.weekStart, 41) };
@@ -230,30 +458,169 @@
   function refresh() {
     var r = range();
     var label = fmtDayMonth.format(parse(r.from)) + ' – ' + fmtDayMonth.format(parse(r.to));
-    if (state.weekStart === monday(state.today) && state.view === 'week') label = 'Settimana corrente · ' + label;
+    if (state.view === 'month') label = capital(fmtMonth.format(parse(state.month)));
+    else if (state.weekStart === monday(state.today) && state.view === 'week') label = 'Questa settimana · ' + label;
     $('[data-range]').textContent = label;
     var q = '/events?from=' + r.from + '&to=' + r.to + (isAdmin() ? '&professional=' + (state.scope || 'all') : '');
     loadPendingCount();
+    if (state.route === 'agenda/blocchi') loadBlocks();
     return api('GET', q).then(function (res) {
       state.events = res.events;
       $('[data-week]').hidden = state.view !== 'week';
+      $('[data-month]').hidden = state.view !== 'month';
       $('[data-list]').hidden = state.view !== 'list';
-      if (state.view === 'week') renderWeek(); else renderList();
+      if (state.view === 'week') renderWeek(); else if (state.view === 'month') renderMonth(); else renderList();
     }).catch(function (e) { $('[data-week]').textContent = e.message; });
   }
 
-  // Requests from the website waiting for approval: count on the Agenda tab.
+  // Requests from the website waiting for approval: count in the menu and the "Da accettare" list.
   function loadPendingCount() {
-    api('GET', '/events/pending').then(function (res) {
+    return api('GET', '/events/pending').then(function (res) {
+      state.pending = res.events;
       var badge = $('[data-pending-count]');
       if (badge) { badge.hidden = !res.events.length; badge.textContent = String(res.events.length); }
+      if (state.route === 'agenda/da-accettare') renderPending();
     }).catch(function () { /* the agenda still works */ });
+  }
+
+  function whenText(ev) {
+    return capital(fmtLongDay.format(parse(ev.date))) + ' · ' + ev.time + '–' + (ev.endDate === ev.date ? ev.endTime : '…');
+  }
+  function dateTile(d) {
+    var dt = parse(d);
+    return el('span', { class: 'date-tile', 'aria-hidden': 'true' }, [
+      el('small', { text: DAY_NAMES[weekday(d) - 1] }),
+      el('strong', { text: String(dt.getUTCDate()) }),
+      el('small', { text: new Intl.DateTimeFormat('it-IT', { month: 'short', timeZone: 'UTC' }).format(dt) }),
+    ]);
+  }
+  function pill(text, cls) { return el('span', { class: 'pill' + (cls ? ' pill-' + cls : ''), text: text }); }
+
+  function renderPending() {
+    var box = $('[data-pending-list]');
+    box.textContent = '';
+    var list = (state.pending || []).slice().sort(function (a, b) { return a.start < b.start ? -1 : 1; });
+    if (!list.length) {
+      box.appendChild(emptyState('check', 'Nessuna richiesta da accettare', 'Quando qualcuno chiede un primo colloquio dal sito, la richiesta compare qui e ricevi un\'email.'));
+      return;
+    }
+    var ul = el('ul', { class: 'rows', role: 'list' });
+    list.forEach(function (ev) {
+      var others = ((state.catalog && state.catalog.professionals) || state.me.professionals || []).filter(function (p) { return p.id !== ev.professionalId && p.active !== false; });
+      var actions = el('div', { class: 'row-actions' }, [
+        el('button', { type: 'button', class: 'btn btn-primary btn-small', text: 'Accetta', onclick: function (e) {
+          e.target.disabled = true;
+          api('POST', '/events/' + ev.id + '/approve', {}).then(function () { toast('Richiesta accettata: la persona riceve un\'email di conferma.'); refresh(); })
+            .catch(function (e2) { e.target.disabled = false; toast(e2.message, 'error'); });
+        } }),
+        el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Rifiuta', onclick: function () {
+          if (!window.confirm('Rifiutare la richiesta? La persona riceverà un\'email per scegliere un altro orario.')) return;
+          api('POST', '/events/' + ev.id + '/decline', {}).then(function () { toast('Richiesta rifiutata: la persona riceve un\'email per scegliere un altro orario.'); refresh(); })
+            .catch(function (e2) { toast(e2.message, 'error'); });
+        } }),
+        others.length ? el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Passa alla collega', onclick: function () { openEdit(ev); } }) : null,
+      ]);
+      ul.appendChild(el('li', { class: 'row' }, [
+        dateTile(ev.date),
+        el('button', { type: 'button', class: 'row-main', onclick: function () { openEdit(ev); }, 'aria-label': 'Dettagli della richiesta di ' + (ev.name || 'persona senza nome') }, [
+          el('span', { class: 'row-title' }, [el('strong', { text: ev.name || '—' }), pill('Da accettare', 'pending'), ev.lang === 'en' ? pill('EN', 'muted') : null]),
+          el('span', { class: 'row-sub', text: whenText(ev) + ' · ' + (ev.serviceName || KIND_LABEL[ev.kind]) + (ev.mode ? ' · ' + MODE_LABEL[ev.mode] : '') + (isAdmin() ? ' · ' + ev.professionalName : '') }),
+        ]),
+        actions,
+      ]));
+    });
+    box.appendChild(ul);
+  }
+
+  function emptyState(ic, title, text, action) {
+    return el('div', { class: 'empty-state' }, [el('div', { class: 'es-icon' }, [icon(ic, 28)]), el('h2', { text: title }), text ? el('p', { class: 'hint', text: text }) : null, action || null]);
+  }
+
+  // ---------- blocked days and hours ----------
+  function blockWhen(ev) {
+    var allDay = ev.time === '00:00' && ev.endTime === '00:00';
+    function day(d) { return fmtLongDay.format(parse(d)); }
+    if (allDay) {
+      var last = addDays(ev.endDate, -1);
+      if (last === ev.date) return capital(day(ev.date)) + ' · giornata intera';
+      var n = Math.round((parse(ev.endDate) - parse(ev.date)) / 86400000);
+      return 'Da ' + day(ev.date) + ' a ' + day(last) + ' · ' + n + ' giorni';
+    }
+    if (ev.date === ev.endDate) return capital(day(ev.date)) + ' · ' + ev.time + '–' + ev.endTime;
+    return 'Da ' + day(ev.date) + ', ' + ev.time + ' a ' + day(ev.endDate) + ', ' + ev.endTime;
+  }
+  function loadBlocks() {
+    var from = state.today, to = addDays(state.today, 365);
+    var q = '/events?from=' + from + '&to=' + to + (isAdmin() ? '&professional=' + (state.scope || 'all') : '');
+    return api('GET', q).then(function (res) {
+      var list = res.events.filter(function (e) { return e.kind === 'blocco'; });
+      var box = $('[data-blocks-list]');
+      box.textContent = '';
+      if (!list.length) {
+        box.appendChild(emptyState('calendar', 'Nessun giorno bloccato', 'Blocca le ferie o un impegno: in quel periodo nessuno potrà prenotare online.'));
+        return;
+      }
+      var ul = el('ul', { class: 'rows', role: 'list' });
+      list.forEach(function (ev) {
+        ul.appendChild(el('li', { class: 'row' }, [
+          dateTile(ev.date),
+          el('button', { type: 'button', class: 'row-main', onclick: function () { openEdit(ev); } }, [
+            el('span', { class: 'row-title' }, [el('strong', { text: ev.title || 'Non disponibile' }), !singlePro() ? pill(shortName(ev.professionalName), 'muted') : null]),
+            el('span', { class: 'row-sub', text: blockWhen(ev) }),
+          ]),
+          el('div', { class: 'row-actions' }, [el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Modifica', onclick: function () { openEdit(ev); } })]),
+        ]));
+      });
+      box.appendChild(ul);
+    });
+  }
+  $('[data-new-block]').addEventListener('click', function () {
+    openNew(state.today, '09:00');
+    setKind('blocco');
+    $('[data-dlg-title]').textContent = 'Blocca giorni o ore';
+  });
+
+  // ---------- month ----------
+  function renderMonth() {
+    var start = monday(state.month);
+    var weeks = monthWeeks(state.month);
+    var showPro = !singlePro();
+    var grid = el('div', { class: 'month' });
+    DAY_NAMES.forEach(function (n) { grid.appendChild(el('div', { class: 'month-head', text: n })); });
+    for (var i = 0; i < weeks * 7; i++) {
+      (function (d) {
+        var inMonth = d.slice(0, 7) === state.month.slice(0, 7);
+        var evs = state.events.filter(function (e) { return dayPieces(e, d); });
+        var cell = el('div', { class: 'month-cell' + (inMonth ? '' : ' out') + (d === state.today ? ' today' : '') });
+        cell.appendChild(el('button', { type: 'button', class: 'month-day', 'aria-label': 'Apri la settimana di ' + fmtLongDay.format(parse(d)), text: String(parse(d).getUTCDate()), onclick: function () {
+          state.weekStart = monday(d); setView('week');
+        } }));
+        var ul = el('ul', { class: 'month-evs', role: 'list' });
+        evs.slice(0, 3).forEach(function (ev) {
+          var st = evState(ev);
+          var cls = ev.kind === 'blocco' ? 'blocco' : (st && st.cls === 'pending' ? 'pending' : (ev.source === 'sito' ? 'sito' : 'manuale'));
+          var label = ev.kind === 'blocco' ? (ev.title || 'Non disponibile') : (ev.name || KIND_LABEL[ev.kind]);
+          var allDay = ev.kind === 'blocco' && (ev.date !== d || ev.time === '00:00');
+          ul.appendChild(el('li', {}, [el('button', { type: 'button', class: 'mchip mchip-' + cls, title: label, onclick: function () { openEdit(ev); } }, [
+            allDay ? null : el('time', { text: ev.time }),
+            el('span', { text: label + (showPro && ev.kind !== 'blocco' ? ' · ' + shortName(ev.professionalName) : '') }),
+          ])]));
+        });
+        if (evs.length > 3) ul.appendChild(el('li', {}, [el('button', { type: 'button', class: 'mmore', text: '+' + (evs.length - 3) + ' altri', onclick: function () { state.weekStart = monday(d); setView('week'); } })]));
+        cell.appendChild(ul);
+        if (evs.length) cell.appendChild(el('span', { class: 'mdots', 'aria-hidden': 'true', text: evs.length > 3 ? '•••' : new Array(evs.length + 1).join('•') }));
+        grid.appendChild(cell);
+      })(addDays(start, i));
+    }
+    var wrap = $('[data-month]');
+    wrap.textContent = '';
+    wrap.appendChild(grid);
   }
 
   // Short state shown on an appointment: request to approve, or whether the person confirmed.
   function evState(ev) {
     if (ev.kind === 'blocco') return null;
-    if (ev.pending) return { cls: 'pending', text: 'Da approvare' };
+    if (ev.pending) return { cls: 'pending', text: 'Da accettare' };
     if (ev.status === 'annullato' && ev.cancelReason === 'tardivo') return { cls: 'late', text: 'Annullato dalla persona all\'ultimo momento' };
     if (ev.status === 'annullato' && ev.cancelReason === 'non_confermato') return { cls: 'late', text: 'Orario liberato: presenza non confermata' };
     if (ev.status !== 'confermato') return null;
@@ -449,7 +816,7 @@
 
   function openNew(date, time) {
     var proId = singlePro() || myPro() || (state.me.professionals[0] && state.me.professionals[0].id);
-    if (!proId) { window.alert('Crea prima un professionista nella sezione Professionisti.'); return; }
+    if (!proId) { window.alert('Crea prima una professionista in Studio → Professioniste.'); return; }
     state.editing = null;
     resetDialog();
     $('[data-dlg-title]').textContent = 'Nuovo';
@@ -495,7 +862,7 @@
     var st = evState(ev);
     var stBox = $('[data-ev-status]');
     if (ev.pending) {
-      stBox.textContent = 'Richiesta dal sito, da approvare. Se non la approvi entro le ' + ((state.settings && state.settings.approvalDeadline) || '18:00') + ' dell\'ultimo giorno lavorativo prima, scade e la persona riceve un\'email per scegliere un altro orario.';
+      stBox.textContent = 'Richiesta dal sito, da accettare. Se non la accetti entro le ' + ((state.settings && state.settings.approvalDeadline) || '18:00') + ' dell\'ultimo giorno lavorativo prima, scade e la persona riceve un\'email per scegliere un altro orario.';
       stBox.hidden = false;
       $('[data-approve]').hidden = false;
       $('[data-decline]').hidden = false;
@@ -576,6 +943,7 @@
     var req = state.editing ? api('PATCH', '/events/' + state.editing.id, p) : api('POST', '/events', p);
     req.then(function (res) {
       dlg.close();
+      toast(state.editing ? 'Modifiche salvate.' : (state.kind === 'blocco' ? 'Periodo bloccato.' : 'Appuntamento creato.'));
       if (res.skipped && res.skipped.length) {
         window.alert('Creati ' + res.created.length + ' incontri. Saltati per sovrapposizione: ' + res.skipped.map(function (s) { return s.date; }).join(', '));
       }
@@ -599,24 +967,24 @@
     var ev = state.editing;
     var to = $('[data-reassign-to]').value;
     if (!to) return;
-    api('POST', '/events/' + ev.id + '/reassign', { professionalId: to }).then(function () { dlg.close(); refresh(); })
+    api('POST', '/events/' + ev.id + '/reassign', { professionalId: to }).then(function () { dlg.close(); toast('Richiesta passata alla collega.'); refresh(); })
       .catch(function (e) { $('[data-dlg-error]').textContent = e.message; });
   });
   $('[data-free-slot]').addEventListener('click', function () {
     var ev = state.editing;
     if (!window.confirm('Liberare l\'orario? L\'appuntamento viene annullato e la persona riceve un\'email che le spiega cosa fare se non aveva confermato per errore.')) return;
-    api('POST', '/events/' + ev.id + '/cancel', { scope: 'one', reason: 'non_confermato' }).then(function () { dlg.close(); refresh(); })
+    api('POST', '/events/' + ev.id + '/cancel', { scope: 'one', reason: 'non_confermato' }).then(function () { dlg.close(); toast('Orario liberato.'); refresh(); })
       .catch(function (e) { $('[data-dlg-error]').textContent = e.message; });
   });
   $('[data-approve]').addEventListener('click', function () {
     var ev = state.editing;
-    api('POST', '/events/' + ev.id + '/approve', {}).then(function () { dlg.close(); refresh(); })
+    api('POST', '/events/' + ev.id + '/approve', {}).then(function () { dlg.close(); toast('Richiesta accettata: la persona riceve un\'email di conferma.'); refresh(); })
       .catch(function (e) { $('[data-dlg-error]').textContent = e.message; });
   });
   $('[data-decline]').addEventListener('click', function () {
     var ev = state.editing;
     if (!window.confirm('Rifiutare la richiesta? La persona riceverà un\'email per scegliere un altro orario.')) return;
-    api('POST', '/events/' + ev.id + '/decline', {}).then(function () { dlg.close(); refresh(); })
+    api('POST', '/events/' + ev.id + '/decline', {}).then(function () { dlg.close(); toast('Richiesta rifiutata.'); refresh(); })
       .catch(function (e) { $('[data-dlg-error]').textContent = e.message; });
   });
   $('[data-abort-cancel]').addEventListener('click', function () {
@@ -627,7 +995,7 @@
   $('[data-confirm-cancel]').addEventListener('click', function () {
     var ev = state.editing;
     api('POST', '/events/' + ev.id + '/cancel', { scope: form.following.checked ? 'following' : 'one', notify: form.notify.checked })
-      .then(function () { dlg.close(); refresh(); })
+      .then(function () { dlg.close(); toast(ev.kind === 'blocco' ? 'Blocco eliminato.' : 'Appuntamento annullato.'); refresh(); })
       .catch(function (e) { $('[data-dlg-error]').textContent = e.message; });
   });
 
@@ -672,7 +1040,7 @@
     $('[data-rules-who]').textContent = pro ? '· ' + proName(pro) : '';
     form2.hidden = !pro;
     if (!pro) {
-      var p = $('[data-panel="orari"] .pick-hint') || el('p', { class: 'note pick-hint', text: 'Scegli un professionista in alto (“Agenda di”) per vedere e modificare i suoi orari.' });
+      var p = $('[data-panel="orari"] .pick-hint') || el('p', { class: 'note pick-hint', text: 'Scegli una professionista in alto, in “Agenda di”, per vedere e modificare i suoi orari.' });
       form2.parentNode.appendChild(p);
       p.hidden = false;
       return;
@@ -708,6 +1076,7 @@
       renderRules();
       status.className = 'status form-ok';
       status.textContent = 'Orari salvati.';
+      toast('Orari salvati.');
       refresh();
     }).catch(function (e2) { status.className = 'status form-error'; status.textContent = e2.message; });
   });
@@ -1031,6 +1400,7 @@
       state.settings = res.settings;
       status.className = 'status form-ok';
       status.textContent = 'Impostazioni salvate.';
+      toast('Impostazioni salvate.');
     }).catch(function (e2) { status.className = 'status form-error'; status.textContent = e2.message; });
   });
   // ---------- people's rights: find, export, erase one person's data ----------
@@ -1102,28 +1472,51 @@
       var open = res.requests.filter(function (r) { return !r.handledAt; }).length;
       var badge = $('[data-req-count]');
       if (badge) { badge.hidden = open === 0; badge.textContent = String(open); }
+      $$('[data-req-show]').forEach(function (b) {
+        var v = b.getAttribute('data-req-show');
+        b.setAttribute('aria-pressed', String(v === state.reqShow));
+        b.textContent = v === 'open' ? 'Da gestire' + (open ? ' (' + open + ')' : '') : 'Tutte (' + res.requests.length + ')';
+      });
       var box = $('[data-requests]');
       box.textContent = '';
-      if (!res.requests.length) { box.appendChild(el('p', { class: 'empty', text: 'Nessuna richiesta.' })); return; }
-      res.requests.forEach(function (r) {
+      var list = state.reqShow === 'open' ? res.requests.filter(function (r) { return !r.handledAt; }) : res.requests;
+      if (!list.length) {
+        box.appendChild(state.reqShow === 'open' && res.requests.length
+          ? emptyState('check', 'Tutto gestito', 'Nessuna richiesta in attesa. Quelle già gestite sono in “Tutte”.')
+          : emptyState('mail', 'Nessuna richiesta', 'Quando qualcuno chiede di essere ricontattato dal sito, la richiesta compare qui.'));
+        return;
+      }
+      var ul = el('ul', { class: 'req-list', role: 'list' });
+      list.forEach(function (r) {
         var when = new Date(r.createdAt).toLocaleString('it-IT', { dateStyle: 'medium', timeStyle: 'short' });
-        box.appendChild(el('div', { class: 'req' + (r.handledAt ? ' handled' : '') }, [
-          el('p', {}, [el('strong', { text: r.name || '—' }), (r.organization ? ' · ' + r.organization : '') + ' · ' + when]),
-          r.email ? el('p', {}, [el('a', { href: 'mailto:' + encodeURIComponent(r.email).replace(/%40/g, '@'), text: r.email })]) : null,
-          r.phone ? el('p', {}, [el('a', { href: 'tel:' + r.phone.replace(/\s/g, ''), text: r.phone })]) : null,
-          el('p', { class: 'hint', text: 'Area: ' + (CATEGORY_LABEL[r.category] || 'Da definire')
-            + (r.professionalName ? ' · Professionista: ' + r.professionalName : '')
-            + ' · Preferenza: ' + ({ studio: 'in studio', online: 'online', da_definire: 'da definire' }[r.mode] || '—')
-            + (r.preference ? ' · ' + r.preference : '') }),
-          r.message ? el('p', { text: r.message }) : null,
+        ul.appendChild(el('li', { class: 'req card' + (r.handledAt ? ' handled' : '') }, [
+          el('div', { class: 'req-head' }, [
+            el('div', {}, [
+              el('p', { class: 'req-name' }, [el('strong', { text: r.name || '—' }), r.organization ? el('span', { text: ' · ' + r.organization }) : null]),
+              el('p', { class: 'hint', text: when }),
+            ]),
+            r.handledAt ? pill('Gestita', 'ok') : pill(r.category === 'aziende' ? 'Organizzazione · nuova' : 'Nuova', 'new'),
+          ]),
+          el('dl', { class: 'req-facts' }, [
+            r.email ? el('div', {}, [el('dt', { text: 'Email' }), el('dd', {}, [el('a', { href: 'mailto:' + encodeURIComponent(r.email).replace(/%40/g, '@'), text: r.email })])]) : null,
+            r.phone ? el('div', {}, [el('dt', { text: 'Telefono' }), el('dd', {}, [el('a', { href: 'tel:' + r.phone.replace(/\s/g, ''), text: r.phone })])]) : null,
+            el('div', {}, [el('dt', { text: 'Area' }), el('dd', { text: CATEGORY_LABEL[r.category] || 'Da definire' })]),
+            r.professionalName ? el('div', {}, [el('dt', { text: 'Professionista' }), el('dd', { text: r.professionalName })]) : null,
+            el('div', {}, [el('dt', { text: 'Preferenza' }), el('dd', { text: ({ studio: 'in studio', online: 'online', da_definire: 'da definire' }[r.mode] || '—') + (r.preference ? ' · ' + r.preference : '') })]),
+          ]),
+          r.message ? el('p', { class: 'req-msg', text: r.message }) : null,
           el('div', { class: 'cta-row' }, [
             el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: r.handledAt ? 'Segna da gestire' : 'Segna come gestita', onclick: function () { api('POST', '/requests/' + r.id, { handled: !r.handledAt }).then(loadRequests); } }),
-            el('button', { type: 'button', class: 'btn btn-danger btn-small', text: 'Elimina', onclick: function () { if (window.confirm('Eliminare definitivamente la richiesta?')) api('DELETE', '/requests/' + r.id).then(loadRequests); } }),
+            el('button', { type: 'button', class: 'btn btn-danger btn-small', text: 'Elimina', onclick: function () { if (window.confirm('Eliminare definitivamente la richiesta?')) api('DELETE', '/requests/' + r.id).then(function () { toast('Richiesta eliminata.'); return loadRequests(); }); } }),
           ]),
         ]));
       });
+      box.appendChild(ul);
     });
   }
+  $$('[data-req-show]').forEach(function (b) {
+    b.addEventListener('click', function () { state.reqShow = b.getAttribute('data-req-show'); loadRequests(); });
+  });
 
   // =====================================================================
   // ---------- page editor ("Sito") ----------
@@ -1901,63 +2294,146 @@
     }).map(function (k) { return { key: k, it: groups[k].it, en: groups[k].en }; });
   }
 
-  function renderPageList() {
-    var box = $('[data-se-pages]');
-    box.textContent = '';
-    // Parts shared by every page: header and footer (per language) and the studio's details.
-    var gl = el('ul', { class: 'se-pagelist se-globallist', role: 'list' });
+  // Every place the editor can open: shared parts, the media library, then the pages in both languages.
+  function editorEntries() {
     var scopes = se.globals ? se.globals.scopes : null;
-    function gBtn(scope, text, aria) {
-      var current = se.mode === 'global' && se.gscope === scope;
-      var changes = scopes && scopes[scope] && scopes[scope].hasChanges;
-      return el('button', {
-        type: 'button', class: 'se-lang' + (current ? ' current' : ''), 'aria-current': current ? 'page' : null, disabled: !scopes,
-        'aria-label': aria + (changes ? ', modifiche non pubblicate' : ''), title: scopes ? '' : 'Non ancora disponibile',
-        onclick: function () { openGlobal(scope); },
-      }, [text, changes ? el('span', { class: 'se-dot', 'aria-hidden': 'true' }) : null]);
+    var out = [];
+    if (scopes) {
+      ['it', 'en'].forEach(function (l) {
+        out.push({ group: 'Tutto il sito', label: 'Intestazione e piè di pagina', lang: l, changes: !!(scopes[l] && scopes[l].hasChanges),
+          current: se.mode === 'global' && se.gscope === l, run: function () { openGlobal(l); } });
+      });
+      out.push({ group: 'Tutto il sito', label: 'Dati dello studio', changes: !!(scopes.studio && scopes.studio.hasChanges),
+        current: se.mode === 'global' && se.gscope === 'studio', run: function () { openGlobal('studio'); } });
     }
-    gl.appendChild(el('li', { class: 'se-pageitem' }, [el('span', { class: 'se-pagename', text: 'Intestazione e piè di pagina' }),
-      el('span', { class: 'se-langs' }, [gBtn('it', 'IT', 'Intestazione e piè di pagina, italiano'), gBtn('en', 'EN', 'Intestazione e piè di pagina, inglese')])]));
-    gl.appendChild(el('li', { class: 'se-pageitem' }, [el('span', { class: 'se-pagename', text: 'Dati dello studio' }),
-      el('span', { class: 'se-langs' }, [gBtn('studio', 'Apri', 'Dati dello studio')])]));
-    var mediaCurrent = se.mode === 'media';
-    gl.appendChild(el('li', { class: 'se-pageitem' }, [el('span', { class: 'se-pagename', text: 'Immagini e PDF' }),
-      el('span', { class: 'se-langs' }, [el('button', { type: 'button', class: 'se-lang' + (mediaCurrent ? ' current' : ''), 'aria-current': mediaCurrent ? 'page' : null, 'aria-label': 'Libreria di immagini e PDF', onclick: openMedia, text: 'Apri' })])]));
-    box.appendChild(el('h2', { class: 'se-h', text: 'Tutto il sito' }));
-    box.appendChild(gl);
-    box.appendChild(el('h2', { class: 'se-h', text: 'Pagine' }));
-    var ul = el('ul', { class: 'se-pagelist', role: 'list' });
+    out.push({ group: 'Tutto il sito', label: 'Immagini e PDF', current: se.mode === 'media', run: openMedia });
     siteGroups().forEach(function (g) {
-      var langs = el('span', { class: 'se-langs' });
       ['it', 'en'].forEach(function (l) {
         var p = g[l];
         if (!p) return;
-        var current = se.mode === 'page' && se.page && se.page.id === p.id;
-        langs.appendChild(el('button', {
-          type: 'button', class: 'se-lang' + (current ? ' current' : ''), 'aria-current': current ? 'page' : null,
-          'aria-label': pageName(g.key) + ', ' + LANG_NAME[l] + (p.hasChanges ? ', modifiche non pubblicate' : ''),
-          title: p.hasChanges ? 'Modifiche non pubblicate' : 'Pubblicata',
-          onclick: function () { openSitePage(p.id); },
-        }, [l.toUpperCase(), p.hasChanges ? el('span', { class: 'se-dot', 'aria-hidden': 'true' }) : null]));
+        out.push({ group: 'Pagine', label: pageName(g.key), lang: l, path: p.path, changes: !!p.hasChanges,
+          current: se.mode === 'page' && se.page && se.page.id === p.id, run: function () { openSitePage(p.id); } });
       });
-      ul.appendChild(el('li', { class: 'se-pageitem' }, [el('span', { class: 'se-pagename', text: pageName(g.key) }), langs]));
     });
-    box.appendChild(ul);
+    return out;
+  }
+
+  function entryButton(x, onDone) {
+    return el('button', {
+      type: 'button', class: 'ed-entry' + (x.current ? ' current' : ''), 'aria-current': x.current ? 'page' : null,
+      'aria-label': x.label + (x.lang ? ', ' + LANG_NAME[x.lang] : '') + (x.changes ? ', modifiche non pubblicate' : ''),
+      onclick: function () { if (onDone) onDone(); x.run(); },
+    }, [
+      el('span', { class: 'ed-entry-name' }, [x.label, x.path ? el('small', { text: x.path }) : null]),
+      x.changes ? el('span', { class: 'se-dot', title: 'Modifiche non pubblicate', 'aria-hidden': 'true' }) : null,
+      x.lang ? el('span', { class: 'ed-lang', text: x.lang.toUpperCase() }) : null,
+    ]);
+  }
+
+  function renderPageList() {
+    var box = $('[data-se-pages]');
+    box.textContent = '';
+    var entries = editorEntries();
+    ['Tutto il sito', 'Pagine'].forEach(function (g) {
+      box.appendChild(el('h2', { class: 'se-h', text: g }));
+      var ul = el('ul', { class: 'se-pagelist', role: 'list' });
+      entries.filter(function (x) { return x.group === g; }).forEach(function (x) { ul.appendChild(el('li', {}, [entryButton(x)])); });
+      box.appendChild(ul);
+    });
     box.appendChild(el('p', { class: 'hint se-legend' }, [el('span', { class: 'se-dot', 'aria-hidden': 'true' }), ' modifiche non ancora pubblicate']));
-    // Phones: a simple select.
-    var sel = $('[data-se-pagesel]');
-    sel.textContent = '';
-    sel.appendChild(el('option', { value: '', text: 'Scegli la pagina…' }));
-    if (scopes) {
-      sel.appendChild(el('option', { value: 'g:it', text: 'Intestazione e piè di pagina · IT' }));
-      sel.appendChild(el('option', { value: 'g:en', text: 'Intestazione e piè di pagina · EN' }));
-      sel.appendChild(el('option', { value: 'g:studio', text: 'Dati dello studio' }));
-    }
-    sel.appendChild(el('option', { value: 'media', text: 'Immagini e PDF' }));
-    siteGroups().forEach(function (g) {
-      ['it', 'en'].forEach(function (l) { if (g[l]) sel.appendChild(el('option', { value: g[l].id, text: pageName(g.key) + ' · ' + l.toUpperCase() + (g[l].hasChanges ? ' •' : '') })); });
+    renderPicker();
+  }
+
+  // Page picker in the toolbar, with search.
+  function renderPicker() {
+    var box = $('[data-ed-results]');
+    if (!box) return;
+    var q = ($('[data-ed-search]').value || '').trim().toLowerCase();
+    box.textContent = '';
+    var entries = editorEntries().filter(function (x) {
+      return !q || (x.label + ' ' + (x.path || '') + ' ' + (x.lang || '')).toLowerCase().indexOf(q) !== -1;
     });
-    sel.value = se.mode === 'media' ? 'media' : se.mode === 'global' ? 'g:' + se.gscope : (se.page ? se.page.id : '');
+    var last = null;
+    entries.forEach(function (x) {
+      if (x.group !== last) { box.appendChild(el('p', { class: 'se-h', text: x.group })); last = x.group; }
+      box.appendChild(entryButton(x, closePicker));
+    });
+    if (!entries.length) box.appendChild(el('p', { class: 'hint ed-noresult', text: 'Nessuna pagina trovata.' }));
+  }
+  function closePicker() {
+    var pop = $('[data-ed-pop]');
+    if (!pop || pop.hidden) return;
+    pop.hidden = true;
+    $('[data-ed-pick]').setAttribute('aria-expanded', 'false');
+  }
+
+  // Which panel the editor shows: page (blocks + preview + inspector), shared parts, or the library.
+  function edLayout() {
+    var ed = $('[data-panel="sito"]');
+    var media = se.mode === 'media';
+    var global = se.mode === 'global';
+    ed.classList.toggle('mode-media', media);
+    ed.classList.toggle('mode-global', global);
+    ed.classList.toggle('has-selection', se.mode === 'page' && se.selected >= 0 && se.tab === 'blocks');
+    var bt = $('[data-ed-ltab="blocks"]');
+    bt.disabled = media || global;
+    setLTab(media || global ? 'pages' : (se.ltab || 'blocks'));
+    $('[data-se-history]').hidden = global || media;
+    $('[data-se-publish]').hidden = media;
+    $('[data-se-badge]').hidden = media;
+    $('[data-se-langswitch]').hidden = media || (global && se.gscope === 'studio');
+    $('.se-device').hidden = media;
+    $('[data-se-openpreview]').classList.toggle('is-off', media);
+  }
+  function setLTab(t) {
+    $$('[data-ed-ltab]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-ed-ltab') === t)); });
+    $$('[data-ed-lpanel]').forEach(function (p) { p.hidden = p.getAttribute('data-ed-lpanel') !== t; });
+  }
+
+  // Keep the address in step with what is open, so reload and back/forward come back here.
+  function edHash() {
+    if (se.mode === 'media') return '#/sito/media';
+    if (se.mode === 'global') return se.gscope === 'studio' ? '#/studio/dati' : '#/sito/intestazione/' + se.gscope;
+    return se.page ? '#/sito/pagine/' + se.page.id : '#/sito/pagine';
+  }
+  function syncHash() {
+    if (!document.body.classList.contains('is-editor')) return;
+    var h = edHash();
+    if (location.hash === h) return;
+    var r = routeKey();
+    if (r.key) state.route = r.key;
+    // From the bare section address to a specific page: replace, so "back" leaves the editor.
+    if (h.indexOf(location.hash + '/') === 0) history.replaceState(null, '', h); else history.pushState(null, '', h);
+    var nr = routeKey();
+    state.route = nr.key;
+    $$('[data-route]').forEach(function (a) {
+      if (a.getAttribute('data-route') === nr.key) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+  }
+
+  function enterEditor(kind, arg) {
+    document.body.classList.add('is-editor');
+    document.body.classList.remove('route-wide');
+    $('[data-ed-exit]').href = '#/' + (state.lastShellRoute || 'agenda/calendario');
+    showPanel('sito');
+    document.title = 'Editor del sito – Area riservata Blooming';
+    var ready = se.loaded ? Promise.resolve() : loadSitePages();
+    ready.then(function () {
+      if (kind === 'media') { if (se.mode !== 'media') return openMedia(); }
+      else if (kind === 'global' || kind === 'studio') {
+        var sc = kind === 'studio' ? 'studio' : (arg === 'en' ? 'en' : 'it');
+        if (!(se.mode === 'global' && se.gscope === sc)) return openGlobal(sc);
+      } else {
+        var id = arg ? String(arg) : (se.page ? se.page.id : null);
+        if (!id || !se.pages.some(function (p) { return p.id === id; })) {
+          var home = se.pages.find(function (p) { return p.key === 'index' && p.lang === 'it'; }) || se.pages[0];
+          id = home ? home.id : null;
+        }
+        if (id && !(se.mode === 'page' && se.page && se.page.id === id)) return openSitePage(id);
+      }
+      edLayout();
+      syncHash();
+    }).then(function () { setTimeout(fitFrame, 0); });
   }
 
   function loadGlobals() {
@@ -1966,14 +2442,9 @@
 
   function loadSitePages() {
     return Promise.all([api('GET', '/site/pages'), loadGlobals()]).then(function (all) {
-      var res = all[0];
-      se.pages = res.pages;
+      se.pages = all[0].pages;
       se.loaded = true;
       renderPageList();
-      if (!se.page) {
-        var home = se.pages.find(function (p) { return p.key === 'index' && p.lang === 'it'; }) || se.pages[0];
-        if (home) return openSitePage(home.id);
-      }
     }).catch(function (e) { showBanner(e.message); });
   }
 
@@ -1997,6 +2468,7 @@
       setStatus(res.page.draftUpdatedBy ? 'Ultima modifica: ' + res.page.draftUpdatedBy + ', ' + new Date(res.page.draftUpdatedAt).toLocaleString('it-IT', { dateStyle: 'short', timeStyle: 'short' }) : '');
       renderEditor();
       renderPageList();
+      syncHash();
       if (se.refOpen) loadReference();
       schedulePreview(0);
     }).catch(function (e) { showBanner(e.message); });
@@ -2046,11 +2518,13 @@
     $('[data-se-tab-blocks]').hidden = tab !== 'blocks';
     $('[data-se-tab-seo]').hidden = tab !== 'seo';
     if (tab === 'seo') renderSeo();
+    $('[data-panel="sito"]').classList.toggle('has-selection', se.mode === 'page' && se.selected >= 0 && tab === 'blocks');
   }
 
   function renderEditor() {
     var p = se.page;
     var global = se.mode === 'global';
+    edLayout();
     $('[data-se-media]').hidden = true;
     $('[data-se-empty]').hidden = !!(p || global);
     $('[data-se-editor]').hidden = !(p || global);
@@ -2121,10 +2595,15 @@
     return flushSave().then(function () {
       se.mode = 'media';
       hideBanner();
+      setStatus('');
+      $('[data-se-title]').textContent = 'Immagini e PDF';
+      $('[data-se-path]').textContent = 'Libreria di tutto il sito';
       $('[data-se-empty]').hidden = true;
       $('[data-se-editor]').hidden = true;
       $('[data-se-media]').hidden = false;
+      edLayout();
       renderPageList();
+      syncHash();
       return renderMedia();
     });
   }
@@ -2231,6 +2710,7 @@
       var target = se.page && se.page.lang === lang ? se.page : (se.pages.find(function (p) { return p.key === 'index' && p.lang === lang; }) || se.pages.find(function (p) { return p.lang === lang; }));
       renderEditor();
       renderPageList();
+      syncHash();
       if (!target) return null;
       return api('GET', '/site/pages/' + target.id).then(function (res) {
         se.gpreview = { id: res.page.id, draft: res.page.draft };
@@ -2299,10 +2779,34 @@
         ]),
       ]);
       var item = el('li', { class: 'se-block' + (open ? ' open' : '') + (b.__error ? ' error' : ''), 'data-se-block': String(i) }, [head]);
-      if (open) item.appendChild(inspector(b, def));
       box.appendChild(item);
     });
     if (!blocks.length) box.appendChild(el('li', { class: 'empty', text: 'Nessun blocco. Aggiungine uno.' }));
+    renderInspector();
+  }
+
+  // Right panel: the fields of the selected block.
+  function renderInspector() {
+    var box = $('[data-se-tab-blocks]');
+    box.textContent = '';
+    $('[data-panel="sito"]').classList.toggle('has-selection', se.mode === 'page' && se.selected >= 0 && se.tab === 'blocks');
+    var b = se.draft && se.draft.blocks[se.selected];
+    if (!b) {
+      box.appendChild(el('div', { class: 'ed-empty' }, [
+        el('div', { class: 'es-icon' }, [icon('cursor', 26)]),
+        el('p', { class: 'ed-empty-title', text: 'Scegli un blocco' }),
+        el('p', { class: 'hint', text: 'Clicca un blocco nell\'elenco a sinistra, o direttamente nell\'anteprima, per modificarne testi e impostazioni.' }),
+      ]));
+      return;
+    }
+    var def = se.library[b.type] || { label: b.type, fields: [], bg: ['light'] };
+    var i = se.selected;
+    box.appendChild(el('div', { class: 'ins-head' }, [
+      el('button', { type: 'button', class: 'ins-back', onclick: function () { selectBlock(-1); } }, [icon('back', 18), el('span', { text: 'Blocchi' })]),
+      el('span', { class: 'se-block-n', text: String(i + 1) }),
+      el('strong', { text: def.label }),
+    ]));
+    box.appendChild(inspector(b, def));
   }
 
   function inspector(b, def) {
@@ -2332,12 +2836,13 @@
 
   function selectBlock(i) {
     se.selected = i;
+    if (i >= 0 && se.tab !== 'blocks') setTab('blocks');
     renderBlocks();
     if (i >= 0) {
       var li = $('[data-se-block="' + i + '"]');
       if (li && li.scrollIntoView) li.scrollIntoView({ block: 'nearest' });
       scrollPreviewTo(i);
-    }
+    } else scrollPreviewTo(-1);
   }
   function moveBlock(i, d) {
     if (!moveItem(se.draft.blocks, i, d)) return;
@@ -2551,6 +3056,7 @@
           try { f.contentWindow.scrollTo(0, y); } catch (e2) { /* ignore */ }
           // Clicking links inside the preview does nothing: it is only a picture of the page.
           try { f.contentDocument.addEventListener('click', function (ev) { if (ev.target.closest && ev.target.closest('a,button')) ev.preventDefault(); }, true); } catch (e3) { /* ignore */ }
+          if (se.mode === 'page') wirePreviewPick(f);
           fitFrame();
         };
         f.srcdoc = html;
@@ -2559,11 +3065,27 @@
     }).catch(function (e) { $('[data-se-preview-msg]').textContent = 'Anteprima non aggiornata: ' + e.message; });
   }
 
+  // Clicking a section of the preview selects its block, like a design tool.
+  function wirePreviewPick(f) {
+    try {
+      var doc = f.contentDocument;
+      var main = doc.querySelector('main') || doc.body;
+      var secs = Array.prototype.filter.call(main.children, function (n) { return n.nodeName === 'SECTION'; });
+      secs.forEach(function (sec, i) {
+        sec.addEventListener('mouseenter', function () { sec.style.outline = '2px solid rgba(31, 47, 58, .55)'; sec.style.outlineOffset = '-2px'; sec.style.cursor = 'pointer'; });
+        sec.addEventListener('mouseleave', function () { sec.style.outline = ''; });
+        sec.addEventListener('click', function () { if (se.mode === 'page' && se.draft.blocks[i]) selectBlock(i); });
+      });
+      if (se.selected >= 0 && secs[se.selected]) { secs[se.selected].style.boxShadow = 'inset 0 0 0 3px rgba(31, 47, 58, .85)'; }
+    } catch (e) { /* not loaded yet */ }
+  }
+
   function scrollPreviewTo(i) {
     $$('[data-se-frame]').forEach(function (f) {
       try {
         var main = f.contentDocument.querySelector('main') || f.contentDocument.body;
         var secs = Array.prototype.filter.call(main.children, function (n) { return n.nodeName === 'SECTION'; });
+        secs.forEach(function (sec, k) { sec.style.boxShadow = k === se.selected ? 'inset 0 0 0 3px rgba(31, 47, 58, .85)' : ''; });
         if (secs[i]) secs[i].scrollIntoView({ block: 'start' });
       } catch (e) { /* not loaded yet */ }
     });
@@ -2684,10 +3206,29 @@
   (function wireSiteEditor() {
     var root = $('[data-panel="sito"]');
     if (!root) return;
-    $('[data-se-pagesel]').addEventListener('change', function (e) {
-      var v = e.target.value;
-      if (!v) return;
-      if (v === 'media') openMedia(); else if (v.indexOf('g:') === 0) openGlobal(v.slice(2)); else openSitePage(v);
+    $('[data-ed-pick]').addEventListener('click', function (e) {
+      e.stopPropagation();
+      var pop = $('[data-ed-pop]');
+      pop.hidden = !pop.hidden;
+      this.setAttribute('aria-expanded', String(!pop.hidden));
+      if (!pop.hidden) { $('[data-ed-search]').value = ''; renderPicker(); $('[data-ed-search]').focus(); }
+    });
+    $('[data-ed-search]').addEventListener('input', renderPicker);
+    $('[data-ed-search]').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { var first = $('[data-ed-results] .ed-entry'); if (first) { e.preventDefault(); first.click(); } }
+      if (e.key === 'ArrowDown') { var f2 = $('[data-ed-results] .ed-entry'); if (f2) { e.preventDefault(); f2.focus(); } }
+    });
+    $('[data-ed-results]').addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      var all = $$('[data-ed-results] .ed-entry');
+      var i = all.indexOf(document.activeElement);
+      if (i < 0) return;
+      e.preventDefault();
+      if (e.key === 'ArrowDown' && all[i + 1]) all[i + 1].focus();
+      if (e.key === 'ArrowUp') { if (all[i - 1]) all[i - 1].focus(); else $('[data-ed-search]').focus(); }
+    });
+    $$('[data-ed-ltab]').forEach(function (b) {
+      b.addEventListener('click', function () { se.ltab = b.getAttribute('data-ed-ltab'); setLTab(se.ltab); });
     });
     $$('[data-se-tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.getAttribute('data-se-tab')); }); });
     $('[data-se-add]').addEventListener('click', addBlockDialog);
@@ -2703,6 +3244,7 @@
         se.device = b.getAttribute('data-se-device');
         $$('[data-se-device]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
         fitFrame();
+        schedulePreview(0);
       });
     });
     $('[data-se-openpreview]').addEventListener('click', function () {
@@ -2718,6 +3260,7 @@
   })();
 
   // ---------- boot ----------
+  paintIcons(document);
   var invite = (location.hash.match(/invito=([\w-]+)/) || [])[1];
   if (invite) startInvite(invite); else start();
 })();
