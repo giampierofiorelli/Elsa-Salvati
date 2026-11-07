@@ -741,3 +741,9 @@ main .eyebrow + h2, main .eyebrow + h1 { margin-top: 0; }
 @media (max-width: 699px) {
   .person-v4 .btn { width: 100%; justify-content: space-between; }
 }
+
+/* Logo icon turns ivory on dark backgrounds (dark sections, open menu):
+   a solid ivory copy of the icon replaces the coloured one. */
+.hdr .brand-icon-light { display: none; }
+.site-header.hdr.on-dark .brand-icon:not(.brand-icon-light), .menu-open .hdr .brand-icon:not(.brand-icon-light) { display: none; }
+.site-header.hdr.on-dark .brand-icon-light, .menu-open .hdr .brand-icon-light { display: block; }
