@@ -6,6 +6,7 @@ import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync, readdirSync, st
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
+import { createSite, LANGS, isPlaceholder } from '../lib/site.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = join(root, 'src');
@@ -42,231 +43,9 @@ function proList(cat) {
   return [...map.values()];
 }
 const catalog = await readCatalog();
-const allServices = catalog.categories.flatMap((c) => c.services);
-
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const isPlaceholder = (s) => typeof s === 'string' && /\[[^\]]+\]/.test(s);
-
-// ---------- languages ----------
-// Italian at the root, English under /en/. The two versions are separate sites
-// with their own texts; pages are linked to their equivalent through a shared key.
-const LANGS = ['it', 'en'];
-const LANG_INFO = {
-  it: { name: 'Italiano', locale: 'it_IT', switchTo: 'Read in English' },
-  en: { name: 'English', locale: 'en_GB', switchTo: 'Leggi in italiano' },
-};
-// Localised field of a catalogue item: English if present, else the Italian one.
-const tr = (obj, field, lang) => (lang === 'en' && obj[field + 'En']) || obj[field];
-
-function get(path) {
-  return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), config);
-}
-
-// ---------- components available in pages as {{@name}} ----------
-
-const arrow = '<svg class="icon" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16"><path d="M4.5 11.5l7-7M6 4.5h5.5V10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const arrowRight = '<svg class="icon" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-
-const MODE_LABEL = { studio: 'In studio', online: 'Online' };
-
-function avatar(p, sizes = '(min-width: 900px) 280px, 100vw') {
-  return p.photo
-    ? `<picture>
-          <source type="image/webp" srcset="/assets/img/${esc(p.photo)}-480.webp 480w, /assets/img/${esc(p.photo)}-800.webp 800w" sizes="${sizes}">
-          <img src="/assets/img/${esc(p.photo)}-800.jpg" alt="${esc(p.name)}" width="800" height="1067" loading="lazy">
-        </picture>`
-    : `<div class="person-placeholder" aria-hidden="true"><img src="/assets/img/logo-icon.webp" alt="" width="147" height="112"></div>`;
-}
-
-function modeTags(modes) {
-  return modes.map((m) => `<span class="tag tag-${m}">${MODE_LABEL[m]}</span>`).join(' ');
-}
-
-function personCard(p, { service } = {}) {
-  const services = service
-    ? `<p class="person-meta">${modeTags(p.modes)}</p>`
-    : `<ul class="person-services" role="list">${p.services.map((sv) => `<li><a href="/servizi/${esc(sv.slug)}/">${esc(sv.name)}</a></li>`).join('')}</ul>`;
-  const cta = service
-    ? `<a class="btn btn-primary btn-small" href="/prenota/?servizio=${esc(service.id)}&amp;professionista=${esc(p.id)}">Prenota con ${esc(p.name.split(' ').slice(-1)[0])}</a>`
-    : '';
-  return `<li class="person" id="${esc(p.slug)}">
-      <div class="person-photo">${avatar(p)}</div>
-      <div class="person-body">
-        <h3>${esc(p.name)}</h3>
-        <p class="person-role">${esc(p.title)}</p>
-        ${p.bio ? `<p>${esc(p.bio)}</p>` : ''}
-        ${services}
-        ${p.albo ? `<p class="person-albo">${esc(p.albo)}</p>` : ''}
-        ${cta}
-      </div>
-    </li>`;
-}
-
-const circleArrow = `<span class="circle-arrow" aria-hidden="true">${arrowRight}</span>`;
-
-// One row of the services list: name, practical details and who offers it.
-function serviceRow(sv) {
-  const pros = sv.professionals.map((p) => esc(p.name)).join(', ');
-  const modes = [...new Set(sv.professionals.flatMap((p) => p.modes))];
-  const facts = [`${esc(sv.durationMinutes)} minuti`, sv.price ? esc(sv.price) : '', pros ? `Con ${pros}` : 'Professionisti in arrivo'].filter(Boolean).join(' · ');
-  return `<li><a class="link-row" href="/servizi/${esc(sv.slug)}/">
-      <span class="link-row-text">
-        <span class="link-row-title">${esc(sv.name)}</span>
-        <span class="link-row-sub">${facts}</span>
-        <span class="svc-meta">${modeTags(modes)}</span>
-      </span>
-      ${circleArrow}
-    </a></li>`;
-}
-
-// Final call to action, shown at the bottom of most pages.
-function closingPanel({ photo }) {
-  return `<section class="closing-wrap" aria-labelledby="closing-title">
-    <div class="wrap">
-      <div class="cta-panel${photo ? ' has-photo' : ''}">
-        <div class="cta-panel-text">
-          <h2 id="closing-title">Fare il primo passo <span class="fade">può essere semplice.</span></h2>
-          <p>Scegli un orario libero per il primo colloquio, oppure chiedici di ricontattarti. Non serve raccontare nulla della tua situazione per prenotare.</p>
-          <div class="cta-stack">
-            <a class="btn btn-outline-light btn-wide" href="/contatti/">Fai una domanda</a>
-            <a class="btn btn-light btn-wide" href="/prenota/">Prenota un primo colloquio</a>
-          </div>
-        </div>
-        ${photo ? `<div class="cta-panel-photo">
-          <picture>
-            <source type="image/webp" srcset="/assets/img/team-480.webp 480w, /assets/img/team-800.webp 800w" sizes="(min-width: 900px) 420px, 88vw">
-            <img src="/assets/img/team-800.jpg" alt="" width="800" height="1062" loading="lazy">
-          </picture>
-        </div>` : ''}
-      </div>
-    </div>
-  </section>`;
-}
-
-const components = {
-  arrow: () => arrow,
-  arrowRight: () => arrowRight,
-  heroArt: () => `<div class="hero-art" aria-hidden="true">
-        <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
-          <rect width="400" height="500" fill="#CDEFE2"/>
-          <circle cx="320" cy="90" r="140" fill="#E6F6EF"/>
-          <circle cx="60" cy="440" r="170" fill="#8FBFB3" opacity=".45"/>
-        </svg>
-        <img src="/assets/img/logo-icon.webp" alt="" width="147" height="112">
-      </div>`,
-  trustline: () => `<p class="trustline">Studio associato a ${esc(config.city)} · Psicologi e psicoterapeuti iscritti all'${esc(config.albo)} · In studio e online</p>`,
-  categoryCards: () => `<ul class="link-list" role="list">${catalog.categories.map((c) => `
-    <li><a class="link-row" href="/servizi/#${esc(c.slug)}">
-      <span class="link-row-text">
-        <span class="link-row-title">${esc(c.name)}</span>
-        <span class="link-row-sub">${c.services.map((sv) => esc(sv.name)).join(' · ') || 'Servizi in arrivo'}</span>
-      </span>
-      ${circleArrow}
-    </a></li>`).join('')}
-  </ul>`,
-  servicesByCategory: () => catalog.categories.map((c) => `
-    <section class="cat-block" id="${esc(c.slug)}" aria-labelledby="cat-${esc(c.slug)}">
-      <div class="cat-head">
-        <h2 id="cat-${esc(c.slug)}">${esc(c.name)}</h2>
-        <p class="lead">${esc(c.intro)}</p>
-      </div>
-      ${c.services.length ? `<ul class="link-list" role="list">${c.services.map(serviceRow).join('')}</ul>` : '<p class="hint">Servizi in arrivo.</p>'}
-    </section>`).join(''),
-  team: () => `<ul class="team" role="list">${catalog.professionals.map((p) => personCard(p)).join('')}</ul>`,
-  serviceDetail: (ctx) => {
-    const sv = ctx.service;
-    const paras = String(sv.description || '').split(/\n{2,}/).map((t) => `<p>${esc(t)}</p>`).join('');
-    return paras;
-  },
-  serviceFacts: (ctx) => {
-    const sv = ctx.service;
-    const modes = [...new Set(sv.professionals.flatMap((p) => p.modes))];
-    return `<dl class="summary">
-        <dt>Durata</dt><dd>${esc(sv.durationMinutes)} minuti</dd>
-        ${sv.price ? `<dt>Tariffa</dt><dd>${esc(sv.price)}</dd>` : ''}
-        <dt>Dove</dt><dd>${modes.map((m) => (m === 'studio' ? `In studio a ${esc(config.city)}` : 'Online')).join(' · ') || '—'}</dd>
-      </dl>`;
-  },
-  serviceTeam: (ctx) => ctx.service.professionals.length
-    ? `<ul class="team" role="list">${ctx.service.professionals.map((p) => personCard(p, { service: ctx.service })).join('')}</ul>`
-    : '<p class="hint">I professionisti per questo servizio saranno presto disponibili. Puoi comunque chiederci di ricontattarti.</p>',
-  serviceBook: (ctx) => `/prenota/?servizio=${esc(ctx.service.id)}`,
-  practical: () => `<dl class="practical">
-      <div><dt>Durata</dt><dd>${esc(config.fees.sessionMinutes)}–60 minuti, secondo il servizio</dd></div>
-      <div><dt>Tariffe</dt><dd>Indicate nella pagina di ciascun servizio</dd></div>
-      <div><dt>Dove</dt><dd>In studio a ${esc(config.city)} (${esc(config.studio.neighbourhood)}) e online</dd></div>
-      <div><dt>Cancellazioni</dt><dd>${esc(config.fees.cancellation)}</dd></div>
-    </dl>`,
-  cta: () => `<div class="cta-row">
-      <a class="btn btn-primary" href="/prenota/">Verifica disponibilità ${arrow}</a>
-      <a class="btn btn-ghost" href="/tariffe-e-prenotazioni/#come-si-prenota">Come funziona il primo colloquio</a>
-    </div>`,
-  closing: () => closingPanel({ photo: true }),
-  closingPlain: () => closingPanel({ photo: false }),
-  doors: () => `<ul class="link-list" role="list">${config.needs.map((n) => `
-    <li><a class="link-row" href="${esc(n.href)}">
-      <span class="link-row-text">
-        <span class="link-row-title">${esc(n.door)}</span>
-        <span class="link-row-sub">${esc(n.text)}</span>
-      </span>
-      ${circleArrow}
-    </a></li>`).join('')}
-  </ul>`,
-  heroTeam: () => `<picture>
-          <source type="image/webp" srcset="/assets/img/team-480.webp 480w, /assets/img/team-800.webp 800w, /assets/img/team-1088.webp 1088w" sizes="(min-width: 900px) 460px, 92vw">
-          <img src="/assets/img/team-800.jpg" alt="Tre professionisti dello studio seduti insieme in una stanza luminosa con piante e libri" width="800" height="1062" fetchpriority="high">
-        </picture>`,
-  promoAziende: () => `<div class="promo">
-      <p class="eyebrow">Per aziende e organizzazioni</p>
-      <h2>Persone che stanno bene, <span class="fade">team che funzionano.</span></h2>
-      <p>Coaching per manager, sviluppo dei team, formazione e benessere organizzativo. Prima di proporre un intervento ascoltiamo il vostro contesto: obiettivi, persone coinvolte, vincoli.</p>
-      <a class="btn btn-light btn-wide" href="/aziende/#contatto">Parliamo delle vostre esigenze</a>
-    </div>`,
-  businessAreas: () => `<ul class="biz-areas" role="list">${config.business.areas.map((a) => `
-    <li><h3>${esc(a.name)}</h3><p>${esc(a.text)}</p></li>`).join('')}
-  </ul>`,
-  teamCoaching: () => {
-    const pros = catalog.professionals.filter((p) => p.services.some((sv) => sv.category === 'coaching'));
-    return pros.length ? `<ul class="team" role="list">${pros.map((p) => personCard(p)).join('')}</ul>` : '<p class="hint">Presto qui i professionisti dell\'area.</p>';
-  },
-  workServices: () => {
-    const cat = catalog.categories.find((c) => c.slug === 'coaching');
-    return cat && cat.services.length ? `<ul class="link-list" role="list">${cat.services.map(serviceRow).join('')}</ul>` : '';
-  },
-  needOptions: () => config.needs.map((n) => n.categories.length
-    ? `<button type="button" class="choice" data-need="${esc(n.slug)}" data-cats="${esc(n.categories.join(','))}" aria-pressed="false"><strong>${esc(n.label)}</strong><span>${esc(n.text)}</span></button>`
-    : `<a class="choice" href="${esc(n.href)}#contatto"><strong>${esc(n.label)}</strong><span>Parliamo delle vostre esigenze ${arrowRight}</span></a>`).join('')
-    + '<button type="button" class="choice" data-need="tutti" data-cats="*" aria-pressed="false"><strong>Non sono sicuro</strong><span>Vedi tutti i servizi: al primo colloquio capiamo insieme il percorso più adatto.</span></button>',
-  whatsapp: () => `https://wa.me/${esc(config.contact.whatsapp)}?text=${encodeURIComponent('Buongiorno, vorrei alcune informazioni pratiche.')}`,
-  categoryOptions: (ctx) => catalog.categories.map((c) => `<option value="${esc(c.slug)}">${esc(tr(c, 'name', ctx.lang))}</option>`).join(''),
-  // English-site components (the Italian site keeps the components above until the v4 texts arrive).
-  needOptionsEn: () => config.needs.map((n) => n.categories.length
-    ? `<button type="button" class="choice" data-need="${esc(n.slug)}" data-cats="${esc(n.categories.join(','))}" aria-pressed="false"><strong>${esc(n.labelEn || n.label)}</strong><span>${esc(n.textEn || n.text)}</span></button>`
-    : `<a class="choice" href="/en/contact/"><strong>${esc(n.labelEn || n.label)}</strong><span>Tell us about your organisation ${arrowRight}</span></a>`).join('')
-    + '<button type="button" class="choice" data-need="tutti" data-cats="*" aria-pressed="false"><strong>Not sure</strong><span>See everything: in the free first meeting we work out together what fits.</span></button>',
-  categoryCardsEn: () => `<ul class="link-list" role="list">${catalog.categories.filter((c) => c.services.length).map((c) => `
-    <li><a class="link-row" href="/en/book/?area=${esc(c.slug)}">
-      <span class="link-row-text">
-        <span class="link-row-title">${esc(tr(c, 'name', 'en'))}</span>
-        <span class="link-row-sub">${c.services.map((sv) => esc(tr(sv, 'name', 'en'))).join(' · ')}</span>
-      </span>
-      ${circleArrow}
-    </a></li>`).join('')}
-  </ul>`,
-};
-
-function render(template, extra = {}, ctx = {}) {
-  return template
-    .replace(/\{\{@(\w+)\}\}/g, (_, name) => {
-      if (!components[name]) throw new Error(`componente sconosciuto: ${name}`);
-      return components[name](ctx);
-    })
-    .replace(/\{\{([\w.]+)\}\}/g, (_, key) => {
-      const v = key in extra ? extra[key] : get(key);
-      if (v === undefined) throw new Error(`valore mancante: ${key}`);
-      return esc(v);
-    });
-}
+const layouts = Object.fromEntries(LANGS.map((l) => [l, readFileSync(join(src, `partials/layout.${l}.html`), 'utf8')]));
+const site = createSite({ config, layouts, catalog, demo });
+const { render, page, register, equivalents, base } = site;
 
 function parsePage(text) {
   const m = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
@@ -277,69 +56,6 @@ function parsePage(text) {
     if (i > 0) meta[line.slice(0, i).trim()] = line.slice(i + 1).trim();
   }
   return { meta, body: m[2] };
-}
-
-// ---------- structured data (only real values, never placeholders) ----------
-
-function jsonLd() {
-  const people = catalog.professionals.filter((m) => !isPlaceholder(m.name)).map((m) => ({ '@type': 'Person', name: m.name, jobTitle: m.title }));
-  const business = { '@type': 'LocalBusiness', name: config.studioFullName };
-  if (!isPlaceholder(config.siteUrl)) business.url = config.siteUrl;
-  if (!isPlaceholder(config.contact.phone)) business.telephone = config.contact.phone;
-  if (!isPlaceholder(config.studio.address)) business.address = config.studio.address;
-  return JSON.stringify({ '@context': 'https://schema.org', '@graph': [business, ...people] }).replace(/</g, '\\u003c');
-}
-
-// ---------- layout ----------
-
-const layouts = Object.fromEntries(LANGS.map((l) => [l, readFileSync(join(src, `partials/layout.${l}.html`), 'utf8')]));
-const base = isPlaceholder(config.siteUrl) ? '' : config.siteUrl.replace(/\/$/, '');
-const abs = (path) => base + path;
-
-// key -> { it: path, en: path }: which pages are equivalent across the two sites.
-const equivalents = new Map();
-function register(key, lang, path) {
-  if (!equivalents.has(key)) equivalents.set(key, {});
-  equivalents.get(key)[lang] = path;
-}
-// Where the language switch goes when a page has no equivalent: the nearest
-// section ("how we can help"), never the home page.
-const FALLBACK_KEY = 'servizi';
-function counterpart(key, lang, fallback) {
-  const other = lang === 'it' ? 'en' : 'it';
-  const eq = equivalents.get(key) || {};
-  if (eq[other]) return { path: eq[other], exact: true };
-  const fb = equivalents.get(fallback || FALLBACK_KEY) || {};
-  return { path: fb[other] || (other === 'en' ? '/en/' : '/'), exact: false };
-}
-
-function page(meta, body, path, ctx = {}) {
-  const lang = ctx.lang || 'it';
-  const other = lang === 'it' ? 'en' : 'it';
-  const canonical = base ? `<link rel="canonical" href="${esc(abs(path))}">` : '';
-  const alt = counterpart(meta.key, lang, meta.fallback);
-  // hreflang only between true equivalents; x-default = the English page.
-  const eq = equivalents.get(meta.key) || {};
-  const hreflang = alt.exact && meta.noindex !== 'true'
-    ? [...LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${esc(abs(eq[l]))}">`),
-      `<link rel="alternate" hreflang="x-default" href="${esc(abs(eq.en))}">`].join('\n')
-    : '';
-  // The Italian home is linked as /?lang=it so the browser-language redirect never applies.
-  const switchHref = alt.path === '/' ? '/?lang=it' : alt.path;
-  const langSwitch = `<a class="lang-switch" href="${esc(switchHref)}" hreflang="${other}" lang="${other}" data-lang-switch="${other}">${esc(LANG_INFO[lang].switchTo)}</a>`;
-  const scripts = (meta.scripts || '').split(',').map((s) => s.trim()).filter(Boolean)
-    .map((s) => `<script src="/assets/js/${s}.js" defer></script>`).join('\n');
-  const nav = meta.nav || '';
-  return render(layouts[lang], { pageTitle: meta.title, pageDescription: meta.description || '' })
-    .replace('<!--canonical-->', canonical)
-    .replace('<!--hreflang-->', hreflang)
-    .replace(/<!--langswitch-->/g, langSwitch)
-    .replace('<!--robots-->', meta.noindex === 'true' || demo ? '<meta name="robots" content="noindex, nofollow">' : '')
-    .replace('<!--demo-->', '')
-    .replace('<!--jsonld-->', path === '/' || path === '/en/' ? `<script type="application/ld+json">${jsonLd()}</script>` : '')
-    .replace('<!--scripts-->', scripts)
-    .replace(/<a ([^>]*)data-nav="([\w-]+)"/g, (all, attrs, key) => (key === nav ? `<a ${attrs}aria-current="page"` : `<a ${attrs}`))
-    .replace('<!--content-->', render(body, {}, ctx));
 }
 
 function write(path, html) {
@@ -368,14 +84,6 @@ for (const lang of LANGS) {
   for (const file of walk(dir).filter((f) => f.endsWith('.html'))) {
     const { meta, body } = parsePage(readFileSync(file, 'utf8'));
     meta.key = meta.key || file.slice(dir.length + 1).replace(/\.html$/, '');
-    if (meta.template === 'service') {
-      for (const service of allServices) {
-        const path = lang === 'it' ? `/servizi/${service.slug}/` : `/en/services/${service.slug}/`;
-        pages.push({ lang, meta: { ...meta, key: `servizio:${service.slug}` }, body, path, service });
-        register(`servizio:${service.slug}`, lang, path);
-      }
-      continue;
-    }
     pages.push({ lang, meta, body, path: meta.path });
     if (meta.path !== '/404' && meta.path !== '/en/404') register(meta.key, lang, meta.path);
   }
@@ -384,16 +92,7 @@ for (const lang of LANGS) {
 // Pass 2: render.
 const urls = []; // { path, key, noindex }
 for (const pg of pages) {
-  const { lang, meta, body, path, service } = pg;
-  if (service) {
-    const cat = catalog.categories.find((c) => c.slug === service.category);
-    const fill = (t) => t.replaceAll('{{svc.name}}', esc(tr(service, 'name', lang))).replaceAll('{{svc.category}}', esc(cat ? tr(cat, 'name', lang) : ''))
-      .replaceAll('{{svc.categorySlug}}', esc(service.category));
-    const title = render(fill(meta.title));
-    write(path, page({ ...meta, title, description: String(tr(service, 'description', lang)).slice(0, 155) }, fill(body), path, { service, lang }));
-    urls.push({ path, key: meta.key });
-    continue;
-  }
+  const { lang, meta, body, path } = pg;
   const html = page({ ...meta, title: render(meta.title), description: render(meta.description || '') }, body, path, { lang });
   write(path === '/404' ? '404.html' : path === '/en/404' ? 'en/404.html' : path, html);
   if (meta.noindex !== 'true' && path !== '/404' && path !== '/en/404') urls.push({ path, key: meta.key });
