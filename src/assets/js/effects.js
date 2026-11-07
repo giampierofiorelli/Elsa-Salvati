@@ -1,56 +1,67 @@
-// Desktop-only effects (v4): living gradient in the opening and dot grid on
-// dark sections. (A lotus cursor was tried and set aside for now.) Off on touch screens, small screens and with
+// Effects (v4): living gradient in the opening (desktop and phones) and dot
+// grid on dark sections (desktop with a mouse only). Everything is off with
 // "reduce motion"; the static CSS gradient stays as the fallback.
 (function () {
   'use strict';
   var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var wide = window.matchMedia('(min-width: 900px)').matches;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!fine || !wide || reduce) return;
+  if (reduce) return;
+  var desktop = fine && wide;
 
-  var mouse = { x: 0.7, y: 0.3, px: -1000, py: -1000 };
-  window.addEventListener('pointermove', function (e) {
-    mouse.x = e.clientX / window.innerWidth;
-    mouse.y = e.clientY / window.innerHeight;
-    mouse.px = e.clientX; mouse.py = e.clientY;
-  }, { passive: true });
+  var mouse = { x: 0.62, y: 0.45, px: -1000, py: -1000 };
+  if (desktop) {
+    window.addEventListener('pointermove', function (e) {
+      mouse.x = e.clientX / window.innerWidth;
+      mouse.y = e.clientY / window.innerHeight;
+      mouse.px = e.clientX; mouse.py = e.clientY;
+    }, { passive: true });
+  }
 
   // ---------- living gradient (own WebGL shader) ----------
+  // Same idea as the reference site, written from scratch: a warm cream base
+  // with slow peach clouds and moving grain, plus a large soft triangle in
+  // sand that a flow field bends into silky folds (light rim, soft shadow).
+  // On desktop the shape leans towards the mouse; on phones it moves alone.
   function gradient(host) {
     var canvas = document.createElement('canvas');
     var gl = canvas.getContext('webgl', { antialias: false, premultipliedAlpha: false });
     if (!gl) return;
-    host.appendChild(canvas);
     var vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
-    // Ivory to lotus peach with slow animated grain, plus a soft gold glow that
-    // drifts through a flow field and leans towards the mouse.
     var fs = [
       'precision highp float;',
-      'uniform vec2 r;uniform float t;uniform vec2 m;',
+      'uniform vec2 r;uniform float t;uniform vec2 m;uniform float mob;',
       'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
       'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);',
       ' return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}',
-      // A soft shape made of three drifting blobs, warped by slow noise.
-      'float field(vec2 q){',
-      ' vec2 w=q+vec2(n(q*1.6+t*.06),n(q*1.6-t*.05))*.22;',
-      ' vec2 c1=vec2(1.25+.18*sin(t*.11),.78+.10*cos(t*.09));',
-      ' vec2 c2=vec2(1.55+.14*cos(t*.07),.42+.12*sin(t*.10));',
-      ' vec2 c3=mix(vec2(1.05,.30),m,.35)+vec2(.06*sin(t*.13),.05*cos(t*.12));',
-      ' return .11/dot(w-c1,w-c1)+.07/dot(w-c2,w-c2)+.05/dot(w-c3,w-c3);}',
+      // Signed distance to an equilateral triangle of half-side s (negative inside).
+      'float tri(vec2 p,float s){const float k=1.7320508;p.x=abs(p.x)-s;p.y=p.y+s/k;',
+      ' if(p.x+k*p.y>0.)p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.;p.x-=clamp(p.x,-2.*s,0.);return -length(p)*sign(p.y);}',
+      // Flow field: a few small curl-like steps bend the shape into folds.
+      'vec2 flow(vec2 p){for(int i=0;i<8;i++){float f=float(i);',
+      ' p+=.15*vec2(sin(p.y*.95+t*.20+f*1.3),cos(p.x*.85-t*.17+f*2.1));}return p;}',
+      'vec3 ovl(vec3 s,vec3 d){return mix(2.*s*d,1.-2.*(1.-s)*(1.-d),step(.5,d));}',
+      // Distance to the bent shape, in units of its size.
+      'float D(vec2 q,vec2 c,float s){vec2 p=flow((q-c)/s+vec2(0.,.05*sin(t*.2)))*s;return tri(p,s)/s;}',
       'void main(){',
-      ' vec2 uv=gl_FragCoord.xy/r;float a=r.x/r.y;vec2 q=vec2(uv.x*a,uv.y);',
-      ' vec3 ivory=vec3(.980,.965,.941),peach=vec3(.957,.878,.824),sand=vec3(.910,.800,.706),light=vec3(1.,.992,.980);',
-      ' vec3 col=mix(ivory,peach,smoothstep(.1,1.,uv.x*.6+(1.-uv.y)*.25));',
-      ' float e=.003;float f=field(q);',
-      ' vec2 g=vec2(field(q+vec2(e,0))-f,field(q+vec2(0,e))-f)/e;',
-      ' float body=smoothstep(.85,1.35,f);',
-      ' float rim=smoothstep(.55,1.0,f)*(1.-smoothstep(1.0,1.6,f));',
-      ' vec2 nrm=normalize(g+1e-5);float lit=dot(nrm,normalize(vec2(-.6,.8)));',
-      ' col=mix(col,sand,body*.55);',
-      ' col=mix(col,light,rim*max(lit,0.)*.75);',
-      ' col=mix(col,sand*.92,rim*max(-lit,0.)*.35);',
-      ' col=mix(ivory,col,smoothstep(.0,.35,uv.y));',
-      ' col+=(h(gl_FragCoord.xy+fract(t)*91.)-.5)*.035*smoothstep(.0,.35,uv.y);',
+      ' vec2 uv=gl_FragCoord.xy/r;float a=r.x/r.y;vec2 q=(uv-.5)*vec2(a,1.);',
+      ' vec3 cream=vec3(.962,.935,.910),peach=vec3(.985,.920,.868),sand=vec3(.949,.851,.765);',
+      ' float cl=n(q*1.1+vec2(t*.03,-t*.02))*.65+n(q*2.3-vec2(t*.035))*.35;',
+      ' vec3 col=mix(cream,peach,smoothstep(.3,.8,cl)*.8);',
+      ' float s=mix(.30*a,.50*a,mob);',
+      ' vec2 c=mix(vec2(.08*a,.02)+(m-vec2(.5*a,.5))*.18,vec2(0.,.06),mob);',
+      ' float e=.004;float d=D(q,c,s);',
+      ' vec2 g=vec2(D(q+vec2(e,0.),c,s)-d,D(q+vec2(0.,e),c,s)-d);',
+      ' float lit=dot(normalize(g+1e-6),normalize(vec2(-.55,.85)));',
+      ' float body=smoothstep(.10,-.40,d);',
+      ' col=mix(col,ovl(sand,col),body*.85);',
+      ' col=mix(col,vec3(1.,.992,.98),body*.18);',
+      // Embossed edge: light on the side facing the light, soft shadow on the other.
+      ' float rim=exp(-d*d/.0035);float halo=exp(-d*d/.03);',
+      ' col=mix(col,vec3(1.),rim*max(-lit,0.)*.75);',
+      ' col=mix(col,col*vec3(.925,.905,.885),halo*max(lit,0.)*.55);',
+      ' col+=(h(gl_FragCoord.xy+fract(t*.73)*97.)-.5)*.045;',
+      ' col=mix(vec3(.980,.965,.941),col,smoothstep(0.,.12,uv.y));',
       ' gl_FragColor=vec4(col,1.);}',
     ].join('\n');
     function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
@@ -58,7 +69,9 @@
     gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs));
     gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs));
     gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { canvas.remove(); return; }
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+    host.appendChild(canvas);
+    host.classList.add('gl');
     gl.useProgram(prog);
     var buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
@@ -66,8 +79,10 @@
     var loc = gl.getAttribLocation(prog, 'p');
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    var uR = gl.getUniformLocation(prog, 'r'), uT = gl.getUniformLocation(prog, 't'), uM = gl.getUniformLocation(prog, 'm');
-    var scale = 0.6; // render below full resolution: it's a soft gradient
+    var uR = gl.getUniformLocation(prog, 'r'), uT = gl.getUniformLocation(prog, 't'),
+        uM = gl.getUniformLocation(prog, 'm'), uMob = gl.getUniformLocation(prog, 'mob');
+    // Render below full resolution (it's soft) and, on phones, at ~30 fps to save battery.
+    var scale = desktop ? 0.6 : 0.5, minGap = desktop ? 0 : 32, last = 0;
     function size() {
       canvas.width = Math.max(1, Math.floor(host.clientWidth * scale));
       canvas.height = Math.max(1, Math.floor(host.clientHeight * scale));
@@ -75,11 +90,13 @@
     }
     size();
     window.addEventListener('resize', size);
+    gl.uniform1f(uMob, desktop ? 0 : 1);
     var visible = true, sm = { x: mouse.x, y: mouse.y }, t0 = performance.now();
     new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(host);
     (function frame(now) {
       requestAnimationFrame(frame);
-      if (!visible || document.hidden) return;
+      if (!visible || document.hidden || now - last < minGap) return;
+      last = now;
       sm.x += (mouse.x - sm.x) * 0.03; sm.y += (mouse.y - sm.y) * 0.03;
       gl.uniform2f(uR, canvas.width, canvas.height);
       gl.uniform1f(uT, (now - t0) / 1000);
@@ -88,6 +105,8 @@
     })(t0);
   }
   document.querySelectorAll('[data-gradient]').forEach(gradient);
+
+  if (!desktop) return;
 
   // ---------- dot grid on dark sections ----------
   function dots(section) {
