@@ -451,6 +451,19 @@ create table if not exists stats_notes (
 );
 alter table stats_notes enable row level security;
 
+-- Testi delle email modificabili dall'amministrazione: solo quelli personalizzati (gli originali sono nel codice).
+create table if not exists email_texts (
+  key        text not null,
+  lang       text not null check (lang in ('it', 'en')),
+  subject    text not null,
+  body       jsonb not null,
+  button     text not null default '',
+  updated_by bigint references users(id) on delete set null,
+  updated_at timestamptz not null default now(),
+  primary key (key, lang)
+);
+alter table email_texts enable row level security;
+
 -- Il sito usa solo la connessione diretta al database: i ruoli pubblici di Supabase non devono leggere nulla.
 do $$ begin
   if exists (select 1 from pg_roles where rolname = 'anon') and exists (select 1 from pg_roles where rolname = 'authenticated') then

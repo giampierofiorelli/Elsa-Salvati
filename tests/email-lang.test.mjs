@@ -6,18 +6,19 @@ import { templates } from '../lib/email.mjs';
 const ev = { start_at: '2026-11-10T14:00:00Z', end_at: '2026-11-10T14:30:00Z', kind: 'primo_colloquio', mode: 'online', professional_name: 'Elsa Salvati' };
 const site = { professionalName: 'Blooming', cancelHours: 24 };
 
-test('confirmation in English for an English booking', () => {
-  const m = templates.confirmation({ ev: { ...ev, lang: 'en' }, name: 'Anna', manageUrl: 'https://x/en/book/manage/?t=1', tz: 'Europe/Rome', site });
-  assert.match(m.subject, /^Request accepted/);
+test('appointment booked by the professional, in English for an English booking', () => {
+  const m = templates.confirmation({ ev: { ...ev, lang: 'en', service_price_en: 'Free' }, name: 'Anna', manageUrl: 'https://x/en/book/manage/?t=1', tz: 'Europe/Rome', site });
+  assert.match(m.subject, /^Your meeting – Blooming$/);
   assert.match(m.text, /Dear Anna,/);
-  assert.match(m.text, /free first meeting is booked/);
+  assert.match(m.text, /Elsa has booked your next meeting/);
   assert.match(m.text, /Tuesday, 10 November 2026, 15:00/);
-  assert.match(m.text, /Move or cancel/);
+  assert.match(m.text, /Fee: Free/, 'the price of a first meeting stays where it was');
+  assert.match(m.text, /Cancel: https:\/\/x\/en\/book\/manage\/\?t=1#e=fissato/);
 });
 
 test('confirmation in Italian by default', () => {
   const m = templates.confirmation({ ev, name: 'Anna', manageUrl: null, tz: 'Europe/Rome', site });
-  assert.match(m.subject, /^Richiesta accettata/);
+  assert.match(m.subject, /^Appuntamento fissato/);
   assert.match(m.text, /Gentile Anna,/);
   assert.match(m.text, /martedì 10 novembre 2026, ore 15:00/);
 });

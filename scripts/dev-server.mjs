@@ -10,7 +10,7 @@ import { join, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomBytes } from 'node:crypto';
 import postgres from 'postgres';
-import { createStore } from '../lib/db.mjs';
+import { createStore, emailTextsFrom } from '../lib/db.mjs';
 import { createVault, hashPassword, base32Encode, totpCode, randomToken, sha256 } from '../lib/crypto.mjs';
 import { createMailer } from '../lib/email.mjs';
 import { createStats } from '../lib/stats.mjs';
@@ -45,7 +45,7 @@ const sql = postgres(env.DATABASE_URL || 'postgres://postgres@127.0.0.1:54329/ag
 });
 await sql.unsafe(readFileSync(new URL('../db/schema.sql', import.meta.url), 'utf8'));
 
-const deps = { store: createStore(sql), mediaStore: createMediaStore(sql), vault: createVault(env.DATA_KEY), mailer: createMailer(env, globalThis.fetch, createStats(sql)), site: siteFromEnv(env), env };
+const deps = { store: createStore(sql), mediaStore: createMediaStore(sql), vault: createVault(env.DATA_KEY), mailer: createMailer(env, globalThis.fetch, createStats(sql), emailTextsFrom(sql)), site: siteFromEnv(env), env };
 const pub = createPublicApi(deps);
 // Page editor: starting content and templates from the repository files.
 const kit = withCatalog(readKitFiles(join(dirname(fileURLToPath(import.meta.url)), '..')), () => loadCatalog(deps.store));
