@@ -670,9 +670,13 @@
       { name: 'description', label: 'Descrizione (compare sul sito)', type: 'textarea' },
       { name: 'durationMinutes', label: 'Durata (minuti)', type: 'number', min: 15, maxValue: 240 },
       { name: 'price', label: 'Tariffa (es. €70)', max: 60 },
+      { name: 'nameEn', label: 'Nome in inglese (sito inglese)', max: 80 },
+      { name: 'descriptionEn', label: 'Descrizione in inglese', type: 'textarea' },
+      { name: 'priceEn', label: 'Tariffa in inglese (es. €70)', max: 60 },
+      { name: 'firstMeeting', label: 'Primo colloquio gratuito dell\'area (usato da «Aiutami a scegliere»)', type: 'checkbox' },
       { name: 'sort', label: 'Ordine nell\'elenco', type: 'number' },
       { name: 'active', label: 'Attivo (visibile e prenotabile)', type: 'checkbox' },
-    ], s || { categoryId: cats[0] && cats[0][0], durationMinutes: 50, sort: 0, active: true }, function (v) {
+    ], s ? Object.assign({}, s, { firstMeeting: s.firstMeeting === true }) : { categoryId: cats[0] && cats[0][0], durationMinutes: 50, sort: 0, active: true, firstMeeting: false }, function (v) {
       return (s ? api('PATCH', '/services/' + s.id, v) : api('POST', '/services', v)).then(loadCatalog).then(renderServices);
     });
   }
@@ -681,8 +685,10 @@
     formDialog('Area: ' + c.name, [
       { name: 'name', label: 'Nome', max: 60 },
       { name: 'intro', label: 'Introduzione (compare sul sito)', type: 'textarea', max: 600 },
+      { name: 'nameEn', label: 'Nome in inglese (sito inglese)', max: 60 },
+      { name: 'introEn', label: 'Introduzione in inglese', type: 'textarea', max: 600 },
       { name: 'active', label: 'Visibile sul sito', type: 'checkbox' },
-    ], c, function (v) { return api('PATCH', '/categories/' + c.id, v).then(loadCatalog).then(renderServices); });
+    ], Object.assign({}, c, { nameEn: c.nameEn !== undefined ? c.nameEn : c.name_en, introEn: c.introEn !== undefined ? c.introEn : c.intro_en }), function (v) { return api('PATCH', '/categories/' + c.id, v).then(loadCatalog).then(renderServices); });
   }
 
   function renderServices() {
@@ -755,14 +761,22 @@
       { name: 'name', label: 'Nome (come appare sul sito)', max: 80 },
       { name: 'title', label: 'Titolo (es. Psicologa psicoterapeuta)', max: 80 },
       { name: 'bio', label: 'Presentazione breve', type: 'textarea' },
+      { name: 'titleEn', label: 'Titolo in inglese (es. Psychologist and psychotherapist)', max: 80 },
+      { name: 'bioEn', label: 'Presentazione breve in inglese', type: 'textarea' },
+      { name: 'langIt', label: 'Fa colloqui in italiano', type: 'checkbox' },
+      { name: 'langEn', label: 'Fa colloqui in inglese (compare sul sito inglese e in «Help me choose»)', type: 'checkbox' },
       { name: 'albo', label: 'Iscrizione all\'Albo (es. Ordine degli Psicologi dell\'Emilia-Romagna n. 1234)', max: 120 },
       { name: 'notifyEmail', label: 'Email per gli avvisi di prenotazione', type: 'email' },
       { name: 'photo', label: 'Foto (nome del file, es. elsa-salvati)', max: 60, hint: 'Le foto si aggiungono al sito su richiesta; lascia vuoto per usare il logo.' },
       { name: 'sort', label: 'Ordine nell\'elenco', type: 'number' },
       { name: 'active', label: 'Attivo (visibile e prenotabile)', type: 'checkbox' },
-    ], p || { sort: 0, active: true }, function (v) {
+    ], p ? Object.assign({}, p, { langIt: (p.languages || ['it']).indexOf('it') >= 0, langEn: (p.languages || []).indexOf('en') >= 0 })
+      : { sort: 0, active: true, langIt: true, langEn: false }, function (v) {
       var offerings = v.__extra;
       delete v.__extra;
+      v.languages = [v.langIt ? 'it' : null, v.langEn ? 'en' : null].filter(Boolean);
+      if (!v.languages.length) v.languages = ['it'];
+      delete v.langIt; delete v.langEn;
       var save = p ? api('PATCH', '/professionals/' + p.id, v).then(function () { return p.id; })
         : api('POST', '/professionals', v).then(function (r) { return r.id; });
       return save.then(function (id) { return api('PUT', '/professionals/' + id + '/services', { offerings: offerings }); })

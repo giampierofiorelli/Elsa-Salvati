@@ -45,6 +45,16 @@
 # Netlify reads instead of the browser language.
 # An explicit choice of Italian (the language switch links to /?lang=it) is
 # never sent to English, whatever the browser or the cookies say.
+# Old one-page-per-service addresses: the overview page now has a section per area.
+[[redirects]]
+  from = "/servizi/:slug/"
+  to = "/servizi/"
+  status = 301
+[[redirects]]
+  from = "/servizi/:slug"
+  to = "/servizi/"
+  status = 301
+
 # Pages merged or removed in the v4 site (7/11/2026).
 [[redirects]]
   from = "/costi-e-faq/"
