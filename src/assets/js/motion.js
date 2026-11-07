@@ -121,10 +121,14 @@
     });
   }
 
-  // Short loader with the lotus: first visit only, at most ~1.4 s.
+  // Short loader with the lotus, at most ~1.4 s.
+  // Test phase (G, 7/11): shown on every page load. To go back to first visit
+  // only, set EVERY_LOAD to false.
+  var EVERY_LOAD = true;
   function loader(done) {
     var seen = false;
     try { seen = localStorage.getItem('bl-loader') === '1'; localStorage.setItem('bl-loader', '1'); } catch (e) { seen = true; }
+    if (EVERY_LOAD) seen = false;
     if (seen || !document.querySelector('.hero-v4')) { done(); return; }
     var el = document.createElement('div');
     el.className = 'loader';
