@@ -324,7 +324,9 @@ function page(meta, body, path, ctx = {}) {
     ? [...LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${esc(abs(eq[l]))}">`),
       `<link rel="alternate" hreflang="x-default" href="${esc(abs(eq.en))}">`].join('\n')
     : '';
-  const langSwitch = `<a class="lang-switch" href="${esc(alt.path)}" hreflang="${other}" lang="${other}" data-lang-switch="${other}">${esc(LANG_INFO[lang].switchTo)}</a>`;
+  // The Italian home is linked as /?lang=it so the browser-language redirect never applies.
+  const switchHref = alt.path === '/' ? '/?lang=it' : alt.path;
+  const langSwitch = `<a class="lang-switch" href="${esc(switchHref)}" hreflang="${other}" lang="${other}" data-lang-switch="${other}">${esc(LANG_INFO[lang].switchTo)}</a>`;
   const scripts = (meta.scripts || '').split(',').map((s) => s.trim()).filter(Boolean)
     .map((s) => `<script src="/assets/js/${s}.js" defer></script>`).join('\n');
   const nav = meta.nav || '';

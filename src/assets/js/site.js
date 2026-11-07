@@ -37,6 +37,10 @@
 // other version of the site.
 (function () {
   var pageLang = document.documentElement.lang === 'en' ? 'en' : 'it';
+  // After an explicit switch to Italian (/?lang=it), keep the clean address.
+  if (/[?&]lang=it\b/.test(location.search) && window.history.replaceState) {
+    window.history.replaceState(null, '', location.pathname + location.hash);
+  }
   function remember(lang) {
     document.cookie = 'nf_lang=' + lang + '; path=/; max-age=31536000; samesite=lax';
   }

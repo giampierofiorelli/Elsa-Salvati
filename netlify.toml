@@ -43,6 +43,15 @@
 # else (and crawlers, which send no language) stays on the Italian home page.
 # A choice made with the language switch is kept in the nf_lang cookie, which
 # Netlify reads instead of the browser language.
+# An explicit choice of Italian (the language switch links to /?lang=it) is
+# never sent to English, whatever the browser or the cookies say.
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+  force = true
+  query = {lang = "it"}
+
 [[redirects]]
   from = "/"
   to = "/en/"
