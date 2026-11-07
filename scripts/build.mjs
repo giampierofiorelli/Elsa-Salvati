@@ -395,8 +395,8 @@ for (const pg of pages) {
     continue;
   }
   const html = page({ ...meta, title: render(meta.title), description: render(meta.description || '') }, body, path, { lang });
-  write(path === '/404' ? '404.html' : path, html);
-  if (meta.noindex !== 'true' && path !== '/404') urls.push({ path, key: meta.key });
+  write(path === '/404' ? '404.html' : path === '/en/404' ? 'en/404.html' : path, html);
+  if (meta.noindex !== 'true' && path !== '/404' && path !== '/en/404') urls.push({ path, key: meta.key });
 }
 
 // Admin app: standalone page, not indexed.

@@ -97,6 +97,12 @@
   force = true
   conditions = {Language = ["en", "fr", "de", "es", "pt", "nl", "pl", "ro", "ru", "uk", "zh", "ja", "ko", "ar", "tr", "el", "sv", "da", "no", "nb", "fi", "cs", "sk", "hu", "bg", "hr", "sr", "sl", "sq", "he", "hi", "bn", "ur", "fa", "vi", "th", "id", "ms", "tl", "lt", "lv", "et", "ca"]}
 
+# English visitors on a missing page see the English 404.
+[[redirects]]
+  from = "/en/*"
+  to = "/en/404.html"
+  status = 404
+
 # Preview deploys are never indexed.
 [context.deploy-preview.environment]
   SITE_DEMO = "true"
