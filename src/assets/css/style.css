@@ -636,3 +636,8 @@ main > section:first-child:not(.hero-v4) { padding-top: calc(var(--section) + 70
 .site-header.hdr { padding: 0; }
 .hdr-nav a, .hdr-nav .lang-switch { display: inline-flex; align-items: center; line-height: 1.25; }
 .hdr-nav .lang-switch { font-size: .92rem; }
+
+/* Header lockup (G, 7/11): the real lotus icon + "Blooming" in the title font, no subtitle. */
+.hdr .brand-name { font-family: var(--serif); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.035em; line-height: 1; color: var(--night); }
+.site-header.hdr.on-dark .brand-name, .menu-open .hdr .brand-name { color: var(--ivory); }
+.loader-mark { width: 110px; height: auto; }

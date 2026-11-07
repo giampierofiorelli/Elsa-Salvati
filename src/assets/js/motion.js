@@ -115,7 +115,7 @@
     var el = document.createElement('div');
     el.className = 'loader';
     el.setAttribute('aria-hidden', 'true');
-    el.innerHTML = '<svg class="loader-mark" viewBox="0 0 100 100" fill="currentColor"><use href="/assets/img/lotus.svg#g"/></svg><p class="loader-word">Blooming</p>';
+    el.innerHTML = '<img class="loader-mark" src="/assets/img/logo-icon.webp" width="293" height="224" alt=""><p class="loader-word">Blooming</p>';
     document.body.appendChild(el);
     var tl = gsap.timeline({ onComplete: function () { el.remove(); done(); } });
     tl.from('.loader-mark', { clipPath: 'inset(100% 0 0 0)', duration: 0.6, ease: 'power3.out' })
