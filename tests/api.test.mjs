@@ -435,7 +435,7 @@ test('v4: the management link follows the booking language', opts, async () => {
   assert.equal(m7.body.booking.assigned, true);
   assert.doesNotMatch(JSON.stringify(m7.body), /Anna Prova|Bea|Dott/);
   // The request email gives the real deadline: 18:00 of the last working day before (Monday 16 Nov → Friday 13 Nov).
-  assert.match(deps.mailer.sent.filter((m) => m.to === 'sette@example.it').at(-1).text, /will reply by Friday, 13 November 2026, 18:00 \(Italian time\) at the latest/);
+  assert.match(deps.mailer.sent.filter((m) => m.to === 'sette@example.it').at(-1).text, /has until Friday, 13 November 2026, 18:00 \(Italian time\) to accept your request/);
   await approvePending();
   m7 = await pubCall('POST', '/manage', { t: tok7 });
   assert.ok(m7.body.booking.professional && m7.body.booking.professional.name, 'once accepted, the name shows');
