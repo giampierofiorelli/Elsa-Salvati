@@ -922,6 +922,9 @@
     $('[data-cancel-box]').hidden = false;
     $('[data-scope-box]').hidden = !ev.seriesId;
     $('[data-notify-box]').hidden = ev.kind === 'blocco' || !ev.email;
+    $('[data-noemail-box]').hidden = ev.kind === 'blocco' || !ev.email;
+    form.noEmail.checked = false;
+    form.notify.disabled = false;
     $('[data-save]').hidden = true;
     this.hidden = true;
   });
@@ -949,6 +952,10 @@
     api('POST', '/events/' + ev.id + '/decline', {}).then(function () { dlg.close(); toast('Richiesta rifiutata.'); refresh(); })
       .catch(function (e) { $('[data-dlg-error]').textContent = e.message; });
   });
+  form.noEmail.addEventListener('change', function () {
+    form.notify.disabled = form.noEmail.checked;
+    if (form.noEmail.checked) form.notify.checked = false;
+  });
   $('[data-abort-cancel]').addEventListener('click', function () {
     $('[data-cancel-box]').hidden = true;
     $('[data-save]').hidden = false;
@@ -956,7 +963,8 @@
   });
   $('[data-confirm-cancel]').addEventListener('click', function () {
     var ev = state.editing;
-    api('POST', '/events/' + ev.id + '/cancel', { scope: form.following.checked ? 'following' : 'one', notify: form.notify.checked })
+    var noEmail = form.noEmail.checked && !$('[data-noemail-box]').hidden;
+    api('POST', '/events/' + ev.id + '/cancel', { scope: form.following.checked ? 'following' : 'one', notify: !noEmail && form.notify.checked, noEmail: noEmail })
       .then(function () { dlg.close(); toast(ev.kind === 'blocco' ? 'Blocco eliminato.' : 'Appuntamento annullato.'); refresh(); })
       .catch(function (e) { $('[data-dlg-error]').textContent = e.message; });
   });

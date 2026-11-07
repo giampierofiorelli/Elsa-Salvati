@@ -1715,3 +1715,31 @@ test('phone-calendar link: the admin can revoke it; a new activation always ends
   const log = (await sql`select action, detail from audit_log order by id desc limit 20`).map((r) => `${r.action}: ${r.detail}`);
   assert.ok(log.includes('link del calendario revocato: Calendario Prova'));
 });
+
+test('cancel or decline with «non inviare email»: nothing goes to the address, and the choice is logged', opts, async () => {
+  tick();
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  const start = new Date(clock.now.getTime() + 10 * 86400000);
+  const mk = (email, status) => deps.store.insertEvent({
+    professional_id: ids.laura, service_id: ids.consulenza, kind: 'primo_colloquio', source: 'sito', mode: 'online', status,
+    start_at: start, end_at: new Date(start.getTime() + 1800000), contact_enc: deps.vault.encrypt({ name: 'Errata', email }), contact_hash: `h-${email}`,
+  });
+  const sent = (to) => deps.mailer.sent.filter((m) => m.to === to).length;
+  const quiet = await mk('sbagliata@example.it', 'confermato');
+  let r = await as('admin')('POST', `/events/${quiet}/cancel`, { scope: 'one', noEmail: true });
+  assert.equal(r.status, 200);
+  assert.equal(r.body.emailSent, false);
+  assert.equal(sent('sbagliata@example.it'), 0, 'no email to the wrong address');
+  const told = await mk('giusta@example.it', 'confermato');
+  await sql`update events set start_at = start_at + interval '1 hour', end_at = end_at + interval '1 hour' where id = ${told}`;
+  r = await as('admin')('POST', `/events/${told}/cancel`, { scope: 'one' });
+  assert.equal(r.body.emailSent, true, 'without the option the person is told, as before');
+  const req = await mk('richiesta-errata@example.it', 'in_attesa');
+  await sql`update events set start_at = start_at + interval '2 hours', end_at = end_at + interval '2 hours' where id = ${req}`;
+  r = await as('admin')('POST', `/events/${req}/decline`, { noEmail: true });
+  assert.equal(r.status, 200);
+  assert.equal(sent('richiesta-errata@example.it'), 0);
+  const log = (await sql`select action, detail from audit_log order by id desc limit 10`).map((x) => `${x.action}: ${x.detail}`);
+  assert.ok(log.includes(`annullato senza inviare email: appuntamento ${quiet}`));
+  assert.ok(log.includes(`rifiutata senza inviare email: richiesta ${req}`));
+});
