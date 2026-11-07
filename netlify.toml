@@ -45,6 +45,12 @@
 # Netlify reads instead of the browser language.
 # An explicit choice of Italian (the language switch links to /?lang=it) is
 # never sent to English, whatever the browser or the cookies say.
+# The career page moved to an Italian address (7/11/2026).
+[[redirects]]
+  from = "/lavoro/"
+  to = "/orientamento-carriera/"
+  status = 301
+
 [[redirects]]
   from = "/"
   to = "/index.html"

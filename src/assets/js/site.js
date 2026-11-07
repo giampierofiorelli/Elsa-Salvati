@@ -119,6 +119,7 @@
 (function () {
   var host = location.hostname;
   if (!/staging--|localhost|127\.0\.0\.1/.test(host)) return;
+  document.documentElement.classList.add('is-staging');
   var opts = [['a', 'Verde profondo e menta (consigliata)', '#205A54', '#CDEFE2'], ['b', 'Salvia calda e terracotta', '#3F5F52', '#E8C9A8'],
     ['c', 'Ardesia e sabbia', '#2D5068', '#E9CFA9'], ['x', 'Colori attuali', '#1F2F3A', '#CBAD85']];
   var q = new URLSearchParams(location.search).get('palette');

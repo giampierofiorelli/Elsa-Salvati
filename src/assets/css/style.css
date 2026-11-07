@@ -909,3 +909,33 @@ html[data-palette]:not([data-palette="x"]) .lang-notice { background: var(--nigh
   .hero-v4 .cta-row { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px; }
 }
 .palette-panel { flex-wrap: wrap; max-width: calc(100vw - 24px); border-radius: 22px; }
+
+/* ---------- Inner pages v4 ---------- */
+.page-v4-hero { padding-top: calc(118px + 3vw) !important; padding-bottom: clamp(48px, 7vw, 96px); }
+.page-v4-hero h1 { font-size: clamp(2.3rem, 5.2vw, 4.4rem); max-width: 18ch; margin-bottom: .3em; }
+.page-v4-hero .hero-v4-sub { max-width: 34ch; margin-bottom: 28px; }
+@media (min-width: 960px) { .page-v4-hero .cta-row { flex-direction: row; flex-wrap: wrap; gap: 12px; } }
+.steps li > div > :last-child { margin-bottom: 0; }
+.steps h3 { font-size: 1.25rem; margin-bottom: 8px; }
+.steps p { margin: 0 0 10px; }
+.prose-v4 { max-width: 62ch; }
+.prose-v4 > :last-child { margin-bottom: 0; }
+.page-v4-aside { margin-top: clamp(32px, 4vw, 48px); max-width: 70ch; }
+.links-v4 .row-body > p:first-child { font-size: 1.1rem; margin-bottom: 0; }
+.links-v4 .row { padding: 20px 0; }
+/* Notes for the client (unconfirmed items): visible on staging only, never online. */
+.draft-note { display: none; }
+.is-staging .draft-note { display: block; background: #FFF6DB; border: 1px dashed #C9A646; color: #5C4A12; padding: 10px 14px; border-radius: 10px; font: 500 .85rem/1.45 var(--sans); margin: 12px 0; }
+.is-staging .draft-note::before { content: "Da confermare · "; font-weight: 700; }
+.section-dark .draft-note { color: #5C4A12; }
+.page-v4-lead { max-width: 60ch; margin-bottom: 28px; }
+.cover-list { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.cover-list li { padding: 16px 0; border-bottom: 1px solid var(--line); }
+.cover-list li.draft-note { border-bottom: 0; }
+.cover-list strong { font-weight: 600; color: var(--ink); }
+/* "If your situation is a different one": text on the left, link on the right. */
+.links-v4 .row { grid-template-columns: 1fr !important; }
+@media (min-width: 900px) {
+  .links-v4 .row-body { display: flex; align-items: center; justify-content: space-between; gap: 32px; max-width: none; }
+  .links-v4 .row-links { margin-top: 0; flex: none; }
+}
