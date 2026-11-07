@@ -7,6 +7,7 @@ import { runReminders, runRetention, buildIcs } from '../lib/jobs.mjs';
 import { readKitFiles, withCatalog } from '../lib/site-kit.mjs';
 import { pageResponse } from '../lib/page-server.mjs';
 import { createSite } from '../lib/site.mjs';
+import { sha256 } from '../lib/crypto.mjs';
 
 const available = await dbAvailable();
 const opts = { skip: available ? false : 'no local PostgreSQL (set TEST_DATABASE_URL)' };
@@ -239,13 +240,20 @@ test('patient reschedules and cancels from the personal link', opts, async () =>
   r = await pubCall('POST', '/manage/slots', { t: manageToken, mode: 'studio' });
   assert.ok(r.body.days[0].slots.some((s) => s.time === '10:00'), 'own current slot is offered again');
   assert.equal((await pubCall('POST', '/manage/slots', { t: manageToken, mode: 'online' })).status, 400);
+  const [old] = await deps.store.sql`update events set heard_from = 'passaparola' where manage_token_hash = ${sha256(manageToken)} returning id::text as id`;
   r = await pubCall('POST', '/manage/reschedule', { t: manageToken, start: '2026-10-26T10:00:00.000Z', mode: 'studio' });
   assert.equal(r.status, 200, JSON.stringify(r.body));
   const newToken = new URL(r.body.manageUrl).hash.slice(3);
+  const [moved] = await deps.store.sql`select id::text as id, heard_from, contact_hash from events where manage_token_hash = ${sha256(newToken)}`;
+  assert.equal(moved.heard_from, 'passaparola', 'the source answer moves with the appointment');
+  assert.equal((await deps.store.sql`select heard_from from events where id = ${old.id}`)[0].heard_from, null, 'and is not kept twice');
   r = await pubCall('POST', '/manage/cancel', { t: newToken });
   assert.equal(r.status, 200);
   r = await pubCall('POST', '/manage', { t: newToken });
   assert.equal(r.body.booking.status, 'annullato');
+  // «Dimentica» (rights tool) also erases the source answer.
+  await deps.store.forgetContact([moved.contact_hash]);
+  assert.equal((await deps.store.sql`select heard_from from events where id = ${moved.id}`)[0].heard_from, null);
 });
 
 test('professionals change modes of their services but cannot add services', opts, async () => {
