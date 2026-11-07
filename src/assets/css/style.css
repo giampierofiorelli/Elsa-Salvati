@@ -799,3 +799,12 @@ main .eyebrow + h2, main .eyebrow + h1 { margin-top: 0; }
   .site main .btn:not(.btn-primary):not(.btn-light) { padding-right: 22px; }
   .site main a.btn:is(.btn-ghost, .btn-outline-light):not([download]):not(:has(svg))::after { content: "→"; font-size: 1.05rem; line-height: 1; flex: none; }
 }
+
+/* Arrows (G, 7/11): → for anything that stays on the site (header "Prenota"
+   included); ↗ only for links that open another site or app (maps, WhatsApp,
+   phone, email). The circle stays only on the main buttons. */
+.hdr-cta:hover .hdr-cta-icon { transform: translateX(2px); }
+.hdr-cta-icon { transition: transform .2s; }
+@media (max-width: 699px) {
+  .site main a.btn:is(.btn-ghost, .btn-outline-light):is([target="_blank"], [href^="tel:"], [href^="mailto:"]):not(:has(svg))::after { content: "↗"; }
+}
