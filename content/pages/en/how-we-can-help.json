@@ -580,7 +580,7 @@
               "p": [
                 [
                   {
-                    "t": "If you decide to go on, you plan the next steps with the psychologist you met. If it doesn't feel right, you can switch to the other psychologist or stop there. No follow-up emails."
+                    "t": "If you decide to go on, you plan the next steps with the psychologist you met. If it doesn't feel right, you can switch to the other psychologist or stop there. If you decide not to go on, we won't contact you again."
                   }
                 ]
               ]
@@ -598,7 +598,7 @@
         ]
       },
       "type": "text-columns",
-      "note": "Technical: in English, \"Help me choose\" must not assign Monica unless her sessions in English are confirmed. Switching to Monica in English: to confirm. Sessions last 50/60 minutes: to confirm. Fees: not to be published until agreed (brief: €50 per hour for career coaching, workplace coaching and psychological support, €70 for psychotherapy; research proposed a different fee for sessions in English; the client decides). Your request is read only by: to confirm. WhatsApp to arrange appointments: to confirm."
+      "note": "Technical: in English, \"Help me choose\" must not assign Monica unless her sessions in English are confirmed. Switching to Monica in English: to confirm. Sessions last 50/60 minutes: to confirm. Fees: not to be published until agreed (brief: €50 per hour for career coaching, workplace coaching and psychological support, €70 for psychotherapy; research proposed a different fee for sessions in English; the client decides). Your request is read only by: to confirm. WhatsApp to arrange appointments: to confirm. · \"If you decide not to go on, we won't contact you again.\": to confirm with the practice."
     },
     {
       "bg": "dark",

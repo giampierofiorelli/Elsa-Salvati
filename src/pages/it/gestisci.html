@@ -1,6 +1,6 @@
 ---
 title: Gestisci il tuo appuntamento – {{studioName}}
-description: Annulla o sposta il tuo appuntamento.
+description: Annulla la richiesta, conferma la presenza o gestisci il tuo appuntamento.
 path: /prenota/gestisci/
 noindex: true
 scripts: booking
@@ -21,7 +21,7 @@ scripts: booking
         <dl class="summary" data-current></dl>
         <p data-change-note></p>
         <div class="cta-row" data-actions>
-          <button class="btn btn-primary" type="button" data-confirm-attendance hidden>Confermo l'appuntamento</button>
+          <button class="btn btn-primary" type="button" data-confirm-attendance hidden>Confermo</button>
           <button class="btn btn-primary" type="button" data-start-reschedule>Sposta a un altro orario</button>
           <button class="btn btn-danger" type="button" data-cancel>Annulla l'appuntamento</button>
         </div>
@@ -56,7 +56,7 @@ scripts: booking
       </div>
 
       <div data-invalid hidden>
-        <p class="note">Questo link non è valido o è scaduto. Se hai bisogno di modificare un appuntamento, <a href="/contatti/">contattaci</a>.</p>
+        <p class="note">Questo link non è più valido: ogni nuova email contiene un link nuovo. Usa quello dell'ultima email ricevuta, oppure <a href="/contatti/">contattaci</a>.</p>
       </div>
     </div>
   </div>

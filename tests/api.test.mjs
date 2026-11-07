@@ -301,7 +301,7 @@ test('reminders, personal calendar feed, export and retention', opts, async () =
   const before = deps.mailer.sent.length;
   const r = await runReminders(deps);
   assert.ok(r.sent >= 1);
-  assert.match(deps.mailer.sent[before].subject, /Conferma il tuo appuntamento/, 'the day before, the person is asked to confirm');
+  assert.match(deps.mailer.sent[before].subject, /Conferma la presenza/, 'the day before, the person is asked to confirm');
 
   const ics = await buildIcs(deps, { professionalId: ids.marco });
   assert.match(ics, /SUMMARY:Seduta/);
@@ -491,10 +491,10 @@ test('the confirmation email states the fee of the booked service, and reminders
   });
   assert.equal(r.status, 201, JSON.stringify(r.body));
   const request = deps.mailer.sent.slice(before).find((m) => m.to === 'nove@example.it');
-  assert.match(request.subject, /Abbiamo ricevuto la tua richiesta/);
+  assert.match(request.subject, /Richiesta ricevuta/);
   const pending = (await as('admin')('GET', '/events/pending')).body.events.find((e) => e.email === 'nove@example.it');
   assert.equal((await as('admin')('POST', `/events/${pending.id}/approve`, {})).status, 200);
-  const mail = deps.mailer.sent.slice(before).find((m) => m.to === 'nove@example.it' && /approvata/.test(m.subject));
+  const mail = deps.mailer.sent.slice(before).find((m) => m.to === 'nove@example.it' && /accettata/.test(m.subject));
   assert.match(mail.text, /Tariffa: Gratuito/);
   assert.match(mail.subject, /Blooming/);
   assert.doesNotMatch(mail.subject, /psicolog/i, 'the subject does not reveal a psychology practice');
@@ -807,8 +807,8 @@ test('a first meeting booked online is a request: it holds the time until the pr
   assert.equal(r.status, 201, JSON.stringify(r.body));
   assert.equal(r.body.booking.pending, true);
   const t1 = new URL(r.body.manageUrl).hash.slice(3);
-  assert.match(mailsTo('richiesta1@example.it', since)[0].subject, /Abbiamo ricevuto la tua richiesta/);
-  assert.ok(deps.mailer.sent.slice(since).some((m) => /nuova richiesta di primo colloquio da accettare/.test(m.subject)), 'the professional is asked to approve');
+  assert.match(mailsTo('richiesta1@example.it', since)[0].subject, /Richiesta ricevuta/);
+  assert.ok(deps.mailer.sent.slice(since).some((m) => /Nuova richiesta da accettare/.test(m.subject)), 'the professional is asked to approve');
   // The time is held while the request waits.
   assert.equal((await book('altra@example.it', '2026-11-30T08:00:00.000Z')).status, 409);
   // The person sees a request (cancel only).
@@ -837,7 +837,7 @@ test('a first meeting booked online is a request: it holds the time until the pr
   assert.equal(r.status, 200, JSON.stringify(r.body));
   assert.equal(r.body.event.pending, false);
   const approvedMail = mailsTo('richiesta2@example.it', since).at(-1);
-  assert.match(approvedMail.subject, /La tua richiesta è stata approvata/);
+  assert.match(approvedMail.subject, /Richiesta accettata/);
   const t2b = tokenIn(approvedMail);
   assert.equal((await pubCall('POST', '/manage', { t: t2 })).status, 404);
   r = await pubCall('POST', '/manage', { t: t2b });
@@ -870,8 +870,8 @@ test('requests not approved in time expire; reminders never go to requests', opt
   r = await runReminders(deps);
   assert.ok(r.expired >= 1);
   const last = mailsTo('scade@example.it', since).at(-1);
-  assert.match(last.subject, /Please choose another time/);
-  assert.match(last.text, /wasn't confirmed in time/);
+  assert.match(last.subject, /About your request/);
+  assert.match(last.text, /wasn't able to reply to your request in time/);
   const [row] = await sql`select status, cancelled_by from events where start_at = '2026-12-07T08:00:00Z' and professional_id = ${anna}`;
   assert.deepEqual([row.status, row.cancelled_by], ['rifiutato', 'sistema']);
   await setWorkdays([1, 2, 3, 4, 5]);
@@ -885,9 +885,9 @@ test('appointments set by the professional: email to the person, confirmation th
   assert.equal(r.status, 201, JSON.stringify(r.body));
   assert.equal(r.body.emailSent, true);
   const first = mailsTo('manuale@example.it', since)[0];
-  assert.match(first.subject, /Appointment confirmed/);
+  assert.match(first.subject, /Your session/);
   assert.match(first.text, /\/en\/book\/manage\/#t=/);
-  assert.match(first.text, /To move it, please contact the practice/);
+  assert.match(first.text, /To move it to another time, please contact/);
   const tok1 = tokenIn(first);
   r = await pubCall('POST', '/manage', { t: tok1 });
   assert.equal(r.body.booking.canMove, false);
@@ -903,8 +903,8 @@ test('appointments set by the professional: email to the person, confirmation th
   clock.now = new Date('2026-12-01T12:00:00Z');
   await runReminders(deps);
   const ask = mailsTo('manuale@example.it', since).at(-1);
-  assert.match(ask.subject, /Please confirm your appointment/);
-  assert.match(ask.text, /replaces any earlier ones/);
+  assert.match(ask.subject, /Please confirm your session/);
+  assert.match(ask.text, /links in our earlier emails no longer work/);
   const tok2 = tokenIn(ask);
   assert.notEqual(tok2, tok1);
   assert.equal((await pubCall('POST', '/manage', { t: tok1 })).status, 404);
@@ -915,7 +915,7 @@ test('appointments set by the professional: email to the person, confirmation th
   assert.equal(r.status, 200);
   assert.ok(r.body.confirmedAt);
   assert.equal((await pubCall('POST', '/manage/confirm', { t: tok2 })).status, 200, 'confirming twice is fine');
-  assert.equal(deps.mailer.sent.slice(beforeConfirm).filter((m) => /confermato dalla persona/.test(m.subject)).length, 1, 'the professional is told once');
+  assert.equal(deps.mailer.sent.slice(beforeConfirm).filter((m) => /confermato dalla persona/.test(m.text)).length, 1, 'the professional is told once');
   r = await pubCall('POST', '/manage', { t: tok2 });
   assert.equal(r.body.booking.needsConfirmation, false);
   cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
@@ -928,7 +928,7 @@ test('appointments set by the professional: email to the person, confirmation th
   const tok3 = tokenIn(mailsTo('annulla@example.it', since)[0]);
   const beforeCancel = deps.mailer.sent.length;
   assert.equal((await pubCall('POST', '/manage/cancel', { t: tok3 })).status, 200);
-  assert.ok(deps.mailer.sent.slice(beforeCancel).some((m) => /annullato/.test(m.subject) && m.to !== 'annulla@example.it'));
+  assert.ok(deps.mailer.sent.slice(beforeCancel).some((m) => /annullato/.test(m.text) && m.to !== 'annulla@example.it'));
 });
 
 test('a short reminder two hours before, with nothing to click; once only, never for cancelled or last-minute bookings', opts, async () => {
@@ -945,13 +945,13 @@ test('a short reminder two hours before, with nothing to click; once only, never
   // 1 h 50 min before 10:00 Rome (09:00 UTC).
   clock.now = new Date('2026-12-03T07:10:00Z');
   let r = await runReminders(deps);
-  const soon = mailsTo('duore@example.it', since).filter((m) => /tra poco/.test(m.subject));
+  const soon = mailsTo('duore@example.it', since).filter((m) => /Tra poco/.test(m.subject));
   assert.equal(soon.length, 1);
   assert.doesNotMatch(soon[0].text, /#t=|https?:\/\//, 'nothing to click');
   assert.match(soon[0].text, /Se non riesci a esserci, rispondi a questa email/);
   r = await runReminders(deps);
-  assert.equal(mailsTo('duore@example.it', since).filter((m) => /tra poco/.test(m.subject)).length, 1, 'sent once');
-  assert.equal(mailsTo('annullato2h@example.it', since).filter((m) => /tra poco/.test(m.subject)).length, 0);
+  assert.equal(mailsTo('duore@example.it', since).filter((m) => /Tra poco/.test(m.subject)).length, 1, 'sent once');
+  assert.equal(mailsTo('annullato2h@example.it', since).filter((m) => /Tra poco/.test(m.subject)).length, 0);
 
   // Booked at the last minute (less than 3 hours before): no second reminder, and never two emails in one run.
   clock.now = new Date('2026-12-03T10:30:00Z');
@@ -960,7 +960,7 @@ test('a short reminder two hours before, with nothing to click; once only, never
   clock.now = new Date('2026-12-03T11:15:00Z');
   await runReminders(deps);
   const late = mailsTo('ultimo@example.it', since);
-  assert.equal(late.filter((m) => /tra poco/.test(m.subject)).length, 0);
+  assert.equal(late.filter((m) => /Tra poco/.test(m.subject)).length, 0);
 
   // Setting 0 turns it off.
   clock.now = new Date('2026-12-03T11:20:00Z');
@@ -969,7 +969,7 @@ test('a short reminder two hours before, with nothing to click; once only, never
   await mk('16:00', 'spento@example.it'); // 15:00 UTC, booked 3 h 40 min ahead
   clock.now = new Date('2026-12-03T13:10:00Z');
   await runReminders(deps);
-  assert.equal(mailsTo('spento@example.it', since).filter((m) => /tra poco/.test(m.subject)).length, 0);
+  assert.equal(mailsTo('spento@example.it', since).filter((m) => /Tra poco/.test(m.subject)).length, 0);
   await as('admin')('PUT', '/settings', { settings: { reminder2Hours: 2 } });
 });
 
@@ -987,11 +987,11 @@ test('times too close to the approval deadline cannot be requested; a late appro
   const ev = (await as('admin')('GET', '/events/pending')).body.events.find((e) => e.email === 'tardi@example.it');
   assert.equal((await as('admin')('POST', `/events/${ev.id}/approve`, {})).status, 200);
   const mail = mailsTo('tardi@example.it', since).at(-1);
-  assert.match(mail.subject, /Richiesta approvata: conferma la tua presenza/);
+  assert.match(mail.subject, /Richiesta accettata: conferma la presenza/);
   const tok = tokenIn(mail);
   assert.equal((await pubCall('POST', '/manage', { t: tok })).body.booking.needsConfirmation, true);
   await runReminders(deps);
-  assert.equal(mailsTo('tardi@example.it', since).filter((m) => /Conferma il tuo appuntamento/.test(m.subject)).length, 0, 'no second email the same day');
+  assert.equal(mailsTo('tardi@example.it', since).filter((m) => /Conferma la presenza – /.test(m.subject)).length, 0, 'no second email the same day');
 
   // With no minimum notice, on Sunday 20 December at 16:30 Rome (deadline 18:00 in 1 h 30 min), Monday morning is closed.
   await as('admin')('PUT', '/settings', { settings: { minNoticeHours: 0 } });
@@ -1054,7 +1054,7 @@ test('round 2: help me choose, notifications to the professional, passing a requ
   // Only Rita is told, at her notification email; never the studio inbox; nothing about the person.
   const notice = deps.mailer.sent.slice(since).filter((m) => m.to !== 'scelta1@example.it');
   assert.deepEqual(notice.map((m) => m.to), ['rita@example.it']);
-  assert.match(notice[0].subject, /nuova richiesta di primo colloquio da accettare/);
+  assert.match(notice[0].subject, /Nuova richiesta da accettare/);
   assert.doesNotMatch(notice[0].text, /Persona Prova|scelta1@example\.it/);
 
   since = deps.mailer.sent.length;
@@ -1074,7 +1074,7 @@ test('round 2: help me choose, notifications to the professional, passing a requ
   r = await as('admin')('POST', `/events/${req.id}/reassign`, { professionalId: sara });
   assert.equal(r.status, 200, JSON.stringify(r.body));
   assert.equal(mailsTo('passa@example.it', since).length, 0, 'nothing changes for the person');
-  assert.ok(deps.mailer.sent.slice(since).some((m) => /ti ha passato una richiesta/.test(m.subject)));
+  assert.ok(deps.mailer.sent.slice(since).some((m) => /Richiesta passata a te/.test(m.subject)));
   // Sara is busy at 10:00 (scelta2) and doesn't work in English.
   r = await pubCall('POST', '/book', { start: '2027-01-18T11:00:00.000Z', mode: 'online', service: coachSvc, professional: rita, name: 'Persona Prova', email: 'passa2@example.it', privacy: true, lang: 'en' });
   assert.equal(r.status, 201, JSON.stringify(r.body));
@@ -1121,7 +1121,7 @@ test('round 2: confirmation asked 48 h before in the daytime, second invitation,
   await runReminders(deps);
   const nudge = mailsTo(email, since);
   assert.equal(nudge.length, 1);
-  assert.match(nudge[0].subject, /Can you still make it/);
+  assert.match(nudge[0].subject, /tomorrow/);
   await runReminders(deps);
   assert.equal(mailsTo(email, since).length, 1, 'only once');
 
@@ -1129,12 +1129,12 @@ test('round 2: confirmation asked 48 h before in the daytime, second invitation,
   clock.now = new Date('2027-01-17T17:05:00Z');
   since = deps.mailer.sent.length;
   await runReminders(deps);
-  const list = mailsTo('rita@example.it', since).filter((m) => /non ancora confermat/.test(m.subject));
+  const list = mailsTo('rita@example.it', since).filter((m) => /da confermare/.test(m.subject));
   assert.equal(list.length, 1);
   assert.doesNotMatch(list[0].text, /Persona Prova|scelta1/, 'no personal data in the notice');
   clock.now = new Date('2027-01-17T17:20:00Z');
   await runReminders(deps);
-  assert.equal(mailsTo('rita@example.it', since).filter((m) => /non ancora confermat/.test(m.subject)).length, 1);
+  assert.equal(mailsTo('rita@example.it', since).filter((m) => /da confermare/.test(m.subject)).length, 1);
 
   // "Libera l'orario": the person is told what to do if it was a mistake.
   clock.now = new Date('2027-01-17T17:30:00Z');
@@ -1144,7 +1144,7 @@ test('round 2: confirmation asked 48 h before in the daytime, second invitation,
   assert.equal(r.status, 200, JSON.stringify(r.body));
   assert.equal(r.body.emailSent, true);
   const freed = mailsTo(email, since)[0];
-  assert.match(freed.text, /didn't hear back|non avendo ricevuto/i);
+  assert.match(freed.text, /hadn't heard back|non avendo ricevuto/i);
   assert.match(freed.text, /still free|ancora libero/);
 
   // The same time given to someone else (set by the professional, with emails): only the new person gets the
@@ -1164,7 +1164,7 @@ test('round 2: confirmation asked 48 h before in the daytime, second invitation,
   r = await pubCall('POST', '/manage/cancel', { t: link });
   assert.equal(r.status, 200, JSON.stringify(r.body));
   assert.equal(r.body.late, true);
-  assert.ok(mailsTo('rita@example.it', since).some((m) => /ultimo momento/.test(m.subject)), 'the professional is told');
+  assert.ok(mailsTo('rita@example.it', since).some((m) => /ultimo momento/.test(m.text)), 'the professional is told');
   cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
   const ev = (await as('admin')('GET', '/events?from=2027-01-18&to=2027-01-18&cancelled=1')).body.events.find((e) => e.name === 'Nuova');
   assert.equal(ev.cancelReason, 'tardivo');

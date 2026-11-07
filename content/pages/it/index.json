@@ -294,7 +294,7 @@
               "p": [
                 [
                   {
-                    "t": "Scegli un orario e, se vuoi, la professionista. Se non lo sai, seleziona «Aiutami a scegliere»: nel colloquio capiamo insieme chi di noi fa per te."
+                    "t": "Scegli un orario e, se vuoi, la professionista. Se non lo sai, scegli «Non lo so ancora»: nel colloquio capiamo insieme chi di noi fa per te. La professionista accetta la richiesta e ti arriva un'email."
                   }
                 ]
               ]
@@ -318,11 +318,12 @@
               "p": [
                 [
                   {
-                    "t": "Se vuoi andare avanti, decidi il percorso con la professionista, ai prezzi indicati nel sito. Se non ti trovi bene, puoi cambiare professionista o fermarti lì. Nessuna email di sollecito."
+                    "t": "Se vuoi andare avanti, decidi il percorso con la professionista. Se non ti trovi bene, puoi cambiare professionista o fermarti lì. Nessuno ti scriverà per convincerti a continuare."
                   }
                 ]
               ]
-            }
+            },
+            "note": "Dopo «con la professionista»: «ai prezzi indicati nel sito», solo quando i prezzi saranno pubblicati."
           }
         ],
         "after": []

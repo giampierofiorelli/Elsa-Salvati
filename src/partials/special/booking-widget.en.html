@@ -50,7 +50,7 @@
         <div class="field">
           <label for="b-email">Email</label>
           <input id="b-email" name="email" type="email" autocomplete="email" required maxlength="254">
-          <span class="hint">We'll send your confirmation here, with a link to cancel or move the meeting.</span>
+          <span class="hint">We'll email you here about your request, with a link to cancel it.</span>
         </div>
         <div class="field">
           <label for="b-phone">Phone <span class="hint">(optional)</span></label>
@@ -62,19 +62,19 @@
         <p class="note">You don't need to say why you're booking: we'll talk about it in the meeting.</p>
         <p class="status form-error" role="alert" data-error></p>
         <div class="cta-row">
-          <button class="btn btn-primary" type="submit" data-confirm>Confirm booking</button>
+          <button class="btn btn-primary" type="submit" data-confirm>Send request</button>
           <button class="btn btn-ghost" type="button" data-back>Back</button>
         </div>
       </form>
 
       <div class="booking-step" data-step="done" hidden tabindex="-1">
         <div class="success-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h2>Your meeting is booked.</h2>
+        <h2>Request sent.</h2>
         <dl class="summary" data-summary-3></dl>
-        <p>We've emailed you a summary and a personal link to cancel or move the meeting. If you can't find it, check your spam folder.</p>
+        <p>We're holding this time for you. The psychologist will reply by 6 pm (Italian time) the day before at the latest, and we'll email you when she accepts. Can't find our email? Check your spam folder.</p>
         <div class="cta-row">
           <a class="btn btn-ghost" data-ics download="meeting.ics" href="#">Add to calendar</a>
-          <a class="btn btn-ghost" data-manage href="#">Manage your booking</a>
+          <a class="btn btn-ghost" data-manage href="#">Cancel the request</a>
         </div>
       </div>
       <p class="hint">This booking system is not an emergency service: if you are in immediate danger, call 112 or 118.</p>

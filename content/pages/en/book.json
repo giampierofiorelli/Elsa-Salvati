@@ -2,7 +2,7 @@
   "key": "prenota",
   "path": "/en/book/",
   "title": "Book a free first meeting – Blooming · Psychology and coaching practice",
-  "description": "Book a free 30-minute first meeting online, in English or Italian. Instant confirmation; you don't need to explain your situation.",
+  "description": "Request a free 30-minute first meeting online, in English or Italian. You'll get an email once the psychologist accepts it. No need to explain your situation.",
   "nav": "book",
   "blocks": [
     {
@@ -14,7 +14,7 @@
           "p": [
             [
               {
-                "t": "Choose what you need, then who you'd like to see (or \"Help me choose\"), the language and a free time. You get an instant confirmation by email. You don't need to explain your situation to book."
+                "t": "Choose what you need, who you'd like to see (or \"Help me choose\"), the language and a free time. We hold that time for you while the psychologist looks at your request, and we email you when she accepts it. You don't need to explain your situation to book."
               }
             ]
           ]
@@ -26,7 +26,8 @@
     },
     {
       "data": {},
-      "type": "booking-widget"
+      "type": "booking-widget",
+      "note": "Note under the times, shown from 4 pm Italian time (not built yet): \"Times for tomorrow can be requested until 4 pm (Italian time), so the psychologist has time to reply.\" 4 pm = 2 hours before the 6 pm deadline; if either setting changes, this changes too."
     },
     {
       "bg": "light",

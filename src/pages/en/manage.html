@@ -1,6 +1,6 @@
 ---
-title: Manage your booking – Blooming
-description: Cancel or move your booking.
+title: Your appointment – Blooming
+description: Confirm, move or cancel your appointment.
 path: /en/book/manage/
 key: gestisci
 noindex: true
@@ -8,8 +8,8 @@ scripts: booking
 ---
 <section class="section page-v4-hero" data-theme-section="light">
   <div class="wrap narrow">
-    <p class="eyebrow">Your booking</p>
-    <h1>Manage your booking.</h1>
+    <p class="eyebrow">Your appointment</p>
+    <h1>Your appointment.</h1>
   </div>
 </section>
 
@@ -22,9 +22,9 @@ scripts: booking
         <dl class="summary" data-current></dl>
         <p data-change-note></p>
         <div class="cta-row" data-actions>
-          <button class="btn btn-primary" type="button" data-confirm-attendance hidden>I confirm</button>
+          <button class="btn btn-primary" type="button" data-confirm-attendance hidden>Confirm I'm coming</button>
           <button class="btn btn-primary" type="button" data-start-reschedule>Move to another time</button>
-          <button class="btn btn-danger" type="button" data-cancel>Cancel the meeting</button>
+          <button class="btn btn-danger" type="button" data-cancel>Cancel</button>
         </div>
         <p class="status form-error" role="alert" data-view-error></p>
       </div>
@@ -40,7 +40,7 @@ scripts: booking
         <dl class="summary" data-summary hidden></dl>
         <p class="status form-error" role="alert" data-error></p>
         <div class="cta-row">
-          <button class="btn btn-primary" type="button" data-next disabled>Confirm the new time</button>
+          <button class="btn btn-primary" type="button" data-next disabled>Move to this time</button>
           <button class="btn btn-ghost" type="button" data-back-view>Back</button>
         </div>
       </div>
@@ -52,12 +52,12 @@ scripts: booking
         <p data-done-text></p>
         <div class="cta-row">
           <a class="btn btn-ghost" data-ics download="meeting.ics" href="#" hidden>Add to calendar</a>
-          <a class="btn btn-primary" href="/en/book/" data-rebook hidden>Book a new time</a>
+          <a class="btn btn-primary" href="/en/book/" data-rebook hidden>Choose another time</a>
         </div>
       </div>
 
       <div data-invalid hidden>
-        <p class="note">This link isn't valid or has expired. If you need to change a booking, <a href="/en/contact/">contact us</a>.</p>
+        <p class="note">This link isn't valid any more. Please use the link in our most recent email, or <a href="/en/contact/">contact us</a>.</p>
       </div>
     </div>
   </div>

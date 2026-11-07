@@ -217,7 +217,30 @@
       },
       "anchor": "monica",
       "type": "profile",
-      "note": "Lingue: da confermare (domanda 14). · Foto vera: da avere. Una frase di Monica in prima persona: da fornire. Video breve in italiano: da girare. · Monica va inserita nel sistema di prenotazione (slug monica-federico) perché il pulsante la preselezioni. Dagmara: scelta per G (proposta: per ora solo nella pagina Aziende)."
+      "note": "Lingue: da confermare (domanda 14). · Foto vera: da avere. Una frase di Monica in prima persona: da fornire. Video breve in italiano: da girare. · Monica va inserita nel sistema di prenotazione (slug monica-federico) perché il pulsante la preselezioni."
+    },
+    {
+      "bg": "soft",
+      "data": {
+        "photo": null,
+        "eyebrow": "Dagmara Ostrowska",
+        "title": "Consulenza HR e processi.",
+        "languages": "",
+        "items": [],
+        "button": null,
+        "links": [
+          {
+            "label": "Aziende",
+            "to": {
+              "kind": "page",
+              "key": "aziende"
+            }
+          }
+        ]
+      },
+      "anchor": "dagmara",
+      "type": "profile",
+      "note": "Profilo minimo: i testi della prenotazione non coprono Dagmara. Foto vera: da avere. Biografia breve: da fornire (esperienza da confermare). Scelta per G: profilo anche qui o solo nella pagina Aziende."
     },
     {
       "bg": "dark",

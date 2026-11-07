@@ -256,7 +256,30 @@
       },
       "anchor": "monica",
       "type": "profile",
-      "note": "Real photo to come. Languages to confirm with Monica (if she works in English: \"Italian · English\"; if not: \"Italian\"). Short video: in English only if she confirms sessions in English. One sentence of her own, in the first person: to be supplied. · \"Book with Monica\" only once she is in the booking system and if she works in English. Dagmara Ostrowska: profile when her details exist."
+      "note": "Real photo to come. Languages to confirm with Monica (if she works in English: \"Italian · English\"; if not: \"Italian\"). Short video: in English only if she confirms sessions in English. One sentence of her own, in the first person: to be supplied. · \"Book with Monica\" only once she is in the booking system and if she works in English."
+    },
+    {
+      "bg": "light",
+      "data": {
+        "photo": null,
+        "eyebrow": "Dagmara Ostrowska",
+        "title": "HR consulting and processes.",
+        "languages": "",
+        "items": [],
+        "button": null,
+        "links": [
+          {
+            "label": "Organisations",
+            "to": {
+              "kind": "page",
+              "key": "aziende"
+            }
+          }
+        ]
+      },
+      "anchor": "dagmara",
+      "type": "profile",
+      "note": "Minimal profile: the booking texts don't cover Dagmara. Real photo to come. Short bio: to be supplied (experience to confirm). G to decide: profile here too, or only on the Organisations page."
     },
     {
       "bg": "soft",

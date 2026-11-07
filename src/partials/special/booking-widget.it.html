@@ -33,7 +33,7 @@
           <p class="label" id="times-label">Orario</p>
           <div class="times" role="group" aria-labelledby="times-label" data-times></div>
           <div data-empty hidden>
-            <p class="note">Al momento non ci sono orari liberi con questa scelta nelle prossime settimane. Prova un'altra modalità o l'altra professionista, oppure <a href="#ricontatto">chiedici di ricontattarti</a>.</p>
+            <p class="note">Al momento non ci sono orari liberi con questa scelta nelle prossime settimane. Prova un'altra modalità o un'altra professionista, oppure <a href="#ricontatto">chiedici di ricontattarti</a>.</p>
           </div>
           <dl class="summary" data-summary hidden></dl>
           <button class="btn btn-primary" type="button" data-next disabled>Continua con i tuoi recapiti</button>
@@ -50,7 +50,7 @@
         <div class="field">
           <label for="b-email">Email</label>
           <input id="b-email" name="email" type="email" autocomplete="email" required maxlength="254">
-          <span class="hint">Ti invio qui la conferma e il link per annullare o spostare.</span>
+          <span class="hint">Ti scriviamo qui l'esito della richiesta e il link per annullarla.</span>
         </div>
         <div class="field">
           <label for="b-phone">Telefono <span class="hint">(facoltativo)</span></label>
@@ -62,19 +62,19 @@
         <p class="note">Per prenotare non serve descrivere il motivo della richiesta: ne parleremo durante il colloquio.</p>
         <p class="status form-error" role="alert" data-error></p>
         <div class="cta-row">
-          <button class="btn btn-primary" type="submit" data-confirm>Conferma la prenotazione</button>
+          <button class="btn btn-primary" type="submit" data-confirm>Invia la richiesta</button>
           <button class="btn btn-ghost" type="button" data-back>Indietro</button>
         </div>
       </form>
 
       <div class="booking-step" data-step="done" hidden tabindex="-1">
         <div class="success-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h2>Appuntamento confermato.</h2>
+        <h2>Richiesta inviata.</h2>
         <dl class="summary" data-summary-3></dl>
-        <p>Ti ho inviato un'email con il riepilogo e il link personale per annullare o spostare l'appuntamento. Se non la trovi, controlla nella cartella spam.</p>
+        <p>Ti abbiamo scritto un'email con il riepilogo e il link per annullare la richiesta. Quando la professionista la accetta, ti scriviamo di nuovo. Se non trovi l'email, guarda nella cartella spam.</p>
         <div class="cta-row">
           <a class="btn btn-ghost" data-ics download="appuntamento.ics" href="#">Aggiungi al calendario</a>
-          <a class="btn btn-ghost" data-manage href="#">Gestisci l'appuntamento</a>
+          <a class="btn btn-ghost" data-manage href="#">Annulla la richiesta</a>
         </div>
       </div>
       <p class="hint">Questo sistema di prenotazione non è un servizio di emergenza: in caso di pericolo immediato chiama il 112 o il 118.</p>
@@ -87,7 +87,7 @@
         <dt>Costo</dt><dd>Gratuito</dd>
         <dt>Dove</dt><dd>Online, in videochiamata</dd>
       </dl>
-      <p>Puoi spostarlo o annullarlo dal link nell'email di conferma.</p>
+      <p>Quando la professionista accetta la richiesta, puoi annullarlo o spostarlo dal link nell'email, fino a 24 ore prima.</p><!-- Nota bozza: il limite di 24 ore è un valore da confermare (impostazione dell'agenda). -->
       <p><a href="/tariffe-e-prenotazioni/#come-si-prenota">Come funziona il primo colloquio</a></p>
     </aside>
   </div>

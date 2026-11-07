@@ -49,12 +49,12 @@
               "p": [
                 [
                   {
-                    "t": "Se non sai chi scegliere, seleziona «Aiutami a scegliere»: incontri una delle due professioniste e, se fa per te l'altra, te lo dice."
+                    "t": "Se non sai chi scegliere, scegli «Non lo so ancora» e poi «Aiutami a scegliere»: incontri una delle due professioniste; se il tuo bisogno riguarda l'area della collega, te lo dice."
                   }
                 ]
               ]
             },
-            "note": "E fissate un colloquio con lei: da confermare."
+            "note": "Se il bisogno riguarda l'altra area: passaggio alla collega, con il consenso; modalità da definire con lo studio."
           },
           {
             "title": "Lascia nome ed email",
@@ -62,7 +62,7 @@
               "p": [
                 [
                   {
-                    "t": "Ricevi subito la conferma, con il link per spostare o annullare il colloquio."
+                    "t": "Ti arriva subito un'email con il riepilogo e il link per annullare la richiesta, se cambi idea. Quando la professionista la accetta, te lo scriviamo."
                   }
                 ]
               ]
@@ -74,7 +74,7 @@
               "p": [
                 [
                   {
-                    "t": "Non devi preparare niente: racconti cosa succede, la professionista ti dice se e come potete lavorare insieme. Non è una seduta né una valutazione, e non ti obbliga a continuare."
+                    "t": "Non devi preparare niente: racconti cosa succede, la professionista ti dice se e come potete lavorare insieme. Non è una seduta né una valutazione, e non ti obbliga a continuare. Due giorni prima ti chiediamo di confermare la presenza."
                   }
                 ]
               ]
@@ -181,11 +181,11 @@
               "p": [
                 [
                   {
-                    "t": "Spostare o annullare.",
+                    "t": "Annullare o spostare.",
                     "b": true
                   },
                   {
-                    "t": " Il primo colloquio puoi spostarlo o annullarlo dal link nell'email di conferma. Per le sedute successive avvisa la tua professionista."
+                    "t": " Finché la richiesta aspetta risposta, puoi annullarla dal link nella prima email. Quando è accettata, puoi annullare o spostare il primo colloquio dal link nell'ultima email ricevuta, fino a 24 ore prima. Dopo, se non riesci a venire, usa «Non riesco a venire» nella stessa pagina: così la professionista lo sa. Le sedute successive le fissi con la professionista: se ricevi le email puoi annullarle dal link, altrimenti avvisala."
                   }
                 ]
               ]
@@ -196,7 +196,7 @@
       },
       "anchor": "prezzi",
       "type": "term-list",
-      "note": "Prezzi da non pubblicare finché non sono concordati. Il brief indica 50 € per un'ora (orientamento, coaching, sostegno) e 70 € (psicoterapia); le ricerche propongono pacchetti per la carriera e il costo anche su base mensile (per esempio \"2 sedute al mese: […] €\"). Decide il cliente. Durata di una seduta: 50 o 60 minuti, da confermare. · Preavviso (per esempio 24 ore), canale per avvisare e politica per gli avvisi tardivi: da confermare. Fattura e pagamento: da confermare. Detrazione: se e per quali servizi le spese sono detraibili, e il trattamento del coaching, da verificare con un vostro consulente. · Titolo da completare quando i prezzi sono approvati: \"Il prezzo lo vedi qui prima di prenotare.\""
+      "note": "Prezzi da non pubblicare finché non sono concordati. Il brief indica 50 € per un'ora (orientamento, coaching, sostegno) e 70 € (psicoterapia); le ricerche propongono pacchetti per la carriera e il costo anche su base mensile (per esempio \"2 sedute al mese: […] €\"). Decide il cliente. Durata di una seduta: 50 o 60 minuti, da confermare. · Preavviso (per esempio 24 ore), canale per avvisare e politica per gli avvisi tardivi: da confermare. Fattura e pagamento: da confermare. Detrazione: se e per quali servizi le spese sono detraibili, e il trattamento del coaching, da verificare con un vostro consulente. · Titolo da completare quando i prezzi sono approvati: \"Il prezzo lo vedi qui prima di prenotare.\" · «Annullare o spostare»: il limite di 24 ore è un valore da confermare (impostazione dell'agenda, oggi 24)."
     },
     {
       "bg": "soft",
@@ -231,6 +231,31 @@
         "eyebrow": "Domande frequenti",
         "title": "Quello che conviene sapere prima di prenotare.",
         "items": [
+          {
+            "q": "Quando è fissato il primo colloquio?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "Quando la professionista accetta la tua richiesta: ti arriva un'email. Se in quell'orario non può, ti scriviamo e puoi sceglierne un altro. Se non riesce a risponderti entro le 18 del giorno prima, la richiesta decade e ti avvisiamo, così puoi scegliere un altro orario. Per questo le richieste per il giorno dopo si possono fare fino alle 16."
+                  }
+                ]
+              ]
+            },
+            "note": "Dopo «ti arriva un'email»: «di solito entro un giorno lavorativo», da confermare con Elsa e Monica. Con i giorni lavorativi impostati nell'agenda la scadenza è alle 18 del giorno lavorativo precedente (richieste per il lunedì: punto aperto per G)."
+          },
+          {
+            "q": "Perché mi chiedete di confermare la presenza?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "Così la professionista sa che ci sarai. Due giorni prima ti scriviamo: basta un clic su «Confermo». Se non riesci a venire, nella stessa pagina c'è «Non riesco a venire». Se non rispondi, l'appuntamento non viene annullato da solo: il giorno prima la professionista può scriverti. Due ore prima ti arriva un ultimo promemoria: non devi fare nulla."
+                  }
+                ]
+              ]
+            }
+          },
           {
             "q": "Devo raccontare il mio problema quando prenoto?",
             "a": {

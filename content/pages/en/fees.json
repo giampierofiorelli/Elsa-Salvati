@@ -14,7 +14,7 @@
           "p": [
             [
               {
-                "t": "You book a time on the website and meet one of the psychologists by video. After that, you decide whether to go on. This page explains each step and how sessions work."
+                "t": "You request a time on the website and meet one of the psychologists by video. After that, you decide whether to go on. This page explains each step and how sessions work."
               }
             ]
           ]
@@ -45,7 +45,7 @@
       "bg": "soft",
       "data": {
         "eyebrow": "How booking works",
-        "title": "Four steps, from booking a time to deciding how to go on.",
+        "title": "Four steps, from requesting a time to deciding how to go on.",
         "intro": {
           "p": [
             [
@@ -57,17 +57,17 @@
         },
         "items": [
           {
-            "title": "Book online",
+            "title": "Request a time online",
             "text": {
               "p": [
                 [
                   {
-                    "t": "Say what you'd like help with, or choose \"Not sure yet\". Then choose Elsa or Monica, or \"Help me choose\", and the language of the meeting, English or Italian. Pick a time and leave your name and email; a phone number is optional. A confirmation email arrives straight away, with a link to move or cancel the meeting."
+                    "t": "Say what you'd like help with, or choose \"Not sure yet\". Then choose Elsa or Monica, or \"Help me choose\", and the language of the meeting, English or Italian. Pick a time and leave your name and email; a phone number is optional. We hold that time for you. The psychologist replies at the latest by 6 pm (Italian time) the day before the meeting. Once she accepts, we email you a link to move or cancel the meeting."
                   }
                 ]
               ]
             },
-            "note": "Monica in English: to confirm. If she doesn't confirm English: \"In English, the first meeting is with Elsa, who can suggest Monica (sessions in Italian) if that's what you need.\" (Technical: \"Help me choose\" assigns, at confirmation, the psychologist with the fewest upcoming appointments among those who work in the meeting's language.)"
+            "note": "Source sentence: \"The psychologist replies usually [within: to confirm], and at the latest by 6 pm…\": usual reply time to confirm. Monica in English: to confirm. If she doesn't confirm English: \"In English, the first meeting is with Elsa, who can suggest Monica (sessions in Italian) if that's what you need.\""
           },
           {
             "title": "Have the free first meeting",
@@ -75,7 +75,7 @@
               "p": [
                 [
                   {
-                    "t": "It lasts 30 minutes, by video call. It isn't a session or a diagnostic assessment. You say what's going on, and you find out whether the practice can help and how. It doesn't commit you to anything."
+                    "t": "It lasts 30 minutes, by video call. It isn't a session or a diagnostic assessment. You say what's going on, and you find out whether the practice can help and how. It doesn't commit you to anything. About two days before, we email you to ask you to confirm you're coming."
                   }
                 ]
               ]
@@ -87,7 +87,7 @@
               "p": [
                 [
                   {
-                    "t": "You and your psychologist agree what to work on, and she arranges the following sessions with you directly, not through the website."
+                    "t": "You and your psychologist agree what to work on, and she books the following sessions with you. If you'd like, you get an email for each one, with a link to cancel it and, a couple of days before, a request to confirm you're coming. Later sessions can't be booked on the website."
                   }
                 ]
               ]
@@ -104,7 +104,7 @@
                 ]
               ]
             },
-            "note": "Monica in English: to confirm. \"No follow-up emails\": to confirm with the practice (appointment reminders aside)."
+            "note": "Monica in English: to confirm. \"If you decide not to go on, we won't contact you again.\": to confirm with the practice (appointment reminders aside)."
           }
         ],
         "after": []
@@ -222,12 +222,12 @@
               "p": [
                 [
                   {
-                    "t": "You can move or cancel the free first meeting from the link in your confirmation email. To move or cancel a later session, contact your psychologist."
+                    "t": "You can move or cancel the free first meeting from the link in our email, up to 24 hours before. After that, the same page has an \"I can't make it\" link, which works until the meeting starts. Sessions booked by your psychologist can be cancelled the same way; to move one, contact her."
                   }
                 ]
               ]
             },
-            "note": "Session length (50/60 minutes), video platform, what you need (a quiet room, a device with camera and microphone, what happens if the connection drops, whether sessions are recorded, informed consent before you start), notice for moving or cancelling, payment and invoices: to confirm. If you're still abroad: the rules for online sessions, especially psychological ones, may depend on the country you're in; check with your own adviser. If you're tax resident in Italy: whether fees are deductible, and for which services: check with your own adviser."
+            "note": "Late cancellation of paid sessions: rule to agree with the practice. The 24-hour limit is a setting: to confirm. Session length (50/60 minutes), video platform, what you need (a quiet room, a device with camera and microphone, what happens if the connection drops, whether sessions are recorded, informed consent before you start), notice for moving or cancelling, payment and invoices: to confirm. If you're still abroad: the rules for online sessions, especially psychological ones, may depend on the country you're in; check with your own adviser. If you're tax resident in Italy: whether fees are deductible, and for which services: check with your own adviser."
           }
         ],
         "after": [],
@@ -291,6 +291,43 @@
                 ]
               ]
             }
+          },
+          {
+            "q": "When is my first meeting accepted?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "When the psychologist accepts your request, and we email you straight away. Until then, the time is held for you. She replies by 6 pm (Italian time) the day before at the latest, so you know where you stand the evening before; if she hasn't, the request expires and the time is released. That's also why times for the next day can be requested only until 4 pm: it leaves her time to reply. If she can't make the time you chose, we email you so you can pick another."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "q": "Why do you ask me to confirm I'm coming?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "Your psychologist keeps that time free for you. About two days before, we email you a link, and one click on our website lets her know you're coming. If we haven't heard from you, we send one more email the day before. Nothing is cancelled automatically. If you still haven't confirmed by the evening before, your psychologist may get in touch, or free the time; if she does, we'll email you to explain what to do. And if you can't make it, the \"I can't make it\" link on the same page lets the time go to someone else."
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "q": "Can I cancel?",
+            "a": {
+              "p": [
+                [
+                  {
+                    "t": "Yes. While your request is waiting, you can cancel it at any time from the link in our first email. Once it's accepted, you can cancel the meeting or move it to another free time from the link in our email, up to 24 hours before; after that, use \"I can't make it\" on the same page, until the meeting starts. Cancelling the free first meeting costs nothing. Sessions booked by your psychologist can be cancelled, but not moved: for a new time, contact her."
+                  }
+                ]
+              ]
+            },
+            "note": "Late cancellation of paid sessions: rule to agree with the practice; add one sentence here once agreed. The 24-hour limit is a setting: to confirm."
           },
           {
             "q": "Can I book just one session?",

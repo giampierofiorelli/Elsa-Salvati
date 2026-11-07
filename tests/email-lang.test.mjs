@@ -8,22 +8,22 @@ const site = { professionalName: 'Blooming', cancelHours: 24 };
 
 test('confirmation in English for an English booking', () => {
   const m = templates.confirmation({ ev: { ...ev, lang: 'en' }, name: 'Anna', manageUrl: 'https://x/en/book/manage/?t=1', tz: 'Europe/Rome', site });
-  assert.match(m.subject, /^Appointment confirmed/);
+  assert.match(m.subject, /^Request accepted/);
   assert.match(m.text, /Dear Anna,/);
-  assert.match(m.text, /free first meeting is confirmed/);
+  assert.match(m.text, /free first meeting is booked/);
   assert.match(m.text, /Tuesday, 10 November 2026, 15:00/);
-  assert.match(m.text, /Manage your booking/);
+  assert.match(m.text, /Move or cancel/);
 });
 
 test('confirmation in Italian by default', () => {
   const m = templates.confirmation({ ev, name: 'Anna', manageUrl: null, tz: 'Europe/Rome', site });
-  assert.match(m.subject, /^Appuntamento confermato/);
+  assert.match(m.subject, /^Richiesta accettata/);
   assert.match(m.text, /Gentile Anna,/);
   assert.match(m.text, /martedì 10 novembre 2026, ore 15:00/);
 });
 
 test('explicit lang wins over the event', () => {
   const m = templates.cancelled({ ev, name: 'Anna', tz: 'Europe/Rome', site, bookUrl: 'https://x/en/book/', lang: 'en' });
-  assert.match(m.subject, /^Appointment cancelled/);
-  assert.match(m.text, /Book a new time/);
+  assert.match(m.subject, /^Cancelled/);
+  assert.match(m.text, /Choose another time/);
 });

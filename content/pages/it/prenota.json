@@ -2,7 +2,7 @@
   "key": "prenota",
   "path": "/prenota/",
   "title": "Prenota un primo colloquio – Blooming",
-  "description": "Scegli un orario libero per il primo colloquio gratuito di 30 minuti, online. Conferma immediata, bastano nome ed email.",
+  "description": "Prenota un primo colloquio gratuito di 30 minuti, online: scegli un orario libero e la professionista accetta la richiesta. Bastano nome ed email.",
   "nav": "prenota",
   "blocks": [
     {
@@ -14,7 +14,7 @@
           "p": [
             [
               {
-                "t": "Dicci di cosa hai bisogno, poi scegli la professionista, oppure «Aiutami a scegliere», e un orario libero. La conferma è immediata e ricevi un'email con il riepilogo. Non serve raccontare nulla della tua situazione."
+                "t": "Scegli l'area e la professionista, oppure «Non lo so ancora», e un orario libero. La professionista accetta la richiesta e ti arriva un'email. Non serve raccontare nulla della tua situazione."
               }
             ]
           ]
