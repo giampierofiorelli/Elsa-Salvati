@@ -60,7 +60,9 @@
       ' float rim=exp(-d*d/.0035);float halo=exp(-d*d/.03);',
       ' col=mix(col,vec3(1.),rim*max(-lit,0.)*.75);',
       ' col=mix(col,col*vec3(.925,.905,.885),halo*max(lit,0.)*.55);',
-      ' col+=(h(gl_FragCoord.xy+fract(t*.73)*97.)-.5)*.045;',
+      // Grain: moving on desktop; still on phones, where the canvas is enlarged
+      // and a grain that changes every frame reads as flicker.
+      ' col+=(h(gl_FragCoord.xy+fract(t*.73)*97.*(1.-mob))-.5)*mix(.045,.03,mob);',
       ' col=mix(vec3(.980,.965,.941),col,smoothstep(0.,.12,uv.y));',
       ' gl_FragColor=vec4(col,1.);}',
     ].join('\n');
@@ -83,25 +85,34 @@
         uM = gl.getUniformLocation(prog, 'm'), uMob = gl.getUniformLocation(prog, 'mob');
     // Render below full resolution (it's soft) and, on phones, at ~30 fps to save battery.
     var scale = desktop ? 0.6 : 0.5, minGap = desktop ? 0 : 32, last = 0;
+    // Resize only when the size really changes: on iPhone, scrolling shows and
+    // hides the address bar and fires "resize"; resetting the canvas each time
+    // blanked it for a frame (a flash). After a resize, draw at once.
     function size() {
-      canvas.width = Math.max(1, Math.floor(host.clientWidth * scale));
-      canvas.height = Math.max(1, Math.floor(host.clientHeight * scale));
-      gl.viewport(0, 0, canvas.width, canvas.height);
+      var w = Math.max(1, Math.floor(host.clientWidth * scale));
+      var h = Math.max(1, Math.floor(host.clientHeight * scale));
+      if (w === canvas.width && h === canvas.height) return false;
+      canvas.width = w; canvas.height = h;
+      gl.viewport(0, 0, w, h);
+      return true;
     }
     size();
-    window.addEventListener('resize', size);
+    window.addEventListener('resize', function () { if (size()) draw(performance.now()); });
     gl.uniform1f(uMob, desktop ? 0 : 1);
     var visible = true, sm = { x: mouse.x, y: mouse.y }, t0 = performance.now();
     new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(host);
+    function draw(now) {
+      gl.uniform2f(uR, canvas.width, canvas.height);
+      gl.uniform1f(uT, (now - t0) / 1000);
+      gl.uniform2f(uM, sm.x * canvas.width / canvas.height, 1 - sm.y);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
     (function frame(now) {
       requestAnimationFrame(frame);
       if (!visible || document.hidden || now - last < minGap) return;
       last = now;
       sm.x += (mouse.x - sm.x) * 0.03; sm.y += (mouse.y - sm.y) * 0.03;
-      gl.uniform2f(uR, canvas.width, canvas.height);
-      gl.uniform1f(uT, (now - t0) / 1000);
-      gl.uniform2f(uM, sm.x * canvas.width / canvas.height, 1 - sm.y);
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      draw(now);
     })(t0);
   }
   document.querySelectorAll('[data-gradient]').forEach(gradient);
