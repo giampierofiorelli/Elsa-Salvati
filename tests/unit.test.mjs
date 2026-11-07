@@ -111,3 +111,18 @@ test('IPv6 addresses are grouped by /64 for rate limits', async () => {
   assert.equal(ipKey('198.51.100.4'), '198.51.100.4');
   assert.equal(ipKey('::ffff:198.51.100.4'), '::ffff:198.51.100.4');
 });
+
+test('approval deadline: the day before at 18:00 Rome time, also across daylight-saving changes', async () => {
+  const { approvalDeadlineFor, requestOpen, DEFAULT_SETTINGS } = await import('../lib/slots.mjs');
+  const s = { ...DEFAULT_SETTINGS };
+  // Summer time starts on Sunday 29 March 2026: 18:00 in Rome that day is 16:00 UTC.
+  assert.equal(approvalDeadlineFor('2026-03-30T07:00:00Z', s).toISOString(), '2026-03-29T16:00:00.000Z');
+  // Winter time is back on Sunday 25 October 2026: 18:00 in Rome is 17:00 UTC.
+  assert.equal(approvalDeadlineFor('2026-10-26T08:00:00Z', s).toISOString(), '2026-10-25T17:00:00.000Z');
+  // An appointment just after midnight: the deadline is still the evening before (local day).
+  assert.equal(approvalDeadlineFor('2026-12-08T23:30:00Z', s).toISOString(), '2026-12-08T17:00:00.000Z');
+  // At least two hours to approve: at 19:00 nobody can request tomorrow morning.
+  assert.equal(requestOpen('2026-12-08T08:00:00Z', s, '2026-12-07T18:00:00Z'), false);
+  assert.equal(requestOpen('2026-12-08T08:00:00Z', s, '2026-12-07T14:59:00Z'), true);
+  assert.equal(requestOpen('2026-12-08T08:00:00Z', { ...s, approvalDeadline: '12:00' }, '2026-12-07T10:30:00Z'), false);
+});

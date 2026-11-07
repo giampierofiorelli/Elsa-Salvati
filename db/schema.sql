@@ -183,6 +183,28 @@ alter table professionals add column if not exists languages text[] not null def
 -- Lingua del colloquio scelta da chi prenota; assigned = professionista assegnata dal sistema.
 alter table events add column if not exists lang text check (lang in ('it', 'en'));
 alter table events add column if not exists assigned boolean not null default false;
+-- Appuntamenti fissati dalla professionista: email alla persona e richiesta di conferma prima dell'appuntamento.
+alter table events add column if not exists notify_client boolean not null default false;
+alter table events add column if not exists client_confirmed_at timestamptz;
+-- Secondo promemoria, solo informativo, poche ore prima.
+alter table events add column if not exists reminder2_sent_at timestamptz;
+-- Richieste di primo colloquio dal sito: in attesa finché la professionista non approva (o rifiuta).
+alter table events add column if not exists approved_at timestamptz;
+alter table events add column if not exists approved_by bigint references users(id) on delete set null;
+do $$ begin
+  alter table events drop constraint if exists events_status_check;
+  alter table events add constraint events_status_check check (status in ('in_attesa', 'confermato', 'annullato', 'rifiutato'));
+  alter table events drop constraint if exists events_cancelled_by_check;
+  alter table events add constraint events_cancelled_by_check check (cancelled_by in ('paziente', 'studio', 'sistema'));
+  -- A request waiting for approval holds its time, like a confirmed appointment.
+  if not exists (select 1 from pg_constraint where conname = 'events_no_overlap' and pg_get_constraintdef(oid) like '%in_attesa%') then
+    alter table events drop constraint if exists events_no_overlap;
+    alter table events add constraint events_no_overlap exclude using gist (
+      professional_id with =,
+      tstzrange(start_at, end_at, '[)') with &&
+    ) where (status in ('confermato', 'in_attesa'));
+  end if;
+end $$;
 
 alter table contact_requests add column if not exists lang text check (lang in ('it', 'en'));
 

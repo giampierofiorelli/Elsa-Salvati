@@ -292,3 +292,10 @@ code { background: var(--paper); border: 1px solid var(--line); padding: 8px 10p
   .md-card { grid-template-columns: 72px 1fr; }
   .md-thumb, .md-pdf { width: 72px; height: 72px; }
 }
+/* Requests to approve and the person's confirmation */
+.ev-pending { background: #FFF1D6; box-shadow: inset 3px 0 0 #B7791F; }
+.ev .ev-flag { display: inline-block; margin: 1px 0; padding: 0 6px; border-radius: 999px; font-size: .72rem; font-weight: 600; line-height: 1.5; }
+.ev-flag-pending, .tag-pending { background: #B7791F; color: #fff; }
+.ev-flag-wait, .tag-wait { background: #FDE7C2; color: #7A4B0C; }
+.ev-flag-ok, .tag-ok { background: #D6F0E2; color: #1F5A3F; }
+.ev-status { margin: 8px 0 0; padding: 10px 12px; border-radius: 10px; background: #FBF5EA; font-size: .9rem; line-height: 1.45; }

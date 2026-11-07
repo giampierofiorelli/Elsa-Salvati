@@ -146,6 +146,7 @@
     tabs.forEach(function (t, i) {
       var b = el('button', { type: 'button', 'data-tab': t[0], 'aria-pressed': String(i === 0) }, [t[1]]);
       if (t[0] === 'richieste') b.appendChild(el('span', { class: 'badge', 'data-req-count': true, hidden: true }));
+      if (t[0] === 'agenda') b.appendChild(el('span', { class: 'badge', 'data-pending-count': true, hidden: true, title: 'Richieste da approvare' }));
       b.addEventListener('click', function () { openTab(t[0]); });
       nav.appendChild(b);
     });
@@ -232,12 +233,31 @@
     if (state.weekStart === monday(state.today) && state.view === 'week') label = 'Settimana corrente · ' + label;
     $('[data-range]').textContent = label;
     var q = '/events?from=' + r.from + '&to=' + r.to + (isAdmin() ? '&professional=' + (state.scope || 'all') : '');
+    loadPendingCount();
     return api('GET', q).then(function (res) {
       state.events = res.events;
       $('[data-week]').hidden = state.view !== 'week';
       $('[data-list]').hidden = state.view !== 'list';
       if (state.view === 'week') renderWeek(); else renderList();
     }).catch(function (e) { $('[data-week]').textContent = e.message; });
+  }
+
+  // Requests from the website waiting for approval: count on the Agenda tab.
+  function loadPendingCount() {
+    api('GET', '/events/pending').then(function (res) {
+      var badge = $('[data-pending-count]');
+      if (badge) { badge.hidden = !res.events.length; badge.textContent = String(res.events.length); }
+    }).catch(function () { /* the agenda still works */ });
+  }
+
+  // Short state shown on an appointment: request to approve, or whether the person confirmed.
+  function evState(ev) {
+    if (ev.kind === 'blocco') return null;
+    if (ev.pending) return { cls: 'pending', text: 'Da approvare' };
+    if (ev.status !== 'confermato') return null;
+    if (ev.clientConfirmedAt) return { cls: 'ok', text: 'Confermato dalla persona' };
+    if ((ev.source === 'sito' || ev.notifyClient) && new Date(ev.start) > new Date()) return { cls: 'wait', text: 'In attesa di conferma' };
+    return null;
   }
 
   function dayPieces(ev, day) {
@@ -319,11 +339,14 @@
         var from = Math.max(p.from, startMin), to = Math.min(p.to, endMin);
         if (to <= from) return;
         var cls = ev.kind === 'blocco' ? 'ev-blocco' : (ev.source === 'sito' ? 'ev-sito' : 'ev-manuale');
+        var st = evState(ev);
+        if (st && st.cls === 'pending') cls += ' ev-pending';
         var title = ev.kind === 'blocco' ? (ev.title || 'Non disponibile') : (ev.name || KIND_LABEL[ev.kind]);
         var sub = ev.kind === 'blocco' ? '' : (ev.serviceName || KIND_LABEL[ev.kind]) + (ev.mode ? ' · ' + MODE_LABEL[ev.mode] : '');
         if (showPro) sub = shortName(ev.professionalName) + (sub ? ' · ' + sub : '');
         var b = el('button', { type: 'button', class: 'ev ' + cls, 'aria-label': title + ', ' + hhmm(p.from) + '–' + hhmm(Math.min(p.to, 1439)) }, [
           el('strong', { text: (ev.kind === 'blocco' ? '' : ev.time + ' ') + title }),
+          st ? el('span', { class: 'ev-flag ev-flag-' + st.cls, text: st.text }) : null,
           sub ? el('span', { text: sub }) : null,
         ]);
         b.style.top = ((from - startMin) * PX_PER_MIN) + 'px';
@@ -371,6 +394,7 @@
             el('span', { class: 'tag', text: ev.serviceName || KIND_LABEL[ev.kind] }),
             ev.mode ? el('span', { class: 'tag', text: MODE_LABEL[ev.mode] }) : null,
             ev.source === 'sito' ? el('span', { class: 'tag', text: 'dal sito' }) : null,
+            evState(ev) ? el('span', { class: 'tag tag-' + evState(ev).cls, text: evState(ev).text }) : null,
           ]),
         ]));
       });
@@ -413,6 +437,9 @@
     $('[data-repeat-fields]').hidden = true;
     $$('[data-time-field]').forEach(function (f) { f.hidden = true; });
     $('[data-save]').hidden = false;
+    $('[data-approve]').hidden = true;
+    $('[data-decline]').hidden = true;
+    $('[data-ev-status]').hidden = true;
   }
 
   function openNew(date, time) {
@@ -454,8 +481,24 @@
     $('[data-send-box]').hidden = true;
     $('[data-ev-pro-field]').hidden = true;
     $('[data-cancel]').hidden = false;
-    $('[data-cancel]').textContent = ev.kind === 'blocco' ? 'Elimina blocco' : 'Annulla appuntamento';
+    $('[data-cancel]').textContent = ev.kind === 'blocco' ? 'Elimina blocco' : (ev.pending ? 'Annulla la richiesta' : 'Annulla appuntamento');
     setKind(ev.kind);
+    // Emails to the person can be turned on for appointments set by hand.
+    $('[data-send-box]').hidden = ev.kind === 'blocco' || ev.source !== 'manuale';
+    form.sendEmail.checked = !!ev.notifyClient;
+    form.emailLang.value = ev.lang || 'it';
+    var st = evState(ev);
+    var stBox = $('[data-ev-status]');
+    if (ev.pending) {
+      stBox.textContent = 'Richiesta dal sito, da approvare. Se non la approvi entro le ' + ((state.settings && state.settings.approvalDeadline) || '18:00') + ' del giorno prima, scade e la persona riceve un\'email per scegliere un altro orario.';
+      stBox.hidden = false;
+      $('[data-approve]').hidden = false;
+      $('[data-decline]').hidden = false;
+      $('[data-save]').hidden = true;
+    } else if (st) {
+      stBox.textContent = st.text + (ev.clientConfirmedAt ? ' il ' + new Date(ev.clientConfirmedAt).toLocaleString('it-IT', { dateStyle: 'medium', timeStyle: 'short' }) : '') + '.';
+      stBox.hidden = false;
+    }
     if (ev.kind === 'blocco') {
       form.title.value = ev.title;
       var allDay = ev.time === '00:00' && ev.endTime === '00:00';
@@ -479,7 +522,7 @@
     dlg.showModal();
   }
 
-  function payload() {
+  function eventPayload() {
     if (state.kind === 'blocco') {
       return {
         kind: 'blocco', title: form.title.value.trim(), allDay: form.allDay.checked,
@@ -496,7 +539,10 @@
     if (!state.editing) {
       if (isAdmin()) p.professionalId = form.professionalId.value;
       if (form.repeat.checked) p.repeat = { count: Number(form.count.value), intervalWeeks: Number(form.intervalWeeks.value) };
+    }
+    if (!state.editing || state.editing.source === 'manuale') {
       p.sendEmail = form.sendEmail.checked;
+      p.emailLang = form.emailLang.value;
     }
     return p;
   }
@@ -505,7 +551,7 @@
     e.preventDefault();
     var err = $('[data-dlg-error]');
     err.textContent = '';
-    var p = payload();
+    var p = eventPayload();
     var req = state.editing ? api('PATCH', '/events/' + state.editing.id, p) : api('POST', '/events', p);
     req.then(function (res) {
       dlg.close();
@@ -527,6 +573,17 @@
     $('[data-notify-box]').hidden = ev.kind === 'blocco' || !ev.email;
     $('[data-save]').hidden = true;
     this.hidden = true;
+  });
+  $('[data-approve]').addEventListener('click', function () {
+    var ev = state.editing;
+    api('POST', '/events/' + ev.id + '/approve', {}).then(function () { dlg.close(); refresh(); })
+      .catch(function (e) { $('[data-dlg-error]').textContent = e.message; });
+  });
+  $('[data-decline]').addEventListener('click', function () {
+    var ev = state.editing;
+    if (!window.confirm('Rifiutare la richiesta? La persona riceverà un\'email per scegliere un altro orario.')) return;
+    api('POST', '/events/' + ev.id + '/decline', {}).then(function () { dlg.close(); refresh(); })
+      .catch(function (e) { $('[data-dlg-error]').textContent = e.message; });
   });
   $('[data-abort-cancel]').addEventListener('click', function () {
     $('[data-cancel-box]').hidden = true;
@@ -931,7 +988,7 @@
     e.preventDefault();
     var status = $('[data-settings-status]');
     var s = {};
-    $$('input', e.target).forEach(function (i) { if (i.value.trim() !== '') s[i.name] = Number(i.value); });
+    $$('input', e.target).forEach(function (i) { if (i.value.trim() !== '') s[i.name] = i.type === 'time' ? i.value : Number(i.value); });
     api('PUT', '/settings', { settings: s }).then(function (res) {
       state.settings = res.settings;
       status.className = 'status form-ok';

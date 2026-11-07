@@ -26,6 +26,17 @@
       noPreference: 'Indifferente', reqName: 'Inserisci il tuo nome.', reqContact: 'Indica almeno un\'email o un numero di telefono.',
       reqPrivacy: 'È necessario prendere visione dell\'informativa privacy.', reqSent: 'Grazie, richiesta inviata. Ti ricontatteremo personalmente al più presto.',
       modes: { studio: 'In studio', online: 'Online' },
+      requestTitle: 'Richiesta inviata.',
+      requestText: 'La professionista la conferma il prima possibile: riceverai un\'email quando sarà approvata. Fino ad allora l\'orario resta riservato per te. Se non trovi l\'email, controlla nella cartella spam.',
+      cancelRequestBtn: 'Annulla la richiesta',
+      pending: 'In attesa di approvazione', declined: 'Non confermato',
+      pendingNote: 'La tua richiesta aspetta l\'approvazione della professionista: riceverai un\'email. Se l\'orario non va più bene, puoi annullarla.',
+      reallyCancelRequest: 'Vuoi davvero annullare la richiesta?',
+      cancelRequestDone: 'Richiesta annullata.', cancelRequestDoneText: 'L\'orario è di nuovo libero. Se vuoi, puoi sceglierne un altro quando preferisci.',
+      confirmAsk: 'Ti chiediamo di confermare la tua presenza.',
+      confirmedByYou: 'Hai confermato la tua presenza. Grazie.',
+      confirmedStatus: 'Confermato da te',
+      cannotMove: function (h) { return 'Puoi annullarlo fino a ' + h + ' ore prima. Per spostarlo contatta lo studio.'; },
     },
     en: {
       at: ', ', error: 'Something went wrong. Please try again.', network: 'Connection failed. Check your network and try again.',
@@ -45,6 +56,17 @@
       noPreference: 'No preference', reqName: 'Please enter your name.', reqContact: 'Please give us an email or a phone number.',
       reqPrivacy: 'Please confirm you have read the privacy notice.', reqSent: 'Thank you, your message has been sent. We\'ll get back to you personally soon.',
       modes: { studio: 'In person', online: 'Online' },
+      requestTitle: 'Request sent.',
+      requestText: 'The psychologist will confirm it as soon as she can: you\'ll get an email once it\'s approved. Until then, the time is held for you. If you can\'t find the email, check your spam folder.',
+      cancelRequestBtn: 'Cancel the request',
+      pending: 'Waiting for approval', declined: 'Not confirmed',
+      pendingNote: 'Your request is waiting for the psychologist\'s approval: you\'ll get an email. If the time no longer suits you, you can cancel it.',
+      reallyCancelRequest: 'Do you really want to cancel the request?',
+      cancelRequestDone: 'Request cancelled.', cancelRequestDoneText: 'The time is free again. You can choose another one whenever you like.',
+      confirmAsk: 'Please confirm you\'re coming.',
+      confirmedByYou: 'You\'ve confirmed you\'re coming. Thank you.',
+      confirmedStatus: 'Confirmed by you',
+      cannotMove: function (h) { return 'You can cancel it up to ' + h + ' hours before. To move it, please contact the practice.'; },
     },
   }[LANG];
   // English messages for the server's error codes (the server answers in Italian).
@@ -55,7 +77,9 @@
     privacy: 'Please confirm you have read the privacy notice.',
     too_late: 'It\'s too late to change this meeting online. Please contact us.',
     not_found: 'This link isn\'t valid or has expired.',
-    not_offered: 'This service isn\'t available with this choice.',
+    not_offered: 'This service isn\'t available with this choice. An appointment set by the psychologist can only be moved by contacting the practice.',
+    pending: 'Your request is still waiting for approval: if the time no longer suits you, cancel it and choose another.',
+    not_active: 'This appointment is no longer active.',
     lang_unavailable: 'The professional you chose doesn\'t hold meetings in this language.',
     invalid: 'Please check the details you entered: one of them isn\'t valid (for example the email address or the phone number).',
     json_required: 'Something went wrong. Please try again.',
@@ -466,6 +490,15 @@
         fillSummary($(root, '[data-summary-3]'), rows());
         $(root, '[data-ics]').href = icsHref(res.booking.start, res.booking.end, res.booking.mode);
         $(root, '[data-manage]').href = res.manageUrl.replace(/^https?:\/\/[^/]+/, '');
+        if (res.booking.pending) {
+          // A request waiting for the professional's approval, not a confirmed appointment.
+          var doneStep = $(root, '[data-step="done"]');
+          var h2 = doneStep.querySelector('h2');
+          var p = h2 && h2.parentNode.querySelector('dl + p, p');
+          if (h2) h2.textContent = T.requestTitle;
+          if (p) p.textContent = T.requestText;
+          $(root, '[data-manage]').textContent = T.cancelRequestBtn;
+        }
         show(root, 'done');
       }).catch(function (err) {
         error.textContent = err.message;
@@ -520,24 +553,54 @@
     api('/manage', { t: token }).then(function (res) {
       loading.hidden = true;
       var b = res.booking;
+      var statusText = b.status === 'in_attesa' ? T.pending
+        : b.status === 'rifiutato' ? T.declined
+          : b.status === 'confermato' ? (b.confirmedAt ? T.confirmedStatus : T.confirmed) : T.cancelled;
       fillSummary($(root, '[data-current]'), [
         [T.when, longDate(b.start)],
         [T.service, b.service && b.service.name],
         [T.with, b.professional && b.professional.name],
         [T.mode, MODE_LABEL[b.mode] || '—'],
-        [T.status, b.status === 'confermato' ? T.confirmed : T.cancelled],
+        [T.status, statusText],
       ]);
       var note = $(root, '[data-change-note]');
-      if (b.status !== 'confermato') {
+      var confirmBtn = $(root, '[data-confirm-attendance]');
+      var moveBtn = $(root, '[data-start-reschedule]');
+      var cancelBtn = $(root, '[data-cancel]');
+      if (b.pending) {
+        note.textContent = T.pendingNote;
+        moveBtn.hidden = true;
+        cancelBtn.textContent = T.cancelRequestBtn;
+      } else if (b.status !== 'confermato') {
         note.textContent = T.wasCancelled;
         $(root, '[data-actions]').hidden = true;
-      } else if (!b.canChange) {
-        note.textContent = T.tooLate(b.cancelHours);
-        $(root, '[data-actions]').hidden = true;
       } else {
-        note.textContent = T.canChange(b.cancelHours);
+        // Confirming is possible even when it's too late to move or cancel online. It needs a real click:
+        // nothing happens just by opening the link (email scanners open links on their own).
+        if (b.needsConfirmation && confirmBtn) confirmBtn.hidden = false;
+        if (!b.canMove) moveBtn.hidden = true;
+        if (!b.canChange) { moveBtn.hidden = true; cancelBtn.hidden = true; }
+        var parts = [];
+        if (b.needsConfirmation) parts.push(T.confirmAsk);
+        else if (b.confirmedAt) parts.push(T.confirmedByYou);
+        parts.push(!b.canChange ? T.tooLate(b.cancelHours) : (b.canMove ? T.canChange(b.cancelHours) : T.cannotMove(b.cancelHours)));
+        note.textContent = parts.join(' ');
+        if (moveBtn.hidden && cancelBtn.hidden && (!confirmBtn || confirmBtn.hidden)) $(root, '[data-actions]').hidden = true;
       }
       show(root, 'view');
+
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', function () {
+          confirmBtn.disabled = true;
+          api('/manage/confirm', { t: token }).then(function () {
+            confirmBtn.hidden = true;
+            note.textContent = T.confirmedByYou;
+          }).catch(function (err) {
+            confirmBtn.disabled = false;
+            $(root, '[data-view-error]').textContent = err.message;
+          });
+        });
+      }
 
       var modesBox = $(root, '[data-modes]');
       (b.modes || ['studio', 'online']).forEach(function (m) {
@@ -547,9 +610,10 @@
       });
 
       $(root, '[data-cancel]').addEventListener('click', function () {
-        if (!window.confirm(T.reallyCancel)) return;
+        if (!window.confirm(b.pending ? T.reallyCancelRequest : T.reallyCancel)) return;
         api('/manage/cancel', { t: token }).then(function () {
-          done(T.cancelDone, T.cancelDoneText);
+          if (b.pending) done(T.cancelRequestDone, T.cancelRequestDoneText);
+          else done(T.cancelDone, T.cancelDoneText);
         }).catch(function (err) { $(root, '[data-view-error]').textContent = err.message; });
       });
       $(root, '[data-start-reschedule]').addEventListener('click', function () {

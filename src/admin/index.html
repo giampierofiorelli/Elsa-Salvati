@@ -236,7 +236,9 @@
         <div class="field"><label for="s-notice">Anticipo minimo per prenotare (ore)</label><input id="s-notice" name="minNoticeHours" type="number" min="0" max="336"></div>
         <div class="field"><label for="s-horizon">Prenotabile fino a (giorni avanti)</label><input id="s-horizon" name="horizonDays" type="number" min="1" max="180"></div>
         <div class="field"><label for="s-cancel">Annullabile online fino a (ore prima)</label><input id="s-cancel" name="cancelHours" type="number" min="0" max="168"></div>
-        <div class="field"><label for="s-reminder">Promemoria email (ore prima)</label><input id="s-reminder" name="reminderHours" type="number" min="1" max="72"></div>
+        <div class="field"><label for="s-confirm">Richiesta di conferma della presenza (ore prima)</label><input id="s-confirm" name="confirmHours" type="number" min="2" max="96"></div>
+        <div class="field"><label for="s-reminder2">Secondo promemoria (ore prima, 0 = nessuno)</label><input id="s-reminder2" name="reminder2Hours" type="number" min="0" max="12"></div>
+        <div class="field"><label for="s-deadline">Le richieste non approvate scadono il giorno prima alle</label><input id="s-deadline" name="approvalDeadline" type="time" step="900"></div>
         <div class="field"><label for="s-retention">Cancella i recapiti dopo (mesi)</label><input id="s-retention" name="retentionMonths" type="number" min="1" max="120"></div>
         <div class="field"><label for="s-req">Cancella le richieste dopo (mesi)</label><input id="s-req" name="requestRetentionMonths" type="number" min="1" max="24"></div>
         <p class="hint">Se cambi i mesi di conservazione, va aggiornata anche l'informativa privacy (oggi dice: recapiti cancellati 24 mesi dopo l'ultimo appuntamento, richieste dopo 6 mesi).</p>
@@ -329,7 +331,11 @@
           <div class="field"><label for="e-count">Numero di incontri</label><input id="e-count" name="count" type="number" min="2" max="104" value="10"></div>
         </div>
       </div>
-      <label class="check" data-send-box><input type="checkbox" name="sendEmail"> <span>Invia email di conferma al paziente</span></label>
+      <div data-send-box>
+        <label class="check"><input type="checkbox" name="sendEmail"> <span>Invia email alla persona (conferma ora e richiesta di conferma prima dell'appuntamento)</span></label>
+        <span class="hint">Spunta solo se l'hai concordato con la persona. Riceverà un link per confermare o annullare; per spostare l'appuntamento dovrà contattarti.</span>
+        <div class="field"><label for="e-lang">Lingua delle email</label><select id="e-lang" name="emailLang"><option value="it">Italiano</option><option value="en">English</option></select></div>
+      </div>
     </div>
 
     <div data-block-fields hidden>
@@ -353,8 +359,11 @@
       </div>
     </div>
 
+    <p class="ev-status" data-ev-status hidden></p>
     <p class="status form-error" role="alert" data-dlg-error></p>
     <div class="cta-row dlg-actions">
+      <button type="button" class="btn btn-primary btn-small" data-approve hidden>Approva la richiesta</button>
+      <button type="button" class="btn btn-ghost btn-small" data-decline hidden>Rifiuta</button>
       <button type="submit" class="btn btn-primary btn-small" data-save>Salva</button>
       <button type="button" class="btn btn-danger btn-small" data-cancel hidden>Annulla appuntamento</button>
     </div>
