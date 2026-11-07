@@ -946,3 +946,5 @@ html[data-palette]:not([data-palette="x"]) .lang-notice { background: var(--nigh
 .closing-v4-more a { color: var(--ivory); border-bottom: 1px solid rgba(250, 246, 240, .5); text-decoration: none; }
 .row { position: relative; }
 .anchor-alias { position: absolute; top: -110px; left: 0; height: 0; width: 0; }
+.form-v4 { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(20px, 3vw, 32px); }
+.form-v4 .btn { margin-top: 8px; }

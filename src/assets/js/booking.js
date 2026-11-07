@@ -615,7 +615,11 @@
         professional: proSelect && !proField.hidden ? proSelect.value : '',
         preference: form.preference ? form.preference.value.trim() : '',
         organization: form.organization ? form.organization.value.trim() : '',
-        message: form.message ? form.message.value.trim() : '',
+        // Extra fields (e.g. role, size and team language on the companies form) go
+        // at the top of the message, one per line, so the panel shows them.
+        message: [].slice.call(form.querySelectorAll('[data-extra]')).filter(function (f) { return f.value.trim(); })
+          .map(function (f) { return f.getAttribute('data-extra') + ': ' + f.value.trim(); })
+          .concat(form.message && form.message.value.trim() ? [form.message.value.trim()] : []).join('\n').slice(0, 600),
         privacy: true, website: form.website.value,
       }).then(function () {
         form.reset();
