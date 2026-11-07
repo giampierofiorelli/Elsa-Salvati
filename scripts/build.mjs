@@ -402,6 +402,18 @@ for (const pg of pages) {
 // Admin app: standalone page, not indexed.
 cpSync(join(src, 'admin'), join(out, 'admin'), { recursive: true });
 
+// Logo icon chosen in the settings (site.config.json "logo"): every page and
+// script points to that icon's files. Each icon has its own path, so a change
+// of logo is never hidden by the browser cache.
+const logo = config.logo || 'classico';
+if (!statSync(join(out, 'assets/img/logos', logo), { throwIfNoEntry: false })) throw new Error(`Logo "${logo}" non trovato in src/assets/img/logos/`);
+for (const file of walk(out).filter((f) => /\.(html|js)$/.test(f) && !f.includes('/vendor/'))) {
+  const text = readFileSync(file, 'utf8');
+  const next = text.replaceAll('/assets/img/logo-icon-light.webp', `/assets/img/logos/${logo}/icon-light.webp`)
+    .replaceAll('/assets/img/logo-icon.webp', `/assets/img/logos/${logo}/icon.webp`);
+  if (next !== text) writeFileSync(file, next);
+}
+
 // Cache busting: assets are cached for a week, so every CSS/JS reference gets
 // ?v=<content hash>. A changed file gets a new URL and phones fetch it at once.
 const versioned = ['/assets/css/style.css', '/assets/js/site.js', '/assets/js/booking.js', '/assets/js/motion.js', '/assets/js/effects.js', '/admin/admin.css', '/admin/admin.js', '/admin/vendor/qrcode.js'];
