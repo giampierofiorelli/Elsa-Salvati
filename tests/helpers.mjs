@@ -19,7 +19,7 @@ export async function dbAvailable() {
 
 export async function freshDb() {
   const sql = postgres(DB_URL, { max: 4, prepare: false, onnotice: () => {}, types: { bigint: postgres.BigInt } });
-  await sql.unsafe('drop table if exists media_files, media, site_globals, site_page_versions, site_pages, site_images, audit_log, events, series, availability_rules, contact_requests, rate_events, kv, users, professional_services, professionals, services, categories cascade');
+  await sql.unsafe('drop table if exists stats_monthly, stats_email_daily, stats_email_actions_daily, stats_site_daily, stats_site_monthly, media_files, media, site_globals, site_page_versions, site_pages, site_images, audit_log, events, series, availability_rules, contact_requests, rate_events, kv, users, professional_services, professionals, services, categories cascade');
   await sql.unsafe(readFileSync(new URL('../db/schema.sql', import.meta.url), 'utf8'));
   return sql;
 }

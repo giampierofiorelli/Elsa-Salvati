@@ -277,7 +277,7 @@
 
   // Colour class of an event: by state first, then by type.
   function evTone(ev) {
-    if (ev.status === 'annullato' || ev.status === 'rifiutato') return 'off';
+    if (ev.status === 'annullato' || ev.status === 'rifiutato' || ev.status === 'non_presentata') return 'off';
     if (ev.kind === 'blocco') return 'block';
     if (ev.pending) return 'pending';
     return ev.kind === 'primo_colloquio' ? 'first' : 'session';
@@ -285,6 +285,7 @@
   function evStatusText(ev) {
     if (ev.status === 'annullato') { var st = evState(ev); return st ? st.text : 'Annullato'; }
     if (ev.status === 'rifiutato') return 'Rifiutata';
+    if (ev.status === 'non_presentata') return 'Non presentata';
     if (ev.kind === 'blocco') return 'Bloccato';
     var s = evState(ev);
     return s ? s.text : 'Confermato';
@@ -694,6 +695,17 @@
         panelAction(free, function () { return api('POST', '/events/' + ev.id + '/cancel', { scope: 'one', reason: 'non_confermato' }); }, 'Orario liberato.');
       };
       actions.appendChild(free);
+    }
+    // After the appointment's time: mark that the person did not come (or undo it).
+    if (ev.kind !== 'blocco' && ev.status === 'confermato' && new Date(ev.start) <= new Date()) {
+      var ns = el('button', { type: 'button', class: 'btn btn-ghost btn-small', 'data-no-show': true, text: 'Non si è presentata' });
+      ns.onclick = function () { panelAction(ns, function () { return api('POST', '/events/' + ev.id + '/no-show', {}); }, 'Segnata come non presentata. Conta nelle statistiche delle assenze.'); };
+      actions.appendChild(ns);
+    }
+    if (ev.status === 'non_presentata') {
+      var un = el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Era presente: annulla' });
+      un.onclick = function () { panelAction(un, function () { return api('POST', '/events/' + ev.id + '/no-show', { undo: true }); }, 'Presenza ripristinata.'); };
+      actions.appendChild(un);
     }
     if (!off) {
       actions.appendChild(el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Modifica', onclick: function () { closePanel(); openEdit(ev); } }));

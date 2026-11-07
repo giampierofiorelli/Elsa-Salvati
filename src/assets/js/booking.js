@@ -498,6 +498,7 @@
       api('/book', {
         start: picker.slot.start, mode: state.mode, service: state.service.id, professional: state.pro.id, lang: state.lang,
         name: name, email: email, phone: form.phone.value.trim(), privacy: true, website: form.website.value,
+        heard: form.heard ? form.heard.value : '',
       }).then(function (res) {
         if (res.booking.assigned) state.assignedName = res.booking.professional.name;
         fillSummary($(root, '[data-summary-3]'), rows());
@@ -707,6 +708,7 @@
           .map(function (f) { return f.getAttribute('data-extra') + ': ' + f.value.trim(); })
           .concat(form.message && form.message.value.trim() ? [form.message.value.trim()] : []).join('\n').slice(0, 600),
         privacy: true, website: form.website.value,
+        heard: form.heard ? form.heard.value : '',
       }).then(function () {
         form.reset();
         if (proField) proField.hidden = true;

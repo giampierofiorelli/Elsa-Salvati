@@ -1195,3 +1195,55 @@ test('round 2: an organisations first meeting can be requested with "help me cho
   assert.equal(r.body.booking.assigned, true);
   assert.ok([rita, sara].includes(r.body.booking.professional.id));
 });
+
+// ---------- statistics (research 23): counters only ----------
+test('statistics: "non presentata" after the time only, with undo; source and contact counters; continuity frozen before deletion', opts, async () => {
+  const at = (iso) => new Date(iso);
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  // A first meeting tomorrow cannot be marked yet; one this morning can.
+  const mk = async (start, extra = {}) => {
+    const id = await deps.store.insertEvent({ professional_id: ids.elsa, service_id: ids.coaching, kind: 'seduta', source: 'manuale', mode: 'online',
+      start_at: at(start), end_at: new Date(at(start).getTime() + 3000000), ...extra });
+    return id;
+  };
+  const future = await mk(new Date(clock.now.getTime() + 86400000 * 3).toISOString());
+  let r = await as('admin')('POST', `/events/${future}/no-show`, {});
+  assert.equal(r.status, 409);
+  const pastId = await mk(new Date(clock.now.getTime() - 86400000 * 2 - 7200000).toISOString());
+  r = await as('admin')('POST', `/events/${pastId}/no-show`, {});
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.equal((await deps.store.getEvent(pastId)).status, 'non_presentata');
+  r = await as('admin')('POST', `/events/${pastId}/no-show`, { undo: true });
+  assert.equal(r.status, 200);
+  assert.equal((await deps.store.getEvent(pastId)).status, 'confermato');
+  await as('admin')('POST', `/events/${pastId}/no-show`, {});
+
+  // "Come ci hai conosciuto?" on the contact form: counted, never stored with the request.
+  r = await pubCall('POST', '/request', { name: 'Anna', email: 'anna.stat@example.it', category: 'aziende', lang: 'it', privacy: true, heard: 'linkedin' });
+  assert.equal(r.status, 201);
+  r = await pubCall('POST', '/request', { name: 'Bea', email: 'bea.stat@example.it', category: 'psicologia', lang: 'en', privacy: true, heard: '<script>' });
+  assert.equal(r.status, 201);
+  const m = await sql`select metric, area, lang, n from stats_monthly order by metric, area`;
+  assert.ok(m.some((x) => x.metric === 'fonte:linkedin' && x.area === 'aziende' && x.n === 1));
+  assert.ok(m.some((x) => x.metric === 'contatto' && x.area === 'psicologia' && x.lang === 'en'));
+  assert.ok(!m.some((x) => /script/.test(x.metric)), 'unknown answers are dropped');
+  const cols = (await sql`select column_name from information_schema.columns where table_name = 'contact_requests'`).map((x) => x.column_name);
+  assert.ok(!cols.some((c) => /heard|source/.test(c)), 'the answer has no column next to the person');
+
+  // Continuity: a first meeting followed by a session within 60 days, frozen once the window closes,
+  // and still counted after the contact fingerprints are deleted.
+  const hash = deps.vault.lookupHash('contact:cont@example.it');
+  const first = await deps.store.insertEvent({ professional_id: ids.marco, service_id: ids.terapia, kind: 'primo_colloquio', source: 'manuale', mode: 'online',
+    start_at: at('2026-03-10T09:00:00Z'), end_at: at('2026-03-10T09:30:00Z'), contact_hash: hash, contact_enc: deps.vault.encrypt({ name: 'C', email: 'cont@example.it' }) });
+  await deps.store.insertEvent({ professional_id: ids.marco, service_id: ids.terapia, kind: 'seduta', source: 'manuale', mode: 'online',
+    start_at: at('2026-03-24T09:00:00Z'), end_at: at('2026-03-24T09:50:00Z'), contact_hash: hash, contact_enc: deps.vault.encrypt({ name: 'C', email: 'cont@example.it' }) });
+  assert.ok(first);
+  const { createStats } = await import('../lib/stats.mjs');
+  await createStats(sql).freezeAndRollup(clock.now);
+  const frozen = await sql`select metric, n from stats_monthly where month = '2026-03-01' and metric like 'continuita%' order by metric`;
+  assert.deepEqual(frozen.map((x) => [x.metric, x.n]), [['continuita-base', 1], ['continuita-si', 1]]);
+  await sql`update events set contact_hash = null, contact_enc = null where contact_hash = ${hash}`;
+  await createStats(sql).freezeAndRollup(clock.now);
+  const again = await sql`select n from stats_monthly where month = '2026-03-01' and metric = 'continuita-si'`;
+  assert.equal(again[0].n, 1, 'frozen counters are never overwritten');
+});
