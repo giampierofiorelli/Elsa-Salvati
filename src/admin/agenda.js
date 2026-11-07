@@ -367,8 +367,10 @@
       'aria-label': title + ', ' + (timeText ? hhmm(p.from) + '–' + hhmm(Math.min(p.to, 1439)) + ', ' : '') + evStatusText(ev),
       title: title + (timeText ? ' · ' + hhmm(p.from) + '–' + hhmm(Math.min(p.to, 1439)) : '') + ' · ' + evStatusText(ev),
     }, [
-      el('span', { class: 'ev-line' }, [timeText ? el('time', { text: timeText }) : null, el('strong', { text: title })]),
-      sub ? el('span', { class: 'ev-sub', text: sub }) : null,
+      // Name first, then the time range, then the service (like Google Calendar). Short events: name and start on one line.
+      el('strong', { class: 'ev-name', text: title }),
+      timeText ? el('time', { class: 'ev-time', text: compact ? timeText : hhmm(p.from) + ' – ' + hhmm(Math.min(p.to, 1439)) }) : null,
+      sub && !compact ? el('span', { class: 'ev-sub', text: sub }) : null,
     ]);
     b.addEventListener('click', function (e) { e.stopPropagation(); openPanel(ev); });
     return b;
