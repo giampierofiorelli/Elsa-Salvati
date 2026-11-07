@@ -1284,10 +1284,13 @@ test('statistics: emails counted per type and language; Brevo webhook needs the 
     { event: 'delivered', email: 'persona@example.it', tags: ['conferma', 'lang-it'] },
     { event: 'hard_bounce', email: 'persona@example.it', tags: ['conferma', 'lang-it'] },
     { event: 'opened', email: 'persona@example.it', tags: ['conferma'] },
+    { event: 'click', email: 'persona@example.it', tags: ['conferma'] },
+    { event: 'unique_opened', email: 'persona@example.it', tags: ['conferma'] },
+    { event: 'proxy_open', email: 'persona@example.it', tags: ['conferma'] },
     { event: 'spam', email: 'p2@example.it', tag: 'accettata' },
   ]);
   assert.equal(r.status, 200);
-  assert.equal(r.body.counted, 3, 'opens are ignored');
+  assert.equal(r.body.counted, 3, 'opens and clicks are ignored');
   const rows = await sql`select email_type, lang, delivered, hard_bounce, spam from stats_email_daily where day = ${day}::date and email_type in ('conferma', 'accettata') order by email_type`;
   assert.deepEqual(rows.map((x) => [x.email_type, x.lang, x.delivered, x.hard_bounce, x.spam]), [['accettata', '', 0, 0, 1], ['conferma', 'it', 1, 1, 0]]);
   const dump = JSON.stringify(await sql`select * from stats_email_daily`) + JSON.stringify(await sql`select * from stats_email_actions_daily`);
@@ -1466,4 +1469,38 @@ test('email texts: only admins and site editors; checked, used when sending, bro
   const log = (await as('admin')('GET', '/audit')).body.entries.map((e) => `${e.action}: ${e.detail}`);
   assert.ok(log.includes('testo email modificato: Richiesta ricevuta (IT)'));
   assert.ok(log.includes('testo email originale ripristinato: Richiesta ricevuta (IT)'));
+});
+
+test('retention: declined or expired requests lose their contacts after 6 months; monthly totals go after 5 years', opts, async () => {
+  const saved = clock.now;
+  clock.now = new Date('2031-07-15T03:00:00Z');
+  const ago = (months) => new Date(Date.UTC(2031, 6 - months, 15, 10));
+  const mk = async (status, months, extra = {}) => deps.store.insertEvent({
+    professional_id: ids.laura, service_id: ids.consulenza, kind: 'primo_colloquio', source: 'sito', mode: 'online', status,
+    start_at: ago(months), end_at: new Date(ago(months).getTime() + 1800000), created_at: ago(months + 1),
+    contact_enc: deps.vault.encrypt({ name: 'R', email: `r${status}${months}@example.it` }), contact_hash: `hash-${status}-${months}`, heard_from: 'ricerca', ...extra,
+  });
+  const oldDeclined = await mk('rifiutato', 7);
+  await sql`update events set cancelled_at = ${ago(7)} where id = ${oldDeclined}`;
+  const recentDeclined = await mk('rifiutato', 8);
+  await sql`update events set cancelled_at = ${ago(5)} where id = ${recentDeclined}`; // declined 5 months ago (for a time long past)
+  const kept = await mk('confermato', 7);
+  for (const [table, extra] of [['stats_monthly', "'m-test'"], ['stats_site_monthly', "'/x/', 'm-test'"]]) {
+    const cols = table === 'stats_monthly' ? '(month, metric, n)' : '(month, page, metric, n)';
+    await sql.unsafe(`insert into ${table} ${cols} values ('2026-06-01', ${extra}, 1), ('2026-07-01', ${extra}, 2), ('2027-01-01', ${extra}, 3)`);
+  }
+  await sql`insert into stats_notes (month, note) values ('2026-06-01', 'vecchia'), ('2026-08-01', 'tenuta') on conflict do nothing`;
+
+  const r = await runRetention(deps);
+  const row = async (id) => (await sql`select contact_enc, contact_hash, heard_from from events where id = ${id}`)[0];
+  assert.deepEqual(await row(oldDeclined), { contact_enc: null, contact_hash: null, heard_from: null }, 'declined 7 months ago: contacts gone');
+  assert.ok((await row(recentDeclined)).contact_enc, 'declined 5 months ago: still there');
+  assert.ok((await row(kept)).contact_enc, 'an appointment that took place follows the 24-month rule');
+  assert.ok(r.declined >= 1);
+  // 5 years: the month of July 2026 is the oldest kept on 15 July 2031.
+  assert.deepEqual((await sql`select to_char(month, 'YYYY-MM') as m from stats_monthly where metric = 'm-test' order by month`).map((x) => x.m), ['2026-07', '2027-01']);
+  assert.deepEqual((await sql`select to_char(month, 'YYYY-MM') as m from stats_site_monthly where metric = 'm-test' order by month`).map((x) => x.m), ['2026-07', '2027-01']);
+  assert.deepEqual((await sql`select note from stats_notes where month in ('2026-06-01', '2026-08-01')`).map((x) => x.note), ['tenuta']);
+  assert.equal(r.totals.stats_monthly >= 1 && r.totals.stats_site_monthly >= 1, true);
+  clock.now = saved;
 });
