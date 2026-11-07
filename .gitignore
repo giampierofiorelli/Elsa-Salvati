@@ -4,3 +4,4 @@ dist/
 .env.*
 .netlify/
 *.log
+lib/generated/

@@ -89,9 +89,11 @@
   to = "/orientamento-carriera/"
   status = 301
 
+# Editable pages are served by the page function (see lib/page-server.mjs): what Elsa
+# publishes from the admin goes online without a new deploy.
 [[redirects]]
   from = "/"
-  to = "/index.html"
+  to = "/.netlify/functions/page?p=/"
   status = 200
   force = true
   query = {lang = "it"}
@@ -104,6 +106,151 @@
   conditions = {Language = ["en", "fr", "de", "es", "pt", "nl", "pl", "ro", "ru", "uk", "zh", "ja", "ko", "ar", "tr", "el", "sv", "da", "no", "nb", "fi", "cs", "sk", "hu", "bg", "hr", "sr", "sl", "sq", "he", "hi", "bn", "ur", "fa", "vi", "th", "id", "ms", "tl", "lt", "lv", "et", "ca"]}
 
 # English visitors on a missing page see the English 404.
+# Editable pages (after the language redirect of the home page).
+[[redirects]]
+  from = "/"
+  to = "/.netlify/functions/page?p=/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/servizi/"
+  to = "/.netlify/functions/page?p=/servizi/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/orientamento-carriera/"
+  to = "/.netlify/functions/page?p=/orientamento-carriera/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/coaching/"
+  to = "/.netlify/functions/page?p=/coaching/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/sostegno-psicologico/"
+  to = "/.netlify/functions/page?p=/sostegno-psicologico/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/psicoterapia/"
+  to = "/.netlify/functions/page?p=/psicoterapia/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/differenze/"
+  to = "/.netlify/functions/page?p=/differenze/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/team/"
+  to = "/.netlify/functions/page?p=/team/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/tariffe-e-prenotazioni/"
+  to = "/.netlify/functions/page?p=/tariffe-e-prenotazioni/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/aziende/"
+  to = "/.netlify/functions/page?p=/aziende/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/contatti/"
+  to = "/.netlify/functions/page?p=/contatti/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/prenota/"
+  to = "/.netlify/functions/page?p=/prenota/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/"
+  to = "/.netlify/functions/page?p=/en/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/how-we-can-help/"
+  to = "/.netlify/functions/page?p=/en/how-we-can-help/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/career-guidance/"
+  to = "/.netlify/functions/page?p=/en/career-guidance/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/workplace-coaching/"
+  to = "/.netlify/functions/page?p=/en/workplace-coaching/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/psychological-support/"
+  to = "/.netlify/functions/page?p=/en/psychological-support/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/psychotherapy/"
+  to = "/.netlify/functions/page?p=/en/psychotherapy/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/differences/"
+  to = "/.netlify/functions/page?p=/en/differences/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/team/"
+  to = "/.netlify/functions/page?p=/en/team/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/fees/"
+  to = "/.netlify/functions/page?p=/en/fees/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/organisations/"
+  to = "/.netlify/functions/page?p=/en/organisations/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/contact/"
+  to = "/.netlify/functions/page?p=/en/contact/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/book/"
+  to = "/.netlify/functions/page?p=/en/book/"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/en/*"
   to = "/en/404.html"

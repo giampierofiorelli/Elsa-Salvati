@@ -149,6 +149,16 @@ for (const file of walk(out).filter((f) => f.endsWith('.html'))) {
   writeFileSync(file, html);
 }
 
+// Kit for the page function: layouts, special-block templates, starting content, asset versions and
+// the addresses of the pages that stay hand-written (privacy, cookie…), so links to them resolve.
+{
+  const staticPages = {};
+  for (const pg of pages) if (!pg.blockPage && pg.meta.key) (staticPages[pg.meta.key] ||= {})[pg.lang] = pg.path;
+  const kit = { config, layouts, specials, hashes, staticPages, content: pages.filter((pg) => pg.blockPage).map((pg) => pg.blockPage) };
+  mkdirSync(join(root, 'lib', 'generated'), { recursive: true });
+  writeFileSync(join(root, 'lib', 'generated', 'site-kit.json'), JSON.stringify(kit));
+}
+
 write('robots.txt', demo ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nDisallow: /admin/\nDisallow: /prenota/gestisci/\n${base ? `Sitemap: ${base}/sitemap.xml\n` : ''}`);
 if (base) {
   const entry = (u) => {

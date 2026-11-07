@@ -4,6 +4,9 @@ import { dbAvailable, freshDb, testDeps, request, PASSWORD, createEnrolledUser, 
 import { createPublicApi } from '../lib/public-api.mjs';
 import { createAdminApi, COOKIE } from '../lib/admin-api.mjs';
 import { runReminders, runRetention, buildIcs } from '../lib/jobs.mjs';
+import { readKitFiles, withCatalog } from '../lib/site-kit.mjs';
+import { pageResponse } from '../lib/page-server.mjs';
+import { createSite } from '../lib/site.mjs';
 
 const available = await dbAvailable();
 const opts = { skip: available ? false : 'no local PostgreSQL (set TEST_DATABASE_URL)' };
@@ -493,4 +496,130 @@ test('references to things that do not exist are refused with 400, not a server 
   cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
   const r = await as('admin')('POST', '/services', { categoryId: '999999', name: 'Prova', durationMinutes: 30 });
   assert.equal(r.status, 400, JSON.stringify(r.body));
+});
+
+// ---------- page editor ----------
+
+const editorKit = () => {
+  const files = readKitFiles(new URL('..', import.meta.url).pathname);
+  const hero = (title) => ({ type: 'page-hero', data: { eyebrow: 'Prova', title } });
+  return withCatalog({
+    ...files,
+    content: [
+      { key: 'prova', lang: 'it', path: '/prova/', nav: 'servizi', title: 'Pagina di prova', description: 'Descrizione', blocks: [hero('Titolo iniziale'), { type: 'closing-cta', data: { title: 'Chiusura', buttons: [{ label: 'Vedi la versione inglese', to: { kind: 'page', key: 'prova' }, style: 'light' }] } }] },
+      { key: 'prova', lang: 'en', path: '/en/test/', nav: 'help', title: 'Test page', description: 'Description', blocks: [hero('First title')] },
+    ],
+  });
+};
+
+test('page editor: only administrators and accounts allowed to edit the site can use it', opts, async () => {
+  const purged = [];
+  const kit = editorKit();
+  const ed = createAdminApi({ ...deps, kit, purge: async (tags) => { purged.push(...tags); } });
+  const call2 = (who, method, path, body) => call(ed, method, `/api/admin${path}`, body, { headers: { cookie: `${COOKIE}=${cookies[who]}`, 'x-agenda': '1' } });
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+
+  // A professional without the permission is refused; with it, she can edit.
+  const anna = await createEnrolledUser(deps, { email: 'redattrice@example.it', name: 'Redattrice', role: 'professionista', professionalId: ids.elsa });
+  cookies.anna = cookieOf(await login(anna.email, anna.secret));
+  assert.equal((await call2('anna', 'GET', '/site/pages')).status, 403);
+  await as('admin')('PATCH', `/users/${anna.id}`, { canEditSite: true });
+  assert.equal((await call2('anna', 'GET', '/site/pages')).status, 401, 'changing permissions ends open sessions');
+  cookies.anna = cookieOf(await login(anna.email, anna.secret));
+  const list = await call2('anna', 'GET', '/site/pages');
+  assert.equal(list.status, 200, JSON.stringify(list.body));
+  assert.equal(list.body.pages.length, 2, 'starting content added once');
+  assert.equal((await call2('anna', 'GET', '/people?email=x@example.it')).status, 403, 'editing the site gives no access to people\'s data');
+
+  const it = list.body.pages.find((p) => p.lang === 'it');
+  const pageRes = await call2('anna', 'GET', `/site/pages/${it.id}`);
+  assert.equal(pageRes.status, 200);
+  const { page, library, linkTargets } = pageRes.body;
+  assert.ok(library.find((b) => b.type === 'rows'), 'block library for the forms');
+  assert.ok(linkTargets.find((t) => t.key === 'prova' && t.it && t.en), 'pages to link to, by key');
+
+  // Save a draft: change the title and add a block; the server cleans what it receives.
+  const blocks = [...page.draft.blocks];
+  blocks[0] = { ...blocks[0], data: { ...blocks[0].data, title: 'Titolo nuovo' } };
+  blocks.splice(1, 0, { type: 'text-columns', data: { eyebrow: 'Sezione', title: 'Aggiunta', body: [{ kind: 'p', text: { p: [[{ t: 'Testo ' }, { t: 'grassetto', b: true, onclick: 'x' }]] } }] } });
+  let r = await call2('anna', 'PUT', `/site/pages/${it.id}`, { title: page.draft.title, description: '', blocks, expected: page.draftUpdatedAt });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.deepEqual(Object.keys(r.body.draft.blocks[1].data.body[0].text.p[0][1]).sort(), ['b', 't']);
+  const savedAt = r.body.draftUpdatedAt;
+
+  // Someone else saving from an old copy is told, instead of overwriting.
+  r = await call2('admin', 'PUT', `/site/pages/${it.id}`, { title: 'Altro titolo', description: '', blocks, expected: page.draftUpdatedAt });
+  assert.equal(r.status, 409);
+  // Invalid content gets a precise message.
+  r = await call2('anna', 'PUT', `/site/pages/${it.id}`, { title: 'Pagina', blocks: [{ type: 'steps', data: { items: [] } }], expected: savedAt });
+  assert.equal(r.status, 400);
+  assert.match(r.body.message, /Passi numerati/);
+
+  // Preview: draft with internal notes, links in the right language.
+  r = await call2('anna', 'POST', '/site/preview', { pageId: it.id, title: 'Pagina di prova', blocks: [...blocks, { type: 'rows', note: 'nota per Elsa', data: { eyebrow: 'Voci', items: [{ title: 'Una' }] } }] });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.match(r.body.html, /Titolo nuovo/);
+  assert.match(r.body.html, /02 · Voci/);
+  assert.match(r.body.html, /class="draft-note">nota per Elsa/);
+  assert.match(r.body.html, /href="\/en\/test\/"/);
+
+  // The public page (production) still shows the published version until "Pubblica".
+  const serve = (path, env) => pageResponse(new Request(`https://studio.example.it/.netlify/functions/page?p=${encodeURIComponent(path)}`), {
+    kit, env, store: deps.store, loadCatalog: () => kit.loadCatalog(), createSite,
+  });
+  let pub1 = await serve('/prova/', { CONTEXT: 'production' });
+  let html = await pub1.text();
+  assert.match(html, /Titolo iniziale/);
+  assert.equal(pub1.headers.get('netlify-cache-tag').split(',')[0], `page-${it.id}`);
+  assert.match(pub1.headers.get('netlify-cdn-cache-control'), /durable/);
+  assert.doesNotMatch(html, /draft-note/);
+  const staging = await serve('/prova/', { CONTEXT: 'branch-deploy' });
+  assert.match(await staging.text(), /Titolo nuovo/, 'staging shows the draft');
+  assert.equal(staging.headers.get('cache-control'), 'no-store');
+
+  r = await call2('anna', 'POST', `/site/pages/${it.id}/publish`, {});
+  assert.equal(r.status, 200);
+  assert.deepEqual(purged, [`page-${it.id}`], 'only that page leaves the cache');
+  pub1 = await serve('/prova/', { CONTEXT: 'production' });
+  assert.match(await pub1.text(), /Titolo nuovo/);
+  assert.equal((await serve('/non-esiste/', { CONTEXT: 'production' })).status, 404);
+
+  // History: restore the starting version as a draft.
+  r = await call2('anna', 'GET', `/site/pages/${it.id}/versions`);
+  assert.deepEqual(r.body.versions.map((v) => v.kind), ['pubblicazione', 'iniziale']);
+  r = await call2('anna', 'POST', `/site/pages/${it.id}/versions/${r.body.versions[1].id}/restore`, {});
+  assert.equal(r.status, 200);
+  const again = await call2('anna', 'GET', `/site/pages/${it.id}`);
+  assert.equal(again.body.page.draft.blocks[0].data.title, 'Titolo iniziale');
+  assert.equal(again.body.page.hasChanges, true);
+  const log = (await as('admin')('GET', '/audit')).body.entries.map((e) => e.action);
+  assert.ok(log.includes('pagina pubblicata'));
+});
+
+test('page editor: images are checked from their bytes; fakes and oversized files are refused', opts, async () => {
+  const kit = editorKit();
+  const ed = createAdminApi({ ...deps, kit, purge: async () => {} });
+  const call2 = (method, path, body) => call(ed, method, `/api/admin${path}`, body, { headers: { cookie: `${COOKIE}=${cookies.admin}`, 'x-agenda': '1' } });
+  // Minimal headers with the size inside: what the server reads to check type and dimensions.
+  const jpeg = (w, h) => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xc0, 0x00, 0x11, 0x08, h >> 8, h & 255, w >> 8, w & 255]), Buffer.alloc(200)]).toString('base64');
+  const webp = (w, h) => {
+    const b = Buffer.alloc(40);
+    b.write('RIFF', 0); b.writeUInt32LE(32, 4); b.write('WEBPVP8X', 8); b.writeUInt32LE(10, 16);
+    b.writeUIntLE(w - 1, 24, 3); b.writeUIntLE(h - 1, 27, 3);
+    return b.toString('base64');
+  };
+  let r = await call2('POST', '/site/images', { '480.webp': webp(480, 640), '800.webp': webp(800, 1067), '800.jpg': jpeg(800, 1067) });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  assert.match(r.body.id, /^[a-f0-9]{24}$/);
+  const media = (await import('../lib/site-api.mjs')).createMediaHandler({ store: deps.store });
+  const img = await media(new Request(`https://studio.example.it/media/${r.body.id}-800.jpg`));
+  assert.equal(img.status, 200);
+  assert.equal(img.headers.get('content-type'), 'image/jpeg');
+  assert.match(img.headers.get('cache-control'), /immutable/);
+  // A script renamed as an image, an SVG, or a file wider than declared: refused.
+  r = await call2('POST', '/site/images', { '480.webp': Buffer.from('<svg onload=alert(1)>').toString('base64'), '800.webp': webp(800, 1067), '800.jpg': jpeg(800, 1067) });
+  assert.equal(r.status, 400);
+  r = await call2('POST', '/site/images', { '480.webp': webp(2000, 1500), '800.webp': webp(800, 1067), '800.jpg': jpeg(800, 1067) });
+  assert.equal(r.status, 400);
+  assert.equal((await media(new Request('https://studio.example.it/media/../../etc/passwd'))).status, 404);
 });
