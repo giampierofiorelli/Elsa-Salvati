@@ -167,3 +167,11 @@ test('booking choices: "Non lo so ancora" opens the shared first meeting; that a
   assert.doesNotMatch(options, /value="aziende"/, 'the forms already have their own organisations option');
   assert.match(it, /class="need-alt"[^>]*>[^<]*<a href="\/aziende\/#contatto"/);
 });
+
+test('the privacy version saved with each booking is the one printed on both privacy pages', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { PRIVACY_VERSION } = await import('../lib/public-api.mjs');
+  assert.match(PRIVACY_VERSION, /^\d{4}-\d{2}-\d{2}$/);
+  assert.ok(readFileSync(new URL('../src/pages/it/privacy.html', import.meta.url), 'utf8').includes(`Versione ${PRIVACY_VERSION}.`), 'IT page');
+  assert.ok(readFileSync(new URL('../src/pages/en/privacy.html', import.meta.url), 'utf8').includes(`Version ${PRIVACY_VERSION}.`), 'EN page');
+});
