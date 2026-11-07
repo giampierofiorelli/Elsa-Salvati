@@ -141,6 +141,28 @@
     b.addEventListener('click', function () { apply(o[0]); });
     panel.appendChild(b);
   });
+  // Descriptor next to the name (research 16): three options to compare.
+  var desc = document.querySelectorAll('[data-descriptor]');
+  if (desc.length) {
+    var en = document.documentElement.lang === 'en';
+    var dOpts = en ? ['Psychology for work and life', 'Therapy and coaching for work and life', 'Psychology, careers and wellbeing']
+                   : ['Psicologia per la vita e il lavoro', 'Psicologia e coaching per la vita e il lavoro', 'Psicologia, carriera e benessere'];
+    var dSep = document.createElement('span'); dSep.textContent = 'Etichetta'; panel.appendChild(dSep);
+    var setDesc = function (i) {
+      desc.forEach(function (el) { el.textContent = dOpts[i]; });
+      try { localStorage.setItem('bl-desc', String(i)); } catch (e) {}
+      panel.querySelectorAll('button[data-desc]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.desc === String(i) ? 'true' : 'false'); });
+    };
+    dOpts.forEach(function (t, i) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.dataset.desc = String(i); b.textContent = String(i + 1); b.title = t; b.setAttribute('aria-label', 'Etichetta ' + (i + 1) + ': ' + t);
+      b.style.background = '#FAF6F0'; b.style.color = '#1F2F3A'; b.style.border = '1px solid #E6DDD2';
+      b.addEventListener('click', function () { setDesc(i); });
+      panel.appendChild(b);
+    });
+    var di = 0; try { di = parseInt(localStorage.getItem('bl-desc') || '0', 10) || 0; } catch (e) {}
+    setDesc(di);
+  }
   document.body.appendChild(panel);
   apply(cur);
 })();
