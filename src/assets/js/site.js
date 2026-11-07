@@ -83,3 +83,33 @@
   var hdr = document.querySelector('.site-header');
   if (hdr) hdr.insertBefore(bar, hdr.firstChild); else document.body.insertBefore(bar, document.body.firstChild);
 })();
+
+// The giant "Blooming" always fits the width of the screen, whatever the
+// browser's font rendering (it was cut on the right on some phones).
+(function () {
+  var words = document.querySelectorAll('.giant-word');
+  if (!words.length) return;
+  function fit() {
+    words.forEach(function (el) {
+      var style = getComputedStyle(el);
+      var avail = el.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+      // Measure the text's own width at 100px in an inline box.
+      var probe = document.createElement('span');
+      probe.textContent = el.textContent;
+      // Letter spacing is computed in px for the current size: scale it to 100px.
+      var ls = (parseFloat(style.letterSpacing) || 0) / parseFloat(style.fontSize) * 100;
+      probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font-size:100px;letter-spacing:' + ls + 'px;';
+      el.appendChild(probe);
+      var natural = probe.getBoundingClientRect().width;
+      el.removeChild(probe);
+      if (natural > 0 && avail > 0) el.style.fontSize = Math.min(352, Math.floor(100 * avail / natural * 0.98)) + 'px';
+    });
+  }
+  fit();
+  // Measure again once the title font is really loaded (it loads on first use).
+  if (document.fonts && document.fonts.load) {
+    document.fonts.load('600 100px "Funnel Display"', 'Blooming').then(fit, fit);
+    document.fonts.ready.then(fit);
+  }
+  window.addEventListener('resize', fit);
+})();
