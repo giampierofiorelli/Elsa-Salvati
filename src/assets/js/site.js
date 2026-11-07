@@ -42,7 +42,7 @@
     window.history.replaceState(null, '', location.pathname + location.hash);
   }
   function remember(lang) {
-    document.cookie = 'nf_lang=' + lang + '; path=/; max-age=31536000; samesite=lax';
+    document.cookie = 'nf_lang=' + lang + '; path=/; max-age=31536000; samesite=lax' + (location.protocol === 'https:' ? '; secure' : '');
   }
   var links = document.querySelectorAll('[data-lang-switch]');
   links.forEach(function (a) {

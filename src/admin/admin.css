@@ -132,3 +132,4 @@ code { background: var(--paper); border: 1px solid var(--line); padding: 8px 10p
 .admin .btn-primary { background: var(--teal); color: #fff; padding: 10px 20px; min-height: 44px; gap: 10px; }
 .admin .btn-primary::after { display: none; }
 .admin .btn-primary:hover { background: var(--teal-hover); color: #fff; }
+.plain-list { list-style: none; padding: 0; margin: .5rem 0 1rem; display: grid; gap: .35rem; font-size: .9rem; }

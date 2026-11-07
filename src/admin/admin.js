@@ -128,6 +128,7 @@
       buildTabs();
       buildProSwitch();
       $('[data-settings-admin]').hidden = !isAdmin();
+      $('[data-privacy-admin]').hidden = !isAdmin();
       return Promise.all([loadCatalog(), loadSettings(), loadRequests()]);
     }).then(function () { return Promise.all([loadRules(), refresh()]); })
       .catch(function () { showLogin(); });
@@ -927,6 +928,61 @@
       status.textContent = 'Impostazioni salvate.';
     }).catch(function (e2) { status.className = 'status form-error'; status.textContent = e2.message; });
   });
+  // ---------- people's rights: find, export, erase one person's data ----------
+  function saveJson(data, name) {
+    var url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+    var a = el('a', { href: url, download: name });
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+  $('[data-people-form]').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = e.target.email.value.trim();
+    var status = $('[data-people-status]');
+    var box = $('[data-people-result]');
+    box.textContent = '';
+    status.textContent = 'Ricerca…';
+    api('GET', '/people?email=' + encodeURIComponent(email)).then(function (res) {
+      status.textContent = '';
+      var n = res.events.length + res.requests.length;
+      if (!n) { box.appendChild(el('p', { class: 'hint', text: 'Nessun dato trovato per questa email.' })); return; }
+      var list = el('ul', { class: 'plain-list' });
+      res.events.forEach(function (ev) {
+        list.appendChild(el('li', { text: 'Appuntamento ' + (ev.date || '') + ' ' + (ev.time || '') + ' · ' + (ev.professionalName || '') + ' · ' + (ev.status || '') }));
+      });
+      res.requests.forEach(function (r) {
+        list.appendChild(el('li', { text: 'Richiesta del ' + new Date(r.createdAt).toLocaleDateString('it-IT') + ' · ' + (r.category || '') }));
+      });
+      box.appendChild(el('p', { text: n + (n === 1 ? ' elemento trovato.' : ' elementi trovati.') }));
+      box.appendChild(list);
+      box.appendChild(el('div', { class: 'cta-row' }, [
+        el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Scarica i dati (per inviarli alla persona)', onclick: function () {
+          saveJson(res, 'dati-' + email.replace(/[^a-z0-9]+/gi, '-') + '.json');
+        } }),
+        el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Cancella i recapiti di questa persona', onclick: function () {
+          if (!window.confirm('Cancellare nome, email, telefono e messaggi di ' + email + '? Gli appuntamenti restano in agenda senza nome. L\'operazione non si può annullare.')) return;
+          api('POST', '/people/forget', { email: email, confirm: true }).then(function (r2) {
+            box.textContent = '';
+            status.textContent = 'Cancellati: recapiti di ' + r2.events + ' appuntamenti e ' + r2.requests + ' richieste.';
+            refresh();
+          }).catch(function (e2) { status.textContent = e2.message; });
+        } }),
+      ]));
+    }).catch(function (e2) { status.textContent = e2.message; });
+  });
+  $('[data-audit-load]').addEventListener('click', function () {
+    var box = $('[data-audit]');
+    api('GET', '/audit').then(function (res) {
+      box.textContent = '';
+      if (!res.entries.length) { box.appendChild(el('p', { class: 'hint', text: 'Il registro è vuoto.' })); return; }
+      var list = el('ul', { class: 'plain-list' });
+      res.entries.forEach(function (x) {
+        list.appendChild(el('li', { text: new Date(x.at).toLocaleString('it-IT') + ' · ' + (x.user_name || 'account rimosso') + ' · ' + x.action + (x.detail ? ' (' + x.detail + ')' : '') }));
+      });
+      box.appendChild(list);
+    }).catch(function (e2) { box.textContent = e2.message; });
+  });
+
   $('[data-make-feed]').addEventListener('click', function () {
     api('POST', '/me/calendar', {}).then(function (r) {
       var c = $('[data-feed]');
@@ -948,7 +1004,7 @@
         var when = new Date(r.createdAt).toLocaleString('it-IT', { dateStyle: 'medium', timeStyle: 'short' });
         box.appendChild(el('div', { class: 'req' + (r.handledAt ? ' handled' : '') }, [
           el('p', {}, [el('strong', { text: r.name || '—' }), (r.organization ? ' · ' + r.organization : '') + ' · ' + when]),
-          r.email ? el('p', {}, [el('a', { href: 'mailto:' + r.email, text: r.email })]) : null,
+          r.email ? el('p', {}, [el('a', { href: 'mailto:' + encodeURIComponent(r.email).replace(/%40/g, '@'), text: r.email })]) : null,
           r.phone ? el('p', {}, [el('a', { href: 'tel:' + r.phone.replace(/\s/g, ''), text: r.phone })]) : null,
           el('p', { class: 'hint', text: 'Area: ' + (CATEGORY_LABEL[r.category] || 'Da definire')
             + (r.professionalName ? ' · Professionista: ' + r.professionalName : '')

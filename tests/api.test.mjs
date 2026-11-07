@@ -407,3 +407,70 @@ test('v4: the management link follows the booking language', opts, async () => {
   assert.equal(r.status, 201, JSON.stringify(r.body));
   assert.match(r.body.manageUrl, /\/en\/book\/manage\/#t=/);
 });
+
+// ---------- security and privacy (verification of 7 November 2026) ----------
+
+test('logout ends the session on the server, so a copied cookie stops working', opts, async () => {
+  const r = await login(adminUser.email, adminUser.secret);
+  const copied = cookieOf(r);
+  const headers = { cookie: `${COOKIE}=${copied}`, 'x-agenda': '1' };
+  assert.equal((await call(admin, 'GET', '/api/admin/me', undefined, { headers })).status, 200);
+  await call(admin, 'POST', '/api/admin/logout', {}, { headers });
+  assert.equal((await call(admin, 'GET', '/api/admin/me', undefined, { headers })).status, 401);
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+});
+
+test('failed logins from one address do not lock the account for everyone', opts, async () => {
+  const attacker = { ip: '203.0.113.7' };
+  for (let i = 0; i < 6; i++) {
+    tick();
+    await call(admin, 'POST', '/api/admin/login', { email: adminUser.email, password: 'sbagliata', code: '000000' }, { context: attacker });
+  }
+  tick();
+  const blocked = await call(admin, 'POST', '/api/admin/login', { email: adminUser.email, password: PASSWORD, code: totpCode(adminUser.secret, Math.floor(clock.now.getTime() / 30000)) }, { context: attacker });
+  assert.equal(blocked.status, 429, 'the guessing address is slowed down');
+  const r = await login(adminUser.email, adminUser.secret); // another address
+  assert.equal(r.status, 200, 'the real user still gets in');
+  cookies.admin = cookieOf(r);
+});
+
+test('names with links and emails that change a mailto link are refused', opts, async () => {
+  let r = await pubCall('POST', '/request', { name: 'Vinci un premio su https://truffa.example', email: 'a@example.it', category: 'coaching', privacy: true });
+  assert.equal(r.status, 400);
+  r = await pubCall('POST', '/request', { name: 'Persona Prova', email: 'a@example.it?bcc=x@evil.example', category: 'coaching', privacy: true });
+  assert.equal(r.status, 400);
+});
+
+test('the administrator finds, exports and erases one person\'s data, and it is logged', opts, async () => {
+  let r = await pubCall('POST', '/request', { name: 'Giulia Verdi', email: 'Giulia.Verdi@Example.it', category: 'psicologia', privacy: true });
+  assert.equal(r.status, 201);
+  r = await as('admin')('GET', '/people?email=giulia.verdi@example.it');
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.equal(r.body.requests.length, 1, 'found whatever the capital letters');
+  assert.equal(r.body.requests[0].name, 'Giulia Verdi');
+  assert.ok(r.body.requests[0].privacyVersion, 'the notice version is saved');
+  assert.equal((await as('marco')('GET', '/people?email=giulia.verdi@example.it')).status, 401, 'only administrators (Marco is deactivated here)');
+  assert.equal((await as('admin')('POST', '/people/forget', { email: 'giulia.verdi@example.it' })).status, 400, 'needs confirmation');
+  r = await as('admin')('POST', '/people/forget', { email: 'giulia.verdi@example.it', confirm: true });
+  assert.equal(r.body.requests, 1);
+  r = await as('admin')('GET', '/people?email=giulia.verdi@example.it');
+  assert.equal(r.body.requests.length, 0);
+  const log = (await as('admin')('GET', '/audit')).body.entries.map((e) => e.action);
+  assert.ok(log.includes('cancellazione dati di una persona'));
+  assert.ok(log.includes('ricerca dati di una persona'));
+});
+
+test('the personal link stops working a day after the appointment', opts, async () => {
+  const svc = (await pubCall('GET', '/catalog')).body.categories.find((c) => c.slug === 'carriera').services[0];
+  const r = await pubCall('POST', '/book', {
+    start: '2026-11-16T09:00:00.000Z', mode: 'online', service: svc.id, professional: 'any', lang: 'it',
+    name: 'Persona Prova', email: 'otto@example.it', privacy: true,
+  });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  const token = new URL(r.body.manageUrl).hash.slice(3);
+  assert.equal((await pubCall('POST', '/manage', { t: token })).status, 200);
+  const saved = clock.now;
+  clock.now = new Date('2026-11-18T10:00:00Z');
+  assert.equal((await pubCall('POST', '/manage', { t: token })).status, 404);
+  clock.now = saved;
+});

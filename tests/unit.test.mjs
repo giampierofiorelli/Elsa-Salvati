@@ -103,3 +103,11 @@ test('session tokens are signed and expire', () => {
   assert.equal(readSession(t, 'other', 1000), null);
   assert.equal(readSession(t.replace(/^./, 'x'), 'k', 1000), null);
 });
+
+test('IPv6 addresses are grouped by /64 for rate limits', async () => {
+  const { ipKey } = await import('../lib/http.mjs');
+  assert.equal(ipKey('2001:db8:1:2:aaaa::1'), ipKey('2001:db8:1:2:bbbb:cccc:dddd:eeee'));
+  assert.notEqual(ipKey('2001:db8:1:2::1'), ipKey('2001:db8:1:3::1'));
+  assert.equal(ipKey('198.51.100.4'), '198.51.100.4');
+  assert.equal(ipKey('::ffff:198.51.100.4'), '::ffff:198.51.100.4');
+});

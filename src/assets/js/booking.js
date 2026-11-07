@@ -11,9 +11,9 @@
     it: {
       at: ', ore ', error: 'Si è verificato un errore. Riprova.', network: 'Connessione non riuscita. Controlla la rete e riprova.',
       service: 'Servizio', with: 'Con', language: 'Lingua', mode: 'Modalità', when: 'Quando', length: 'Durata', status: 'Stato',
-      newTime: 'Nuovo orario', minutes: ' minuti', assigned: 'La professionista più adatta, assegnata alla conferma',
+      newTime: 'Nuovo orario', minutes: ' minuti', assigned: 'Una professionista libera in quell\'orario, assegnata alla conferma',
       notBookable: 'I servizi di quest\'area non sono ancora prenotabili online: chiedici di ricontattarti qui sotto.',
-      help: 'Aiutami a scegliere', helpText: 'Vedi gli orari di tutte; la professionista più adatta ti viene assegnata alla conferma',
+      help: 'Aiutami a scegliere', helpText: 'Vedi gli orari di tutte; alla conferma ti viene assegnata una professionista libera in quell\'orario. Nel colloquio capite insieme se fa per te o se è meglio la collega',
       needName: 'Inserisci nome e cognome.', needEmail: 'Inserisci un indirizzo email valido.',
       needPrivacy: 'Per prenotare è necessario prendere visione dell\'informativa privacy.',
       confirming: 'Conferma in corso…', confirm: 'Conferma la prenotazione',
@@ -30,9 +30,9 @@
     en: {
       at: ', ', error: 'Something went wrong. Please try again.', network: 'Connection failed. Check your network and try again.',
       service: 'Service', with: 'With', language: 'Language', mode: 'Format', when: 'When', length: 'Length', status: 'Status',
-      newTime: 'New time', minutes: ' minutes', assigned: 'The best-suited professional, assigned when you confirm',
+      newTime: 'New time', minutes: ' minutes', assigned: 'A psychologist free at that time, assigned when you confirm',
       notBookable: 'These services can\'t be booked online yet: ask us to get back to you below.',
-      help: 'Help me choose', helpText: 'See everyone\'s free times; we assign the best-suited professional when you confirm',
+      help: 'Help me choose', helpText: 'See everyone\'s free times; when you confirm, you\'re booked with a psychologist free at that time. In the meeting you\'ll work out together whether she\'s right for you or her colleague would be',
       needName: 'Please enter your full name.', needEmail: 'Please enter a valid email address.',
       needPrivacy: 'To book, please confirm you have read the privacy notice.',
       confirming: 'Confirming…', confirm: 'Confirm booking',

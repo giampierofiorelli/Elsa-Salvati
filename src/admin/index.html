@@ -173,6 +173,7 @@
         <div class="field"><label for="s-reminder">Promemoria email (ore prima)</label><input id="s-reminder" name="reminderHours" type="number" min="1" max="72"></div>
         <div class="field"><label for="s-retention">Cancella i recapiti dopo (mesi)</label><input id="s-retention" name="retentionMonths" type="number" min="1" max="120"></div>
         <div class="field"><label for="s-req">Cancella le richieste dopo (mesi)</label><input id="s-req" name="requestRetentionMonths" type="number" min="1" max="24"></div>
+        <p class="hint">Se cambi i mesi di conservazione, va aggiornata anche l'informativa privacy (oggi dice: recapiti cancellati 24 mesi dopo l'ultimo appuntamento, richieste dopo 6 mesi).</p>
         <div class="cta-row"><button type="submit" class="btn btn-primary btn-small">Salva impostazioni</button></div>
         <p class="status" role="status" data-settings-status></p>
       </form>
@@ -186,6 +187,22 @@
     <h2>Copia di sicurezza</h2>
     <p class="hint">Scarica gli appuntamenti in un file. Conservalo in un luogo protetto: contiene dati personali.</p>
     <a class="btn btn-ghost btn-small" href="/api/admin/export" download>Scarica l'agenda</a>
+
+    <div data-privacy-admin hidden>
+      <h2>Dati di una persona</h2>
+      <p class="hint">Per rispondere a chi chiede di vedere, ricevere o cancellare i propri dati. Cerca con l'email usata per prenotare o per scrivere. Ogni ricerca, esportazione e cancellazione resta nel registro qui sotto.</p>
+      <form data-people-form class="settings-grid" novalidate>
+        <div class="field"><label for="p-email">Email della persona</label><input id="p-email" name="email" type="email" autocomplete="off" required></div>
+        <div class="cta-row"><button type="submit" class="btn btn-ghost btn-small">Cerca</button></div>
+        <p class="status" role="status" data-people-status></p>
+      </form>
+      <div data-people-result></div>
+
+      <h2>Registro degli accessi ai dati</h2>
+      <p class="hint">Chi ha cercato, esportato o cancellato dati personali, e quando.</p>
+      <div class="cta-row"><button type="button" class="btn btn-ghost btn-small" data-audit-load>Mostra il registro</button></div>
+      <div data-audit></div>
+    </div>
   </section>
 </div>
 

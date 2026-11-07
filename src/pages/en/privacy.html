@@ -23,8 +23,10 @@ theme: light
 
     <h2>What data the website collects</h2>
     <ul>
-      <li><strong>Online booking</strong>: full name, email, phone (optional), date, time and format (online) of the appointment, and the language of the meeting.</li>
-      <li><strong>Request to be contacted</strong>: name, email and/or phone, preferred times and an optional short message.</li>
+      <li><strong>Online booking</strong>: full name, email, phone (optional), the area or service chosen (for example career guidance, coaching, psychological support or psychotherapy), the psychologist, the language of the meeting, and the date, time and format (online) of the appointment.</li>
+      <li><strong>Request to be contacted</strong>: name, email and/or phone, area, preferred psychologist, language of the meeting, preferred times and an optional short message.</li>
+      <li><strong>Requests from organisations</strong>: also the organisation's name, the sender's role and the size of the organisation.</li>
+      <li><strong>Notice version</strong>: with each booking or request we record which version of this notice you read.</li>
       <li><strong>Technical data</strong>: to protect the system from abuse, a non-reversible cryptographic fingerprint of the IP address, linked to the number of requests, is kept for a few days.</li>
     </ul>
     <p>The website doesn't ask you to describe why you're booking or for any health information. Please don't include it in the optional fields. The mere fact of booking with a psychology practice could still be considered health-related data: for this reason the data is handled with enhanced security measures.</p>
@@ -38,30 +40,33 @@ theme: light
     <p>The data is not used for marketing, profiling or advertising, and is not sent to analytics tools or social networks.</p>
 
     <h2>How it is protected</h2>
-    <p>Name, email, phone and messages are encrypted before being stored in the database. The agenda can be accessed only by the practice's psychologists and by whoever administers it, each with her own account, a password and a second authentication factor; each psychologist sees only her own appointments. Confirmation and reminder emails contain no clinical information.</p>
+    <p>Name, email, phone and messages are encrypted before being stored in the database. The agenda can be accessed only by the practice's psychologists and by whoever administers it, each with her own account, a password and a second authentication factor. Each psychologist sees only her own appointments and the requests addressed to her; whoever administers the practice sees all agendas and the requests with no preferred psychologist [who holds this role: to confirm]. Searches, exports and deletions of personal data are recorded in a log. Confirmation and reminder emails contain no clinical information.</p>
 
     <h2>Who processes the data on our behalf</h2>
     <p>Technical providers appointed as data processors (Art. 28 GDPR):</p>
     <ul>
       <li>[Netlify, Inc.] – hosting of the website and the booking functions;</li>
-      <li>[Supabase, Inc.] – agenda database, hosted in a data centre in the European Union ([region]);</li>
-      <li>[Brevo / Sendinblue SAS, France] – sending confirmation and reminder emails.</li>
+      <li>[Supabase, Inc.] – agenda database, hosted in a data centre in the European Union (Stockholm, Sweden);</li>
+      <li>[Brevo / Sendinblue SAS, France, or Resend, Inc., United States: provider to be chosen] – sending confirmation and reminder emails.</li>
     </ul>
+    <p>If you write to the practice by email, WhatsApp or phone, those messages go through the respective services [the practice's email provider and WhatsApp: to be listed]. The psychologists can also see their appointments in their phone calendar, with neutral titles and no names.</p>
     <p>Some providers are based in the United States: any transfers take place under the EU-U.S. Data Privacy Framework or the standard contractual clauses approved by the European Commission. [To check for each provider.]</p>
 
     <h2>How long it is kept</h2>
     <ul>
-      <li>Booking data: for the duration of the relationship and up to [24] months after the last appointment, then contact details are deleted automatically.</li>
+      <li>Booking data: for the duration of the relationship and up to [24] months after the last appointment, then name, email, phone and messages are deleted automatically. Only the appointment stays in the agenda, with nothing that identifies you.</li>
       <li>Requests to be contacted: up to [6] months.</li>
       <li>Anti-abuse technical fingerprints: 7 days.</li>
     </ul>
     <p>This is without prejudice to the retention obligations under tax and professional rules for the records of the services provided, which are managed separately from this website.</p>
 
     <h2>Your rights</h2>
-    <p>You can ask at any time for access, rectification, erasure, restriction or portability of your data, and object to processing based on legitimate interest, by writing to <a href="mailto:{{contact.email}}">{{contact.email}}</a>. You also have the right to lodge a complaint with the Italian Data Protection Authority, the Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it" rel="noopener">www.garanteprivacy.it</a>).</p>
+    <p>You can ask at any time for access, rectification, erasure, restriction or portability of your data, and object to processing based on legitimate interest, by writing to <a href="mailto:{{contact.email}}">{{contact.email}}</a>. We can find, send you or delete your data from the email address you used. You also have the right to lodge a complaint with the Italian Data Protection Authority, the Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it" rel="noopener">www.garanteprivacy.it</a>).</p>
 
     <h2>Whether you have to provide the data</h2>
     <p>Name and email are needed to confirm an online booking; you can always phone instead. The other fields are optional.</p>
-    <p>Last updated: [date]. <a href="/en/cookies/">Cookies</a></p>
+    <h2>Under 18s</h2>
+    <p>Online booking is for people aged 18 or over. [For minors: arrangements with the consent of whoever holds parental responsibility, to check with your own adviser.]</p>
+    <p>Last updated: [date]. Version 2026-11-07. <a href="/en/cookies/">Cookies</a></p>
   </div>
 </section>

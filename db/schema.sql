@@ -186,6 +186,27 @@ alter table events add column if not exists assigned boolean not null default fa
 
 alter table contact_requests add column if not exists lang text check (lang in ('it', 'en'));
 
+-- Sessioni revocabili: cambia a ogni logout, reset, disattivazione o cambio di ruolo.
+alter table users add column if not exists session_epoch integer not null default 0;
+
+-- Diritti delle persone: ritrovare le richieste per email (impronta, non l'email in chiaro).
+alter table contact_requests add column if not exists contact_hash text;
+create index if not exists contact_requests_contact_idx on contact_requests (contact_hash);
+create index if not exists events_contact_idx on events (contact_hash);
+-- Versione dell'informativa letta da chi prenota o scrive.
+alter table events add column if not exists privacy_version text;
+alter table contact_requests add column if not exists privacy_version text;
+
+-- Registro degli accessi ai dati personali (ricerche, esportazioni, cancellazioni).
+create table if not exists audit_log (
+  id        bigserial primary key,
+  at        timestamptz not null default now(),
+  user_id   bigint references users(id) on delete set null,
+  action    text not null,
+  detail    text not null default ''
+);
+alter table audit_log enable row level security;
+
 insert into categories (slug, name, name_en, intro, sort) values
   ('carriera', 'Orientamento e carriera', 'Career coaching & guidance',
    'Orientamento professionale: capire che lavoro fare e come arrivarci.', 0)
@@ -212,3 +233,11 @@ alter table series enable row level security;
 alter table events enable row level security;
 alter table contact_requests enable row level security;
 alter table rate_events enable row level security;
+
+-- Il sito usa solo la connessione diretta al database: i ruoli pubblici di Supabase non devono leggere nulla.
+do $$ begin
+  if exists (select 1 from pg_roles where rolname = 'anon') and exists (select 1 from pg_roles where rolname = 'authenticated') then
+    execute format('revoke all on all tables in schema %I from anon, authenticated', current_schema());
+    execute format('revoke all on all sequences in schema %I from anon, authenticated', current_schema());
+  end if;
+end $$;
