@@ -680,7 +680,6 @@ main > section:first-child:not(.hero-v4) { padding-top: calc(var(--section) + 70
   .hero-v4 h1 { font-size: clamp(2.1rem, 9.4vw, 2.6rem); }
   .hero-v4-sub { font-size: 1.2rem; }
   .hero-v4 .cta-row { flex-direction: column; align-items: stretch; gap: 12px; }
-  .hero-v4 .cta-row .btn { width: 100%; justify-content: space-between; }
   .hero-v4 .btn-ghost { justify-content: center; }
   .giant-word { font-size: 25vw; margin: 0; padding: 0 16px .08em; }
   h2 { font-size: clamp(1.75rem, 7.4vw, 2.2rem); }
@@ -738,9 +737,6 @@ main .eyebrow + h2, main .eyebrow + h1 { margin-top: 0; }
 .person-v4 p.mono { margin-bottom: 28px; line-height: 1.6; }
 .why { padding-top: clamp(32px, 3.5vw, 40px); gap: 16px; }
 .why li { line-height: 1.5; }
-@media (max-width: 699px) {
-  .person-v4 .btn { width: 100%; justify-content: space-between; }
-}
 
 /* Logo icon turns ivory on dark backgrounds (dark sections, open menu):
    a solid ivory copy of the icon replaces the coloured one. */
@@ -761,3 +757,14 @@ main .eyebrow + h2, main .eyebrow + h1 { margin-top: 0; }
 
 /* With the live gradient running, only a short fade to ivory at the bottom. */
 .hero-v4-bg.gl::after { height: 10%; }
+
+/* ---------- Buttons on phones: one general rule ----------
+   On public pages every button is full width on phones, with no exceptions:
+   no hover there, so a large, even tap target. Buttons with the arrow circle
+   put the text on the left and the circle on the right; the others are centred.
+   Buttons in a row stack one under the other. (The admin panel is excluded.) */
+@media (max-width: 699px) {
+  .site main .btn { display: flex; width: 100%; max-width: none; }
+  .site main .btn-primary, .site main .btn-light { justify-content: space-between; text-align: left; }
+  .site main .cta-row { flex-direction: column; align-items: stretch; gap: 12px; }
+}
