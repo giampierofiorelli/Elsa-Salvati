@@ -751,6 +751,6 @@ body.is-editor .sb-scrim { z-index: 72; }
 }
 
 /* Collapsed rail: the top box holds only the expand arrow, always visible, as tall as the bar next to it. */
-body.sb-rail .sb-brand { flex-direction: row; justify-content: center; padding: 0 6px; min-height: 0; box-sizing: border-box; }
+body.sb-rail .sb-brand { flex-direction: row; justify-content: center; padding: 0 6px; min-height: 0; box-sizing: border-box; flex: none; }
 body.sb-rail .sb-brand img { display: none; }
 body.sb-rail .sb-collapse { display: grid; width: 40px; height: 40px; color: #fff; }
