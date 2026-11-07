@@ -45,6 +45,28 @@
 # Netlify reads instead of the browser language.
 # An explicit choice of Italian (the language switch links to /?lang=it) is
 # never sent to English, whatever the browser or the cookies say.
+# Pages merged or removed in the v4 site (7/11/2026).
+[[redirects]]
+  from = "/costi-e-faq/"
+  to = "/tariffe-e-prenotazioni/"
+  status = 301
+[[redirects]]
+  from = "/online/"
+  to = "/tariffe-e-prenotazioni/#online"
+  status = 301
+[[redirects]]
+  from = "/primo-colloquio/"
+  to = "/tariffe-e-prenotazioni/#come-si-prenota"
+  status = 301
+[[redirects]]
+  from = "/studio/"
+  to = "/contatti/"
+  status = 301
+[[redirects]]
+  from = "/come-lavoriamo/"
+  to = "/servizi/"
+  status = 301
+
 # The career page moved to an Italian address (7/11/2026).
 [[redirects]]
   from = "/lavoro/"

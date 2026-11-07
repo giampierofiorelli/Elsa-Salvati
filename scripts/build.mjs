@@ -199,7 +199,7 @@ const components = {
     </dl>`,
   cta: () => `<div class="cta-row">
       <a class="btn btn-primary" href="/prenota/">Verifica disponibilità ${arrow}</a>
-      <a class="btn btn-ghost" href="/primo-colloquio/">Come funziona il primo colloquio</a>
+      <a class="btn btn-ghost" href="/tariffe-e-prenotazioni/#come-si-prenota">Come funziona il primo colloquio</a>
     </div>`,
   closing: () => closingPanel({ photo: true }),
   closingPlain: () => closingPanel({ photo: false }),

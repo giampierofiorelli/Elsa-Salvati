@@ -8,7 +8,7 @@ const require = createRequire(import.meta.url);
 const { chromium, devices } = require('playwright');
 
 const base = process.argv[2] || 'http://localhost:8890';
-const pages = ['/', '/servizi/', '/orientamento-carriera/', '/aziende/', '/team/', '/costi-e-faq/', '/primo-colloquio/', '/contatti/', '/prenota/',
+const pages = ['/', '/servizi/', '/orientamento-carriera/', '/aziende/', '/team/', '/tariffe-e-prenotazioni/', '/contatti/', '/prenota/',
   '/en/', '/en/how-we-can-help/', '/en/career-guidance/', '/en/contact/', '/en/book/'];
 
 const browser = await chromium.launch();
