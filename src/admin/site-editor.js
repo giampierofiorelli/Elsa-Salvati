@@ -2082,6 +2082,9 @@
     }
     changed();
     if (s.kind !== 'text') placeRichBar();
+    // The panel shows the same field: brought up to date shortly after typing pauses.
+    clearTimeout(syncInline.t);
+    syncInline.t = setTimeout(function () { if (se.inline === s) { renderInspector(); focusInspectorField(); } }, 400);
   }
 
   function endInline() {

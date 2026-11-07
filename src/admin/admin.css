@@ -805,3 +805,5 @@ body.sb-rail .sb-collapse { display: grid; width: 40px; height: 40px; color: #ff
   .se-ins-btn { opacity: 1; }
   .se-ins { height: 12px; }
 }
+
+@media (max-width: 1600px) { .ed-state .se-badge { display: none; } }
