@@ -163,6 +163,43 @@ create table if not exists rate_events (
 );
 create index if not exists rate_events_idx on rate_events (action, key_hash, at);
 
+-- ---------- v4: due lingue, primo colloquio, "aiutami a scegliere" ----------
+-- Solo modifiche aggiuntive: il codice precedente continua a funzionare.
+
+alter table categories add column if not exists name_en  text not null default '';
+alter table categories add column if not exists intro_en text not null default '';
+
+alter table services add column if not exists name_en        text not null default '';
+alter table services add column if not exists description_en text not null default '';
+alter table services add column if not exists price_text_en  text not null default '';
+-- true = primo colloquio conoscitivo gratuito dell'area (prenotabile con "aiutami a scegliere").
+alter table services add column if not exists first_meeting  boolean not null default false;
+
+alter table professionals add column if not exists title_en  text not null default '';
+alter table professionals add column if not exists bio_en    text not null default '';
+-- Lingue in cui la professionista conduce i colloqui ('it', 'en').
+alter table professionals add column if not exists languages text[] not null default '{it}';
+
+-- Lingua del colloquio scelta da chi prenota; assigned = professionista assegnata dal sistema.
+alter table events add column if not exists lang text check (lang in ('it', 'en'));
+alter table events add column if not exists assigned boolean not null default false;
+
+alter table contact_requests add column if not exists lang text check (lang in ('it', 'en'));
+
+insert into categories (slug, name, name_en, intro, sort) values
+  ('carriera', 'Orientamento e carriera', 'Career coaching & guidance',
+   'Orientamento professionale: capire che lavoro fare e come arrivarci.', 0)
+on conflict (slug) do nothing;
+update categories set name_en = 'Workplace coaching' where slug = 'coaching' and name_en = '';
+update categories set name_en = 'Psychological support' where slug = 'psicologia' and name_en = '';
+update categories set name_en = 'Psychotherapy' where slug = 'psicoterapia' and name_en = '';
+
+do $$ begin
+  alter table contact_requests drop constraint if exists contact_requests_category_check;
+  alter table contact_requests add constraint contact_requests_category_check
+    check (category in ('carriera', 'coaching', 'psicologia', 'psicoterapia', 'aziende', 'da_definire'));
+end $$;
+
 -- Nessun accesso diretto dal browser: tutto passa dalle funzioni server.
 alter table kv enable row level security;
 alter table categories enable row level security;

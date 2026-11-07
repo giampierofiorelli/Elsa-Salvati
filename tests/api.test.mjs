@@ -65,7 +65,7 @@ test('login needs email, password and a fresh authenticator code', opts, async (
 
 test('admin builds the catalogue: services in three areas and professionals', opts, async () => {
   const cat = await as('admin')('GET', '/catalog');
-  assert.deepEqual(cat.body.categories.map((c) => c.slug), ['coaching', 'psicologia', 'psicoterapia']);
+  assert.deepEqual(cat.body.categories.map((c) => c.slug), ['carriera', 'coaching', 'psicologia', 'psicoterapia']);
   const catId = Object.fromEntries(cat.body.categories.map((c) => [c.slug, c.id]));
 
   const mk = async (body) => {
@@ -310,4 +310,90 @@ test('reminders, personal calendar feed, export and retention', opts, async () =
   const ret = await runRetention(deps);
   assert.ok(ret.events > 0);
   clock.now = saved;
+});
+
+// ---------- v4: two languages, free first meeting, "help me choose" ----------
+
+test('v4: first meeting with "help me choose", interview language and fair assignment', opts, async () => {
+  clock.now = new Date('2026-11-05T09:00:00Z'); // Thursday; next Monday is 9 November
+  const r0 = await login(adminUser.email, adminUser.secret);
+  assert.equal(r0.status, 200);
+  cookies.admin = cookieOf(r0);
+
+  const cat = await as('admin')('GET', '/catalog');
+  const carriera = cat.body.categories.find((c) => c.slug === 'carriera');
+  assert.ok(carriera, 'career area exists');
+  assert.equal(carriera.name_en, 'Career coaching & guidance');
+
+  let r = await as('admin')('POST', '/services', {
+    categoryId: carriera.id, name: 'Primo colloquio conoscitivo', nameEn: 'Free first meeting',
+    durationMinutes: 30, price: 'Gratuito', priceEn: 'Free', firstMeeting: true,
+  });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  const first = r.body.id;
+
+  const mkPro = async (body) => {
+    const res = await as('admin')('POST', '/professionals', body);
+    assert.equal(res.status, 201, JSON.stringify(res.body));
+    return res.body.id;
+  };
+  const anna = await mkPro({ name: 'Anna Prova', title: 'Psicologa', titleEn: 'Psychologist', languages: ['it', 'en'] });
+  const bea = await mkPro({ name: 'Bea Prova', title: 'Psicologa', languages: ['it'] });
+  r = await as('admin')('POST', '/professionals', { name: 'Zeta Prova', languages: ['fr'] });
+  assert.equal(r.status, 400, 'only Italian and English');
+
+  for (const [pro, start, end] of [[anna, '09:00', '11:00'], [bea, '10:00', '12:00']]) {
+    r = await as('admin')('PUT', `/professionals/${pro}/services`, { offerings: [{ serviceId: first, inStudio: false, online: true }] });
+    assert.equal(r.status, 200);
+    r = await as('admin')('PUT', '/rules', { professionalId: pro, rules: [{ weekday: 1, start_time: start, end_time: end, mode: 'online', public: true }] });
+    assert.equal(r.status, 200);
+  }
+
+  // Public catalogue carries the English fields and the languages.
+  r = await pubCall('GET', '/catalog');
+  const svc = r.body.categories.find((c) => c.slug === 'carriera').services.find((s) => s.id === first);
+  assert.equal(svc.firstMeeting, true);
+  assert.equal(svc.nameEn, 'Free first meeting');
+  assert.deepEqual(svc.professionals.find((p) => p.id === anna).languages, ['it', 'en']);
+
+  // "Help me choose": the union of everyone's free times; in English, only who speaks English.
+  const times = (res) => res.body.days.find((d) => d.date === '2026-11-09').slots.map((s) => s.time);
+  r = await pubCall('GET', `/slots?service=${first}&professional=any&mode=online`);
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.deepEqual(times(r), ['09:00', '10:00', '11:00']);
+  r = await pubCall('GET', `/slots?service=${first}&professional=any&mode=online&lang=en`);
+  assert.deepEqual(times(r), ['09:00', '10:00']);
+  r = await pubCall('GET', `/slots?service=${first}&professional=${bea}&mode=online&lang=en`);
+  assert.equal(r.status, 400);
+  assert.equal(r.body.error, 'lang_unavailable');
+
+  // Booking with "help me choose": assigned at confirmation, the less busy professional first.
+  const start = '2026-11-09T09:00:00.000Z'; // Monday 10:00 in Rome: both are free
+  const book = (email, extra = {}) => pubCall('POST', '/book', {
+    start, mode: 'online', service: first, professional: 'any', name: 'Persona Prova', email, privacy: true, ...extra,
+  });
+  r = await book('uno@example.it');
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  assert.equal(r.body.booking.assigned, true);
+  assert.equal(r.body.booking.lang, 'it');
+  const firstAssigned = r.body.booking.professional.id;
+  r = await book('due@example.it');
+  assert.equal(r.status, 201, 'the other professional is still free');
+  assert.notEqual(r.body.booking.professional.id, firstAssigned);
+  r = await book('tre@example.it');
+  assert.equal(r.status, 409, 'nobody left at that time');
+
+  // English booking goes only to someone who speaks English.
+  r = await book('quattro@example.it', { start: '2026-11-09T08:00:00.000Z', lang: 'en' });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  assert.equal(r.body.booking.professional.id, anna);
+  r = await book('cinque@example.it', { start: '2026-11-09T10:00:00.000Z', lang: 'en' });
+  assert.equal(r.status, 409, 'at 11:00 only Bea is free, and she works in Italian');
+
+  const rows = await sql`select lang, assigned from events where professional_id = ${anna} and status = 'confermato' order by start_at`;
+  assert.deepEqual(rows.map((x) => [x.lang, x.assigned]), [['en', true], ['it', true]]);
+
+  // Requests accept the career area and the language.
+  r = await pubCall('POST', '/request', { name: 'Persona Prova', email: 'sei@example.it', category: 'carriera', lang: 'en', privacy: true });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
 });
