@@ -155,12 +155,14 @@
   function openTab(tab) {
     $$('[data-tab]').forEach(function (x) { x.setAttribute('aria-pressed', String(x.getAttribute('data-tab') === tab)); });
     $$('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== tab; });
-    if (tab === 'richieste') loadRequests();
-    if (tab === 'orari') loadRules();
-    if (tab === 'profilo') renderProfile();
-    if (tab === 'servizi') renderServices();
-    if (tab === 'professionisti') renderPros();
-    if (tab === 'account') loadUsers();
+    var job = null;
+    if (tab === 'richieste') job = loadRequests();
+    if (tab === 'orari') job = loadRules();
+    if (tab === 'profilo') job = renderProfile();
+    if (tab === 'servizi') job = renderServices();
+    if (tab === 'professionisti') job = renderPros();
+    if (tab === 'account') job = loadUsers();
+    if (job && job.catch) job.catch(function () { /* the api() helper already shows the login when the session is over */ });
   }
 
   function buildProSwitch() {
@@ -921,7 +923,7 @@
     e.preventDefault();
     var status = $('[data-settings-status]');
     var s = {};
-    $$('input', e.target).forEach(function (i) { s[i.name] = Number(i.value); });
+    $$('input', e.target).forEach(function (i) { if (i.value.trim() !== '') s[i.name] = Number(i.value); });
     api('PUT', '/settings', { settings: s }).then(function (res) {
       state.settings = res.settings;
       status.className = 'status form-ok';

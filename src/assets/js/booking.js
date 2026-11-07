@@ -57,6 +57,8 @@
     not_found: 'This link isn\'t valid or has expired.',
     not_offered: 'This service isn\'t available with this choice.',
     lang_unavailable: 'The professional you chose doesn\'t hold meetings in this language.',
+    invalid: 'Please check the details you entered: one of them isn\'t valid (for example the email address or the phone number).',
+    json_required: 'Something went wrong. Please try again.',
   };
   // Localised catalogue field: English if available on the English site.
   function loc(obj, field) { return (LANG === 'en' && obj && obj[field + 'En']) || (obj && obj[field]); }

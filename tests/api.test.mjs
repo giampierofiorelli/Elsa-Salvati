@@ -474,3 +474,23 @@ test('the personal link stops working a day after the appointment', opts, async 
   assert.equal((await pubCall('POST', '/manage', { t: token })).status, 404);
   clock.now = saved;
 });
+
+test('the confirmation email states the fee of the booked service, and reminders say how to change', opts, async () => {
+  const svc = (await pubCall('GET', '/catalog')).body.categories.find((c) => c.slug === 'carriera').services[0];
+  const before = deps.mailer.sent.length;
+  const r = await pubCall('POST', '/book', {
+    start: '2026-11-16T10:00:00.000Z', mode: 'online', service: svc.id, professional: 'any', lang: 'it',
+    name: 'Persona Prova', email: 'nove@example.it', privacy: true,
+  });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  const mail = deps.mailer.sent.slice(before).find((m) => m.to === 'nove@example.it');
+  assert.match(mail.text, /Tariffa: Gratuito/);
+  assert.match(mail.subject, /Blooming/);
+  assert.doesNotMatch(mail.subject, /psicolog/i, 'the subject does not reveal a psychology practice');
+});
+
+test('references to things that do not exist are refused with 400, not a server error', opts, async () => {
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  const r = await as('admin')('POST', '/services', { categoryId: '999999', name: 'Prova', durationMinutes: 30 });
+  assert.equal(r.status, 400, JSON.stringify(r.body));
+});
