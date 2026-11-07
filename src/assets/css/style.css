@@ -888,3 +888,10 @@ html[data-palette]:not([data-palette="x"]) .lang-notice { background: var(--nigh
 /* Loader on the soft mint of the palette, so the colour icon reads well;
    the word "Blooming" in the dark colour (G, 7/11). */
 .loader { background: var(--mint); color: var(--night); }
+
+/* Opening on desktop (G, 7/11): label, headline, text and buttons on the left;
+   the moving shape of the gradient on the right. */
+@media (min-width: 960px) {
+  .hero-v4-inner { grid-template-columns: minmax(0, 640px) 1fr; }
+  .hero-v4-text .eyebrow { margin-bottom: 22px; }
+}

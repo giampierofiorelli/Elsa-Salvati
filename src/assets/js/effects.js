@@ -49,7 +49,7 @@
       ' float cl=n(q*1.1+vec2(t*.03,-t*.02))*.65+n(q*2.3-vec2(t*.035))*.35;',
       ' vec3 col=mix(cream,peach,smoothstep(.3,.8,cl)*.8);',
       ' float s=mix(.30*a,.50*a,mob);',
-      ' vec2 c=mix(vec2(.08*a,.02)+(m-vec2(.5*a,.5))*.18,vec2(0.,.06),mob);',
+      ' vec2 c=mix(vec2(.27*a,.03)+(m-vec2(.5*a,.5))*.15,vec2(0.,.06),mob);',
       ' float e=.004;float d=D(q,c,s);',
       ' vec2 g=vec2(D(q+vec2(e,0.),c,s)-d,D(q+vec2(0.,e),c,s)-d);',
       ' float lit=dot(normalize(g+1e-6),normalize(vec2(-.55,.85)));',
