@@ -908,3 +908,4 @@ html[data-palette]:not([data-palette="x"]) .lang-notice { background: var(--nigh
   .hero-v4 .lead { max-width: 60ch; }
   .hero-v4 .cta-row { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px; }
 }
+.palette-panel { flex-wrap: wrap; max-width: calc(100vw - 24px); border-radius: 22px; }
