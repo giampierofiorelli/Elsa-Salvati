@@ -641,3 +641,58 @@ main > section:first-child:not(.hero-v4) { padding-top: calc(var(--section) + 70
 .hdr .brand-name { font-family: var(--serif); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.035em; line-height: 1; color: var(--night); }
 .site-header.hdr.on-dark .brand-name, .menu-open .hdr .brand-name { color: var(--ivory); }
 .loader-mark { width: 110px; height: auto; }
+
+/* ---------- v4: buttons (pill with arrow, Blooming colours) ---------- */
+:root { --arrow-night: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8h10M9 4l4 4-4 4' fill='none' stroke='%231F2F3A' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.btn-primary { background: var(--night); color: var(--ivory); }
+.btn-primary::after { background: var(--ivory) var(--arrow-night) center / 20px no-repeat; }
+.btn-light { background: var(--ivory); color: var(--night); }
+.btn-light::after { background: var(--night) var(--arrow-ivory) center / 20px no-repeat; }
+.btn-ghost { border-color: var(--night); color: var(--night); background: transparent; }
+@media (hover: hover) {
+  .btn-primary:hover { background: var(--night-2); color: var(--ivory); }
+  .btn-primary:hover::after { background-color: var(--gold); }
+  .btn-light:hover { background: var(--gold); color: var(--night); }
+  .btn-ghost:hover { background: var(--night); color: var(--ivory); border-color: var(--night); }
+}
+@media (hover: none) {
+  .btn-primary:hover { background: var(--night); color: var(--ivory); }
+  .btn-primary:hover::after { background-color: var(--ivory); background-position: center; }
+  .btn-light:hover { background: var(--ivory); color: var(--night); }
+  .btn-light:hover::after { background-color: var(--night); background-position: center; }
+  .btn-ghost:hover { background: transparent; color: var(--night); }
+  .btn:active { transform: scale(.98); }
+}
+.section-dark .btn-ghost, .section-dark .btn-outline-light { border-color: rgba(250, 246, 240, .7); color: var(--ivory); }
+
+/* ---------- v4: phones ---------- */
+.site-header.hdr.scrolled .lang-notice { display: none; }
+@media (max-width: 699px) {
+  .lang-notice { font-size: .8rem; padding: .4rem .75rem; gap: .5rem; }
+  .hdr .brand-name { font-size: 1.25rem; }
+  .hdr .brand-icon { width: 28px; }
+  .hdr-inner { padding: 10px 16px; gap: 8px; }
+  .hdr-cta { padding: 7px 10px; font-size: .82rem; }
+  .hdr-toggle { padding: 7px 9px; font-size: .7rem; }
+  .hero-v4 { min-height: auto; padding-top: 128px; }
+  .hero-v4-inner { gap: 18px; padding-bottom: 28px; }
+  .hero-v4 h1 { font-size: clamp(2.1rem, 9.4vw, 2.6rem); }
+  .hero-v4-sub { font-size: 1.2rem; }
+  .hero-v4 .cta-row { flex-direction: column; align-items: stretch; gap: 12px; }
+  .hero-v4 .cta-row .btn { width: 100%; justify-content: space-between; }
+  .hero-v4 .btn-ghost { justify-content: center; }
+  .giant-word { font-size: 25vw; margin: 0; padding: 0 16px .08em; }
+  h2 { font-size: clamp(1.75rem, 7.4vw, 2.2rem); }
+  .h-wide { max-width: none; }
+  .row h3 { font-size: 1.45rem; }
+  .row { padding: 28px 0; }
+  .section { padding-top: 64px; padding-bottom: 64px; }
+  .light-up { font-size: 1.45rem; }
+  .cta-row .btn { max-width: 100%; }
+}
+.hdr-toggle { min-width: 68px; text-align: center; letter-spacing: .04em; }
+@media (max-width: 699px) {
+  .hero-v4 .cta-row .btn-ghost { justify-content: center; }
+  .hero-v4 .cta-row .btn-primary { font-size: .95rem; padding-left: 20px; text-align: left; }
+  .hdr-toggle { min-width: 62px; }
+}

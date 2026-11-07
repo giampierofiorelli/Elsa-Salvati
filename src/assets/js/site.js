@@ -17,9 +17,8 @@
   }
 
   var header = document.querySelector('.site-header');
-  var cta = document.querySelector('.mobile-cta');
+  var cta = null; // the sticky mobile button was removed (v4)
   var footer = document.querySelector('.site-footer');
-  if (cta && /^\/(prenota|contatti|en\/book|en\/contact)\//.test(location.pathname)) { cta.remove(); cta = null; }
 
   function onScroll() {
     if (header) header.classList.toggle('scrolled', window.scrollY > 8);
