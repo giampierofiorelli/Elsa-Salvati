@@ -179,5 +179,7 @@
       }
     })();
   }
-  document.querySelectorAll('[data-dots]').forEach(dots);
+  // Dot grid switched off (G, 7/11). To bring it back, set DOTS to true.
+  var DOTS = false;
+  if (DOTS) document.querySelectorAll('[data-dots]').forEach(dots);
 })();
