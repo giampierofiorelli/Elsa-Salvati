@@ -728,3 +728,16 @@ main .eyebrow + h2, main .eyebrow + h1 { margin-top: 0; }
   .two-col-v4 { gap: 32px; }
 }
 .trio p { line-height: 1.5; }
+
+/* Team blocks: name -> bio 12px, bio -> areas 20px, areas -> button 28px,
+   then a clear gap and divider before the next person. */
+.people { gap: clamp(48px, 5vw, 64px); }
+.person-v4 { padding-top: clamp(32px, 3.5vw, 40px); }
+.person-v4 h3 { margin-bottom: 12px; }
+.person-v4 p { margin-bottom: 20px; }
+.person-v4 p.mono { margin-bottom: 28px; line-height: 1.6; }
+.why { padding-top: clamp(32px, 3.5vw, 40px); gap: 16px; }
+.why li { line-height: 1.5; }
+@media (max-width: 699px) {
+  .person-v4 .btn { width: 100%; justify-content: space-between; }
+}
