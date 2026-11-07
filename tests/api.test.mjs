@@ -27,6 +27,8 @@ async function call(handler, method, path, body, { headers, context = freshCtx()
   return { status: res.status, body: text ? JSON.parse(text) : null, headers: res.headers };
 }
 const cookieOf = (res) => res.headers.get('set-cookie').split(';')[0].split('=').slice(1).join('=');
+// The personal link of a booking arrives only by email: the last one sent to that address.
+const lastToken = (email) => ((deps.mailer.sent.filter((m) => m.to === email).at(-1) || { text: '' }).text.match(/#t=([A-Za-z0-9_-]+)/) || [])[1];
 const as = (who) => (method, path, body) => call(admin, method, `/api/admin${path}`, body, {
   headers: { cookie: `${COOKIE}=${cookies[who]}`, 'x-agenda': '1' },
 });
@@ -192,7 +194,8 @@ test('two professionals can be booked at the same hour; one person cannot be dou
   const start = '2026-10-26T09:00:00.000Z'; // Monday 10:00 in Rome
   let r = await pubCall('POST', '/book', { start, mode: 'studio', service: ids.terapia, professional: ids.marco, name: 'Giulia Bianchi', email: 'giulia@example.it', privacy: true });
   assert.equal(r.status, 201, JSON.stringify(r.body));
-  manageToken = new URL(r.body.manageUrl).hash.slice(3);
+  assert.equal(r.body.manageUrl, undefined, 'the personal link only travels by email');
+  manageToken = lastToken('giulia@example.it');
   assert.equal(r.body.booking.professional.name, 'Dott. Marco Neri');
 
   r = await pubCall('POST', '/book', { start, mode: 'online', service: ids.coaching, professional: ids.elsa, name: 'Paolo Verdi', email: 'paolo@example.it', privacy: true });
@@ -421,7 +424,7 @@ test('v4: the management link follows the booking language', opts, async () => {
     name: 'Persona Prova', email: 'sette@example.it', privacy: true,
   });
   assert.equal(r.status, 201, JSON.stringify(r.body));
-  assert.match(r.body.manageUrl, /\/en\/book\/manage\/#t=/);
+  assert.match(deps.mailer.sent.filter((m) => m.to === 'sette@example.it').at(-1).text, /\/en\/book\/manage\/#t=/);
 });
 
 // ---------- security and privacy (verification of 7 November 2026) ----------
@@ -483,7 +486,7 @@ test('the personal link stops working a day after the appointment', opts, async 
     name: 'Persona Prova', email: 'otto@example.it', privacy: true,
   });
   assert.equal(r.status, 201, JSON.stringify(r.body));
-  const token = new URL(r.body.manageUrl).hash.slice(3);
+  const token = lastToken('otto@example.it');
   assert.equal((await pubCall('POST', '/manage', { t: token })).status, 200);
   const saved = clock.now;
   clock.now = new Date('2026-11-18T10:00:00Z');
@@ -823,7 +826,7 @@ test('a first meeting booked online is a request: it holds the time until the pr
   let r = await book('richiesta1@example.it', '2026-11-30T08:00:00.000Z');
   assert.equal(r.status, 201, JSON.stringify(r.body));
   assert.equal(r.body.booking.pending, true);
-  const t1 = new URL(r.body.manageUrl).hash.slice(3);
+  const t1 = lastToken('richiesta1@example.it');
   assert.match(mailsTo('richiesta1@example.it', since)[0].subject, /Richiesta ricevuta/);
   assert.ok(deps.mailer.sent.slice(since).some((m) => /Nuova richiesta da accettare/.test(m.subject)), 'the professional is asked to approve');
   // The time is held while the request waits.
@@ -845,7 +848,7 @@ test('a first meeting booked online is a request: it holds the time until the pr
   assert.equal((await pubCall('POST', '/manage', { t: t1 })).status, 404, 'the link of a declined request no longer works');
   r = await book('richiesta2@example.it', '2026-11-30T08:00:00.000Z');
   assert.equal(r.status, 201, 'the time is free again');
-  const t2 = new URL(r.body.manageUrl).hash.slice(3);
+  const t2 = lastToken('richiesta2@example.it');
 
   // Approved: confirmation email with a new personal link; the request link stops working.
   pending = (await as('admin')('GET', '/events/pending')).body.events;
@@ -864,7 +867,7 @@ test('a first meeting booked online is a request: it holds the time until the pr
 
   // The person can cancel a request: the time is free again.
   r = await book('richiesta3@example.it', '2026-11-30T09:00:00.000Z');
-  const t3 = new URL(r.body.manageUrl).hash.slice(3);
+  const t3 = lastToken('richiesta3@example.it');
   assert.equal((await pubCall('POST', '/manage/cancel', { t: t3 })).status, 200);
   assert.equal((await book('richiesta4@example.it', '2026-11-30T09:00:00.000Z')).status, 201);
 });
@@ -1510,5 +1513,41 @@ test('retention: declined or expired requests lose their contacts after 6 months
   assert.deepEqual((await sql`select to_char(month, 'YYYY-MM') as m from stats_site_monthly where metric = 'm-test' order by month`).map((x) => x.m), ['2026-07', '2027-01']);
   assert.deepEqual((await sql`select note from stats_notes where month in ('2026-06-01', '2026-08-01')`).map((x) => x.note), ['tenuta']);
   assert.equal(r.totals.stats_monthly >= 1 && r.totals.stats_site_monthly >= 1, true);
+  clock.now = saved;
+});
+
+test('booking: the page never tells whether an email already has a first meeting; only its owner learns it, by email', opts, async () => {
+  const saved = clock.now;
+  clock.now = new Date('2026-12-02T09:00:00Z'); // Wednesday; Monday 7 December is bookable
+  const { svc, anna } = await annaAndService();
+  const book = (email, start, name = 'Persona Prova') => pubCall('POST', '/book', { start, mode: 'online', service: svc.id, professional: anna, lang: 'it', name, email, privacy: true });
+  const first = await book('doppia@example.it', '2026-12-07T08:00:00.000Z');
+  assert.equal(first.status, 201, JSON.stringify(first.body));
+  const oldToken = lastToken('doppia@example.it');
+  const notices = deps.mailer.sent.length;
+  const second = await book('doppia@example.it', '2026-12-07T09:00:00.000Z', 'Qualcun altro');
+  assert.equal(second.status, 201);
+  assert.equal(second.body.booking.start, '2026-12-07T09:00:00.000Z');
+  const hash = deps.vault.lookupHash('email:doppia@example.it');
+  assert.equal((await sql`select count(*)::int as n from events where contact_hash = ${hash}`)[0].n, 1, 'nothing booked the second time');
+  // Once a day at most: no flooding someone's inbox through the form.
+  const before = deps.mailer.sent.length;
+  assert.equal((await book('doppia@example.it', '2026-12-07T09:00:00.000Z')).status, 201);
+  assert.equal(deps.mailer.sent.slice(before).filter((m) => m.to === 'doppia@example.it').length, 0);
+  // The time stays free: someone else books it, and gets an answer of the same shape.
+  const fresh = await book('nuova@example.it', '2026-12-07T09:00:00.000Z');
+  assert.equal(fresh.status, 201, JSON.stringify(fresh.body));
+  const shape = (b) => JSON.stringify(Object.keys(b).sort()) + JSON.stringify(Object.keys(b.booking).sort());
+  assert.equal(shape(second.body), shape(fresh.body), 'same answer for a known and an unknown address');
+  // The owner of the address gets the details of the meeting in place, with a new link; the professional is not bothered.
+  const dupMail = deps.mailer.sent.slice(notices).filter((m) => m.to === 'doppia@example.it');
+  assert.equal(dupMail.length, 1);
+  assert.match(dupMail[0].subject, /^La tua richiesta – /);
+  assert.match(dupMail[0].text, /Gentile Persona Prova,/, 'the name on file, not the one typed the second time');
+  assert.match(dupMail[0].text, /lunedì 7 dicembre 2026, ore 09:00/);
+  assert.ok(!deps.mailer.sent.slice(notices).some((m) => /Nuova richiesta/.test(m.subject) && m.text.includes('ore 09:00')), 'no notice to the professional');
+  const newToken = tokenIn(dupMail[0]);
+  assert.equal((await pubCall('POST', '/manage', { t: newToken })).status, 200);
+  assert.equal((await pubCall('POST', '/manage', { t: oldToken })).status, 404, 'earlier links stop working');
   clock.now = saved;
 });

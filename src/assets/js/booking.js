@@ -79,7 +79,6 @@
   // English messages for the server's error codes (the server answers in Italian).
   var ERR_EN = {
     slot_unavailable: 'That time is no longer available. Please choose another.',
-    already_booked: 'You\'ve already requested a first meeting with this email address. You can cancel it from the link in our email, or move it once it\'s accepted.',
     rate_limited: 'Too many requests in a short time. Please try again later or contact us.',
     privacy: 'Please confirm you have read the privacy notice.',
     too_late: 'It\'s too late to change this online. If you can\'t make it, use "I can\'t make it", or contact us.',
@@ -510,7 +509,6 @@
         if (res.booking.assigned) state.assignedName = res.booking.professional.name;
         fillSummary($(root, '[data-summary-3]'), rows());
         $(root, '[data-ics]').href = icsHref(res.booking.start, res.booking.end, res.booking.mode);
-        $(root, '[data-manage]').href = res.manageUrl.replace(/^https?:\/\/[^/]+/, '');
         if (res.booking.pending) {
           // A request waiting for the professional's approval, not a confirmed appointment.
           var doneStep = $(root, '[data-step="done"]');
@@ -518,7 +516,6 @@
           var p = h2 && h2.parentNode.querySelector('dl + p, p');
           if (h2) h2.textContent = T.requestTitle;
           if (p) p.textContent = T.requestText;
-          $(root, '[data-manage]').textContent = T.cancelRequestBtn;
         }
         show(root, 'done');
         stat({ step: 5, form: 'prenotazione', state: 'inviato', goal: 'prenotazione' });
