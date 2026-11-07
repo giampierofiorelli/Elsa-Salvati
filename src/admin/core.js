@@ -29,8 +29,6 @@
   A.toast = toast;
   A.weekday = weekday;
 
-
-  var PX_PER_MIN = 1.1; A.PX_PER_MIN = PX_PER_MIN;
   var DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom']; A.DAY_NAMES = DAY_NAMES;
   var DAY_LONG = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica']; A.DAY_LONG = DAY_LONG;
   var KIND_LABEL = { primo_colloquio: 'Primo colloquio', seduta: 'Seduta', blocco: 'Non disponibile' }; A.KIND_LABEL = KIND_LABEL;
@@ -191,6 +189,7 @@
     mobile: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18h2"/>',
     check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
     cursor: '<path d="m4 4 7 16 2.5-6.5L20 11z"/>',
+    x: '<path d="M6 6l12 12M18 6 6 18"/>',
   };
   function svg(name, size) {
     return '<svg viewBox="0 0 24 24" width="' + (size || 20) + '" height="' + (size || 20) + '" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + (ICONS[name] || '') + '</svg>';

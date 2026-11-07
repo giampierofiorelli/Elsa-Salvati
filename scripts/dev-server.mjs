@@ -150,6 +150,16 @@ async function seed() {
     await add(pro.giulia, svc.genitori, w * 7 + 1, '10:00', 50, { kind: 'seduta', source: 'manuale', mode: 'online', contact_enc: enc('A. C.') });
   }
   await add(pro.elsa, null, 2, '14:00', 120, { kind: 'blocco', source: 'manuale', block_title: 'Formazione' });
+  // One appointment for each state the calendar shows: to accept, waiting for the person, confirmed, cancelled.
+  for (const w of [0, 1]) {
+    await add(pro.elsa, svc.primo, w * 7 + 4, '09:30', 30, { kind: 'primo_colloquio', source: 'sito', mode: 'online', status: 'in_attesa', contact_enc: enc('Sara P.') });
+    const waitId = await add(pro.giulia, svc.genitori, w * 7 + 3, '15:00', 50, { kind: 'seduta', source: 'manuale', mode: 'studio', notify_client: true, contact_enc: enc('Chiara D.') });
+    const okId = await add(pro.giulia, svc.genitori, w * 7 + 1, '11:30', 50, { kind: 'seduta', source: 'manuale', mode: 'online', notify_client: true, contact_enc: enc('Davide F.') });
+    const offId = await add(pro.marco, svc.terapia, w * 7, '16:00', 50, { kind: 'seduta', source: 'manuale', mode: 'studio', contact_enc: enc('G. T.') });
+    if (waitId) await sql`update events set reminder_sent_at = now() where id = ${waitId}`;
+    if (okId) await sql`update events set reminder_sent_at = now(), client_confirmed_at = now() where id = ${okId}`;
+    if (offId) await sql`update events set status = 'annullato', cancel_reason = 'tardivo', cancelled_by = 'paziente' where id = ${offId}`;
+  }
   await s.insertRequest({ contact_enc: deps.vault.encrypt({ name: 'Paolo', phone: '+39 333 0000000', preference: 'sabato mattina', message: '' }), mode: 'studio', category: 'psicoterapia', professional_id: pro.marco });
   // Admin account (already activated) and a pending invitation for Marco.
   const adminId = await s.insertUser({ email: 'admin@example.it', name: 'Direzione', role: 'admin', professional_id: pro.elsa, invite_token_hash: null, invite_expires_at: null });

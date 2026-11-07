@@ -128,21 +128,25 @@
         <strong class="range" data-range></strong>
       </div>
       <div class="seg" role="group" aria-label="Vista">
+        <button type="button" data-view="day" aria-pressed="false">Giorno</button>
         <button type="button" data-view="week" aria-pressed="true">Settimana</button>
         <button type="button" data-view="month" aria-pressed="false">Mese</button>
-        <button type="button" data-view="list" aria-pressed="false">Elenco</button>
+        <button type="button" data-view="list" aria-pressed="false">Agenda</button>
       </div>
       <button type="button" class="btn btn-primary btn-small" data-new>+ Nuovo</button>
     </div>
     <div class="week-wrap" data-week></div>
     <div class="month-wrap" data-month hidden></div>
     <div class="list-view" data-list hidden></div>
-    <ul class="legend" role="list">
-      <li><span class="sw sw-sito"></span>Dal sito</li>
+    <ul class="legend" role="list" aria-label="Legenda">
+      <li><span class="sw sw-first"></span>Primo colloquio</li>
+      <li><span class="sw sw-session"></span>Seduta</li>
       <li><span class="sw sw-pending"></span>Da accettare</li>
-      <li><span class="sw sw-manuale"></span>Fissato da te</li>
-      <li><span class="sw sw-blocco"></span>Bloccato</li>
-      <li><span class="sw sw-open"></span>Prenotabile online</li>
+      <li><span class="sw sw-outline"></span>In attesa di conferma della persona</li>
+      <li><span class="sw sw-block"></span>Bloccato</li>
+      <li><span class="sw sw-off"></span>Annullato</li>
+      <li><span class="sw sw-work"></span>Orario di lavoro</li>
+      <li><span class="sw sw-public"></span>Prenotabile online</li>
     </ul>
   </section>
 
