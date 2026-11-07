@@ -885,3 +885,6 @@ html[data-palette]:not([data-palette="x"]) .lang-notice { background: var(--nigh
   .footer-v4-col li { margin-bottom: 12px; }
 }
 .footer-v4 a.btn-light { color: var(--night); }
+/* Loader on the soft mint of the palette, so the colour icon reads well;
+   the word "Blooming" in the dark colour (G, 7/11). */
+.loader { background: var(--mint); color: var(--night); }
