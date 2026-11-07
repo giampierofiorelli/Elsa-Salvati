@@ -30,7 +30,7 @@
     var vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
     var fs = [
       'precision highp float;',
-      'uniform vec2 r;uniform float t;uniform vec2 m;uniform float mob;',
+      'uniform vec2 r;uniform float t;uniform vec2 m;uniform float mob;uniform vec3 cA,cB,cS,cF;',
       'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
       'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);',
       ' return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}',
@@ -45,7 +45,7 @@
       'float D(vec2 q,vec2 c,float s){vec2 p=flow((q-c)/s+vec2(0.,.05*sin(t*.2)))*s;return tri(p,s)/s;}',
       'void main(){',
       ' vec2 uv=gl_FragCoord.xy/r;float a=r.x/r.y;vec2 q=(uv-.5)*vec2(a,1.);',
-      ' vec3 cream=vec3(.962,.935,.910),peach=vec3(.985,.920,.868),sand=vec3(.949,.851,.765);',
+      ' vec3 cream=cA,peach=cB,sand=cS;',
       ' float cl=n(q*1.1+vec2(t*.03,-t*.02))*.65+n(q*2.3-vec2(t*.035))*.35;',
       ' vec3 col=mix(cream,peach,smoothstep(.3,.8,cl)*.8);',
       ' float s=mix(.30*a,.50*a,mob);',
@@ -63,7 +63,7 @@
       // Grain: moving on desktop; still on phones, where the canvas is enlarged
       // and a grain that changes every frame reads as flicker.
       ' col+=(h(gl_FragCoord.xy+fract(t*.73)*97.*(1.-mob))-.5)*mix(.045,.03,mob);',
-      ' col=mix(vec3(.980,.965,.941),col,smoothstep(0.,.12,uv.y));',
+      ' col=mix(cF,col,smoothstep(0.,.12,uv.y));',
       ' gl_FragColor=vec4(col,1.);}',
     ].join('\n');
     function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
@@ -99,6 +99,22 @@
     size();
     window.addEventListener('resize', function () { if (size()) draw(performance.now()); });
     gl.uniform1f(uMob, desktop ? 0 : 1);
+    // Colours from the page's palette (CSS variables), so the opening follows it.
+    var uA = gl.getUniformLocation(prog, 'cA'), uB = gl.getUniformLocation(prog, 'cB'),
+        uS = gl.getUniformLocation(prog, 'cS'), uF = gl.getUniformLocation(prog, 'cF');
+    function hex(name, fallback) {
+      var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      var m = /^#([0-9a-f]{6})$/i.exec(v) || /^#([0-9a-f]{6})$/i.exec(fallback);
+      return [0, 2, 4].map(function (i) { return parseInt(m[1].substr(i, 2), 16) / 255; });
+    }
+    function colours() {
+      gl.uniform3fv(uA, hex('--hero-base', '#F5EEE8'));
+      gl.uniform3fv(uB, hex('--hero-cloud', '#FBEBDD'));
+      gl.uniform3fv(uS, hex('--hero-shape', '#F2D9C3'));
+      gl.uniform3fv(uF, hex('--ivory', '#FAF6F0'));
+    }
+    colours();
+    window.addEventListener('bl-palette', colours);
     var visible = true, sm = { x: mouse.x, y: mouse.y }, t0 = performance.now();
     new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(host);
     function draw(now) {
