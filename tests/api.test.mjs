@@ -1655,3 +1655,32 @@ test('DATA_KEY rotation: every encrypted column and the contact fingerprints mov
   await rotate(sql, back);
   assert.ok(oldVault.decrypt((await sql`select contact_enc from events where contact_enc is not null limit 1`)[0].contact_enc));
 });
+
+test('activity log: logins (also failed, never the password), logouts, accounts and settings', opts, async () => {
+  tick();
+  const u = await createEnrolledUser(deps, { email: 'registro@example.it', name: 'Registro Prova', role: 'professionista', professionalId: ids.laura });
+  const bad = await call(admin, 'POST', '/api/admin/login', { email: u.email, password: 'password-sbagliata-123', code: '000000' });
+  assert.equal(bad.status, 401);
+  await call(admin, 'POST', '/api/admin/login', { email: 'nessuno@example.it', password: 'segreta-di-prova-1', code: '000000' });
+  cookies.reg = cookieOf(await login(u.email, u.secret));
+  assert.equal((await as('reg')('POST', '/logout', {})).status, 200);
+  tick();
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  const settings = (await as('admin')('GET', '/settings')).body.settings;
+  assert.equal((await as('admin')('PUT', '/settings', { settings: { cancelHours: settings.cancelHours + 1 } })).status, 200);
+  await as('admin')('PUT', '/settings', { settings: { cancelHours: settings.cancelHours } });
+  assert.equal((await as('admin')('PATCH', `/users/${u.id}`, { role: 'tecnico' })).status, 200);
+  assert.equal((await as('admin')('PATCH', `/users/${u.id}`, { active: false })).status, 200);
+  assert.equal((await as('admin')('POST', `/users/${u.id}/invite`, {})).status, 200);
+  const rows = await sql`select a.action, a.detail, u.email from audit_log a left join users u on u.id = a.user_id order by a.id desc limit 40`;
+  const has = (action, detail, email) => rows.some((r) => r.action === action && (detail === undefined || r.detail.includes(detail)) && (email === undefined || r.email === email));
+  assert.ok(has('accesso non riuscito', 'password o codice non corretti', u.email));
+  assert.ok(has('accesso non riuscito', 'email non registrata'));
+  assert.ok(!rows.some((r) => /nessuno@example\.it|password-sbagliata|segreta-di-prova/.test(r.detail)), 'no typed password or unknown address');
+  assert.ok(has('accesso', '', u.email));
+  assert.ok(has('uscita', '', u.email));
+  assert.ok(has('impostazioni cambiate', `cancelHours: ${settings.cancelHours} → ${settings.cancelHours + 1}`));
+  assert.ok(has('ruolo cambiato', 'Registro Prova: professionista → tecnico'));
+  assert.ok(has('account disattivato', 'Registro Prova'));
+  assert.ok(has('nuovo link di attivazione', 'Registro Prova'));
+});
