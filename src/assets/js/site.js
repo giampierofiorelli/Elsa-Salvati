@@ -141,29 +141,6 @@
     b.addEventListener('click', function () { apply(o[0]); });
     panel.appendChild(b);
   });
-  // Logo icon: the one in the settings, or the other one to compare.
-  var logos = [['classico', '1'], ['fiore', '2']];
-  var curLogo = null;
-  try { curLogo = localStorage.getItem('bl-logo'); } catch (e) {}
-  var sep = document.createElement('span'); sep.textContent = 'Logo'; panel.appendChild(sep);
-  function setLogo(name) {
-    document.querySelectorAll('img[src*="/assets/img/logos/"]').forEach(function (img) {
-      img.src = img.getAttribute('src').replace(/\/logos\/[a-z]+\//, '/logos/' + name + '/');
-    });
-    try { localStorage.setItem('bl-logo', name); } catch (e) {}
-    panel.querySelectorAll('button[data-logo]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.logo === name ? 'true' : 'false'); });
-  }
-  logos.forEach(function (l) {
-    var b = document.createElement('button');
-    b.type = 'button'; b.dataset.logo = l[0]; b.textContent = l[1];
-    b.title = 'Logo ' + l[1] + ' (' + l[0] + ')'; b.setAttribute('aria-label', b.title);
-    b.style.background = '#FAF6F0'; b.style.color = '#1F2F3A'; b.style.border = '1px solid #E6DDD2';
-    b.addEventListener('click', function () { setLogo(l[0]); });
-    panel.appendChild(b);
-  });
   document.body.appendChild(panel);
   apply(cur);
-  var inPage = (document.querySelector('img[src*="/assets/img/logos/"]') || { getAttribute: function () { return ''; } }).getAttribute('src');
-  var built = (/\/logos\/([a-z]+)\//.exec(inPage || '') || [])[1] || 'classico';
-  setLogo(curLogo || built);
 })();
