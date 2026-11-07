@@ -123,6 +123,9 @@
     return m ? decodeURIComponent(m[1]) : null;
   }
 
+  // Tells the statistics script (stats.js) what happened on this page: a step, a sent form, an error.
+  function stat(detail) { try { window.dispatchEvent(new CustomEvent('blooming:stat', { detail: detail })); } catch (e) { /* old browser */ } }
+
   function api(path, body) {
     var opts = body === undefined
       ? { headers: { accept: 'application/json' } }
@@ -259,6 +262,7 @@
     var pageLang = LANG;
     var catalog;
     var picker = new SlotPicker(root, function (slot) {
+      if (slot) stat({ step: 3 });
       $(root, '[data-next]').disabled = !slot;
       var dl = $(root, '[data-summary]');
       if (slot) fillSummary(dl, rows()); else dl.hidden = true;
@@ -337,6 +341,7 @@
     }
 
     function selectService(id, preset) {
+      stat({ step: 1 });
       state.service = state.services.find(function (s) { return s.id === id; });
       setPressed($(root, '[data-services]'), 'data-svc', id);
       hideFrom('pro');
@@ -385,6 +390,7 @@
     }
 
     function selectPro(id) {
+      stat({ step: 2 });
       state.pro = id === ANY
         ? { id: ANY, name: T.help }
         : state.service.professionals.find(function (p) { return p.id === id; });
@@ -476,6 +482,7 @@
     });
 
     $(root, '[data-next]').addEventListener('click', function () {
+      stat({ step: 4 });
       fillSummary($(root, '[data-summary-2]'), rows());
       show(root, 'details');
       $(root, '#b-name').focus();
@@ -514,7 +521,9 @@
           $(root, '[data-manage]').textContent = T.cancelRequestBtn;
         }
         show(root, 'done');
+        stat({ step: 5, form: 'prenotazione', state: 'inviato', goal: 'prenotazione' });
       }).catch(function (err) {
+        stat({ form: 'prenotazione', state: 'errore' });
         error.textContent = err.message;
         if (err.code === 'slot_unavailable') {
           picker.load();
@@ -712,11 +721,13 @@
         privacy: true, website: form.website.value,
         heard: form.heard ? form.heard.value : '',
       }).then(function () {
+        var kind = form.getAttribute('data-stat-form') || 'contatto';
+        stat({ form: kind, state: 'inviato', goal: kind });
         form.reset();
         if (proField) proField.hidden = true;
         status.className = 'status form-ok';
         status.textContent = T.reqSent;
-      }).catch(function (err) { fail(err.message); }).then(function () { btn.disabled = false; });
+      }).catch(function (err) { stat({ form: form.getAttribute('data-stat-form') || 'contatto', state: 'errore' }); fail(err.message); }).then(function () { btn.disabled = false; });
     });
   }
 

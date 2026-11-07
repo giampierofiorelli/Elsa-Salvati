@@ -1290,3 +1290,29 @@ test('statistics: emails counted per type and language; Brevo webhook needs the 
   const acts = await sql`select email_type, action, n from stats_email_actions_daily`;
   assert.deepEqual(acts.map((x) => [x.email_type, x.action, x.n]), [['conferma', 'conferma', 1]]);
 });
+
+test('statistics: the site endpoint writes daily counters only, and drops bots, "do not track", other sites and the over-cap', opts, async () => {
+  const beacon = (body, headers = {}) => pub(new Request('https://studio.example.it/api/public/s', {
+    method: 'POST', headers: { 'content-type': 'text/plain', 'user-agent': 'Mozilla/5.0 (Macintosh) Safari/605', origin: 'https://studio.example.it', ...headers }, body: JSON.stringify(body),
+  }), freshCtx());
+  const count = async () => (await sql`select coalesce(sum(n), 0)::int as n from stats_site_daily where metric = 'view' and page = '/team/'`)[0].n;
+  const v0 = await count();
+  let r = await beacon({ page: '/team/', src: 'google', device: 'telefono', cta: { 'header-prenota': 1 } });
+  assert.equal(r.status, 204);
+  assert.equal(await count(), v0 + 1);
+  await beacon({ page: '/team/' }, { 'sec-gpc': '1' });
+  await beacon({ page: '/team/' }, { dnt: '1' });
+  await beacon({ page: '/team/' }, { 'user-agent': 'Googlebot/2.1' });
+  await beacon({ page: '/team/' }, { origin: 'https://altro-sito.example' });
+  assert.equal(await count(), v0 + 1, 'nothing counted for GPC, DNT, bots, other sites');
+  const cta = await sql`select n from stats_site_daily where metric = 'cta' and page = '/team/' and key = 'header-prenota'`;
+  assert.equal(cta[0].n, 1);
+  // Daily cap.
+  deps.env.STATS_DAILY_CAP = '1';
+  await beacon({ page: '/team/' });
+  assert.equal(await count(), v0 + 1, 'over the cap nothing is written');
+  delete deps.env.STATS_DAILY_CAP;
+  // The tables have no column that could hold an address, an IP or an identifier.
+  const cols = (await sql`select table_name, column_name from information_schema.columns where table_name like 'stats_%'`).map((x) => x.column_name);
+  assert.ok(!cols.some((c) => /^(ip|ip_\w+|user_agent|email|address|session\w*|visitor\w*|\w*_hash|token)$/.test(c)), cols.join(','));
+});
