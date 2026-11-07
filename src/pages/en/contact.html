@@ -1,21 +1,31 @@
 ---
-title: Contact – Blooming · Psychology and coaching practice
-description: Ask a question or ask us to get back to you. We reply personally.
+title: Contact | Book online or ask us something first – Blooming
+description: Book a free 30-minute first meeting online, call or email, or ask Blooming to get back to you. Psychology and coaching, online, for people living in Italy or moving here.
 path: /en/contact/
 key: contatti
 nav: contact
 scripts: booking
+theme: light
 ---
-<section class="page-hero">
-  <div class="wrap narrow">
-    <p class="eyebrow">Contact</p>
-    <h1>Write to us, or ask us to call you back.</h1>
-    <p class="lead">For a question before booking, or if you'd rather talk first. We reply within [one working day], by email, phone or WhatsApp.</p>
+<section class="section page-v4-hero" data-theme-section="light">
+  <div class="wrap">
+    <p class="eyebrow" data-reveal="fade">Contact</p>
+    <h1 class="h-wide" data-reveal="lines">Book online, or ask us something first.</h1>
+    <p class="lead page-v4-lead" data-reveal="fade"><a href="/en/book/">Book a free first meeting</a> online · phone <a href="tel:{{contact.phoneHref}}">{{contact.phone}}</a> · email <a href="mailto:{{contact.email}}">{{contact.email}}</a> · WhatsApp for practical questions.</p>
+    <p class="draft-note">Phone, email, WhatsApp number and use: to confirm. We reply within [reply time: to confirm]. Your messages are read by [to confirm].</p>
   </div>
 </section>
-<section class="section-tight">
-  <div class="wrap narrow">
-    <form class="panel" data-request-form novalidate>
+
+<section class="section section-soft" id="get-back-to-you" data-theme-section="light">
+  <div class="wrap two-col-v4">
+    <div>
+      <p class="eyebrow">01 · Form</p>
+      <h2 data-reveal="lines">Ask us to get back to you.</h2>
+      <p>Leave your details and we'll contact you to arrange a time, or to answer your question.</p>
+      <p class="draft-note">Professional field: Monica in English to confirm. If Monica doesn't confirm English, choosing psychological support or psychotherapy in English shows: "Psychological support and psychotherapy are in Italian. Elsa works in English for career coaching &amp; guidance and workplace coaching." Privacy wording to check with your own adviser; English version of the notice: to decide.</p>
+    </div>
+    <form class="panel form-v4" data-request-form novalidate>
+      <input type="hidden" name="mode" value="da_definire">
       <div class="field">
         <label for="r-name">Name</label>
         <input id="r-name" name="name" type="text" autocomplete="name" required maxlength="80">
@@ -27,33 +37,29 @@ scripts: booking
       <div class="field">
         <label for="r-phone">Phone</label>
         <input id="r-phone" name="phone" type="tel" autocomplete="tel" maxlength="20">
-        <span class="hint">Give us at least an email or a phone number.</span>
+        <span class="hint">Please give us an email address or a phone number, or both.</span>
       </div>
       <div class="field">
-        <label for="r-category">Area</label>
+        <label for="r-category">What would you like help with?</label>
         <select id="r-category" name="category">
           <option value="da_definire">Not sure yet</option>
           {{@categoryOptions}}
           <option value="aziende">For my organisation</option>
         </select>
       </div>
+      <div class="field"><label for="r-lang">Preferred language for the meeting</label><select id="r-lang" data-extra="Meeting language"><option>English</option><option>Italian</option></select></div>
       <div class="field" data-pro-field hidden>
         <label for="r-pro">Professional <span class="hint">(optional)</span></label>
         <select id="r-pro" name="professional"><option value="">No preference</option></select>
       </div>
-      <div class="field">
-        <label for="r-mode">Format</label>
-        <select id="r-mode" name="mode">
-          <option value="online">Online</option>
-        </select>
-      </div>
+      
       <div class="field">
         <label for="r-pref">Preferred days and times <span class="hint">(optional)</span></label>
         <input id="r-pref" name="preference" type="text" maxlength="200" placeholder="e.g. Tuesday afternoon">
       </div>
       <div class="field">
         <label for="r-msg">Message <span class="hint">(optional)</span></label>
-        <textarea id="r-msg" name="message" maxlength="600"></textarea>
+        <textarea id="r-msg" name="message" maxlength="480"></textarea><span class="hint">No need to tell us about your situation or your health here. You can talk about that in the meeting.</span>
         <span class="hint">Please don't include health or sensitive personal details: just tell us how to reach you.</span>
       </div>
       <div class="hp" aria-hidden="true"><label for="r-website">Leave empty</label><input id="r-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
@@ -61,6 +67,25 @@ scripts: booking
       <p class="status" role="status" data-request-status></p>
       <button class="btn btn-primary" type="submit">Send</button>
     </form>
+  </div>
+</section>
 
+<section class="section" data-theme-section="light">
+  <div class="wrap two-col-v4">
+    <div>
+      <p class="eyebrow">02 · Organisations</p>
+      <h2 data-reveal="lines">Companies and teams have their own page.</h2>
+    </div>
+    <div class="prose-v4">
+      <p>For hiring, team coaching or training, the organisations page explains how the practice works with companies, and has its own form.</p>
+      <a class="link-arrow" href="/en/organisations/" data-roll>For organisations</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-dark closing-v4" data-theme-section="dark">
+  <div class="wrap">
+    <h2 class="h-wide" data-reveal="lines">Blooming isn't an emergency service.</h2>
+    <p class="lead">If you or someone else is in danger, call <a href="tel:112">112</a> or <a href="tel:118">118</a>, or go to the nearest emergency department (Pronto Soccorso).</p>
   </div>
 </section>

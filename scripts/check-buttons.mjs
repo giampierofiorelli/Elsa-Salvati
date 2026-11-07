@@ -9,7 +9,7 @@ const { chromium, devices } = require('playwright');
 
 const base = process.argv[2] || 'http://localhost:8890';
 const pages = ['/', '/servizi/', '/orientamento-carriera/', '/aziende/', '/team/', '/tariffe-e-prenotazioni/', '/contatti/', '/prenota/',
-  '/en/', '/en/how-we-can-help/', '/en/career-guidance/', '/en/contact/', '/en/book/'];
+  '/en/', '/en/how-we-can-help/', '/en/career-guidance/', '/en/organisations/', '/en/team/', '/en/fees/', '/en/contact/', '/en/book/'];
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ ...devices['iPhone 13'], reducedMotion: 'reduce' });
