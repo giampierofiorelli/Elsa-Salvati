@@ -49,7 +49,9 @@ const specialDir = join(src, 'partials/special');
 const specials = statSync(specialDir, { throwIfNoEntry: false })
   ? Object.fromEntries(readdirSync(specialDir).filter((f) => f.endsWith('.html')).map((f) => [f.replace(/\.html$/, ''), readFileSync(join(specialDir, f), 'utf8')]))
   : {};
-const site = createSite({ config, layouts, catalog, demo, specials });
+// Header, footer and studio details: the starting values (the editor keeps its own copy in the database).
+const globals = JSON.parse(readFileSync(join(root, 'content', 'globals.json'), 'utf8'));
+const site = createSite({ config, layouts, catalog, demo, specials, globals });
 const { render, page, register, equivalents, base } = site;
 
 function parsePage(text) {
@@ -95,7 +97,7 @@ for (const lang of LANGS) {
     const pg = { ...JSON.parse(readFileSync(join(dir, file), 'utf8')), lang };
     pages.push({ lang, blockPage: pg, path: pg.path, meta: { key: pg.key, noindex: pg.noindex ? 'true' : undefined } });
     blockPaths.add(pg.path);
-    if (!pg.noindex) register(pg.key, lang, pg.path);
+    if (!pg.noindex) register(pg.key, lang, pg.path, pg.nav);
   }
 }
 for (const lang of LANGS) {
@@ -105,7 +107,7 @@ for (const lang of LANGS) {
     meta.key = meta.key || file.slice(dir.length + 1).replace(/\.html$/, '');
     if (blockPaths.has(meta.path)) continue;
     pages.push({ lang, meta, body, path: meta.path });
-    if (meta.path !== '/404' && meta.path !== '/en/404') register(meta.key, lang, meta.path);
+    if (meta.path !== '/404' && meta.path !== '/en/404') register(meta.key, lang, meta.path, meta.nav);
   }
 }
 
@@ -154,7 +156,12 @@ for (const file of walk(out).filter((f) => f.endsWith('.html'))) {
 {
   const staticPages = {};
   for (const pg of pages) if (!pg.blockPage && pg.meta.key) (staticPages[pg.meta.key] ||= {})[pg.lang] = pg.path;
-  const kit = { config, layouts, specials, hashes, staticPages, content: pages.filter((pg) => pg.blockPage).map((pg) => pg.blockPage) };
+  // Hand-written pages (privacy, cookie, booking management) are served by the function too, so their header
+  // and footer follow the editor; only the 404 page stays static.
+  const fixedPages = pages.filter((pg) => !pg.blockPage && !/404$/.test(pg.path)).map((pg) => ({ lang: pg.lang, path: pg.path, meta: pg.meta, body: pg.body }));
+  const navOf = {};
+  for (const pg of pages) if (pg.meta.key && (pg.meta.nav || (pg.blockPage && pg.blockPage.nav))) (navOf[pg.meta.key] ||= {})[pg.lang] = pg.meta.nav || pg.blockPage.nav;
+  const kit = { config, layouts, specials, hashes, staticPages, fixedPages, navOf, globals, content: pages.filter((pg) => pg.blockPage).map((pg) => pg.blockPage) };
   mkdirSync(join(root, 'lib', 'generated'), { recursive: true });
   writeFileSync(join(root, 'lib', 'generated', 'site-kit.json'), JSON.stringify(kit));
 }

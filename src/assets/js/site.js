@@ -167,3 +167,15 @@
   document.body.appendChild(panel);
   apply(cur);
 })();
+
+// Footer year: "2026", then "2026–2027"… If a page was cached before the new year, show the right one.
+(function () {
+  var el = document.querySelector('[data-year]');
+  if (!el) return;
+  var since = Number(el.getAttribute('data-since')) || 0;
+  var year;
+  try { year = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Rome', year: 'numeric' }).format(new Date())); } catch (e) { year = new Date().getFullYear(); }
+  if (!since || !year) return;
+  var text = year > since ? since + '\u2013' + year : String(since);
+  if (el.textContent !== text) el.textContent = text;
+})();

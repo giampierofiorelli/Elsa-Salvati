@@ -1,0 +1,426 @@
+{
+  "it": {
+    "header": {
+      "items": [
+        {
+          "label": "Come possiamo aiutarti",
+          "to": {
+            "kind": "page",
+            "key": "servizi"
+          }
+        },
+        {
+          "label": "Orientamento e carriera",
+          "to": {
+            "kind": "page",
+            "key": "lavoro"
+          }
+        },
+        {
+          "label": "Aziende",
+          "to": {
+            "kind": "page",
+            "key": "aziende"
+          }
+        },
+        {
+          "label": "Chi siamo",
+          "to": {
+            "kind": "page",
+            "key": "team"
+          }
+        },
+        {
+          "label": "Tariffe e prenotazioni",
+          "to": {
+            "kind": "page",
+            "key": "costi-e-faq"
+          }
+        },
+        {
+          "label": "Contatti",
+          "to": {
+            "kind": "page",
+            "key": "contatti"
+          }
+        }
+      ],
+      "cta": {
+        "label": "Prenota",
+        "to": {
+          "kind": "book"
+        },
+        "style": "primary"
+      },
+      "menuLabel": "Navigazione",
+      "skip": "Vai al contenuto",
+      "brandAria": "Blooming · Studio di psicologia e coaching – pagina iniziale",
+      "menuOpen": "Menu",
+      "menuClose": "Chiudi"
+    },
+    "footer": {
+      "sign": "Fiorire, con i tuoi tempi.",
+      "about": {
+        "p": [
+          [
+            {
+              "t": "Blooming – Studio di psicologia e coaching. Psicologhe iscritte all'Albo degli Psicologi. Online, da tutta Italia, in italiano e in inglese."
+            }
+          ]
+        ]
+      },
+      "button": {
+        "label": "Prenota il primo colloquio gratuito",
+        "to": {
+          "kind": "book"
+        },
+        "style": "light"
+      },
+      "columns": [
+        {
+          "title": "Pagine",
+          "kind": "links",
+          "links": [
+            {
+              "label": "Come possiamo aiutarti",
+              "to": {
+                "kind": "page",
+                "key": "servizi"
+              }
+            },
+            {
+              "label": "Orientamento e carriera",
+              "to": {
+                "kind": "page",
+                "key": "lavoro"
+              }
+            },
+            {
+              "label": "Coaching",
+              "to": {
+                "kind": "page",
+                "key": "coaching"
+              }
+            },
+            {
+              "label": "Sostegno psicologico",
+              "to": {
+                "kind": "page",
+                "key": "sostegno"
+              }
+            },
+            {
+              "label": "Psicoterapia",
+              "to": {
+                "kind": "page",
+                "key": "psicoterapia"
+              }
+            },
+            {
+              "label": "Aziende",
+              "to": {
+                "kind": "page",
+                "key": "aziende"
+              }
+            },
+            {
+              "label": "Chi siamo",
+              "to": {
+                "kind": "page",
+                "key": "team"
+              }
+            },
+            {
+              "label": "Tariffe e prenotazioni",
+              "to": {
+                "kind": "page",
+                "key": "costi-e-faq"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Contatti",
+          "kind": "contacts",
+          "links": [
+            {
+              "label": "Scrivici",
+              "to": {
+                "kind": "page",
+                "key": "contatti"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Informazioni",
+          "kind": "info",
+          "links": [
+            {
+              "label": "Privacy",
+              "to": {
+                "kind": "page",
+                "key": "privacy"
+              }
+            },
+            {
+              "label": "Cookie",
+              "to": {
+                "kind": "page",
+                "key": "cookie"
+              }
+            }
+          ]
+        }
+      ],
+      "emergency": {
+        "p": [
+          [
+            {
+              "t": "Non è un servizio di emergenza.",
+              "b": true
+            },
+            {
+              "t": " Questo sito, l'email, WhatsApp e il sistema di prenotazione non sono adatti alle emergenze. In caso di pericolo immediato chiama il "
+            },
+            {
+              "t": "112",
+              "href": "tel:112"
+            },
+            {
+              "t": " o il "
+            },
+            {
+              "t": "118",
+              "href": "tel:118"
+            },
+            {
+              "t": ", oppure rivolgiti al Pronto Soccorso più vicino."
+            }
+          ]
+        ]
+      },
+      "cookieLine": "Questo sito non usa cookie di profilazione né strumenti di tracciamento.",
+      "legalLine": "Blooming – Studio associato"
+    }
+  },
+  "en": {
+    "header": {
+      "items": [
+        {
+          "label": "How we can help",
+          "to": {
+            "kind": "page",
+            "key": "servizi"
+          }
+        },
+        {
+          "label": "Career guidance",
+          "to": {
+            "kind": "page",
+            "key": "lavoro"
+          }
+        },
+        {
+          "label": "For organisations",
+          "to": {
+            "kind": "page",
+            "key": "aziende"
+          }
+        },
+        {
+          "label": "Team",
+          "to": {
+            "kind": "page",
+            "key": "team"
+          }
+        },
+        {
+          "label": "Fees & booking",
+          "to": {
+            "kind": "page",
+            "key": "costi-e-faq"
+          }
+        },
+        {
+          "label": "Contact",
+          "to": {
+            "kind": "page",
+            "key": "contatti"
+          }
+        }
+      ],
+      "cta": {
+        "label": "Book",
+        "to": {
+          "kind": "book"
+        },
+        "style": "primary"
+      },
+      "menuLabel": "Navigation",
+      "skip": "Skip to content",
+      "brandAria": "Blooming · Psychology and coaching practice – home",
+      "menuOpen": "Menu",
+      "menuClose": "Close"
+    },
+    "footer": {
+      "sign": "Bloom in your own time.",
+      "about": {
+        "p": [
+          [
+            {
+              "t": "Blooming – Psychology and coaching practice. Registered psychologists. Online sessions in English and Italian, for people living in Italy or moving here."
+            }
+          ]
+        ]
+      },
+      "button": {
+        "label": "Book a free first meeting",
+        "to": {
+          "kind": "book"
+        },
+        "style": "light"
+      },
+      "columns": [
+        {
+          "title": "Pages",
+          "kind": "links",
+          "links": [
+            {
+              "label": "How we can help",
+              "to": {
+                "kind": "page",
+                "key": "servizi"
+              }
+            },
+            {
+              "label": "Career coaching & guidance",
+              "to": {
+                "kind": "page",
+                "key": "lavoro"
+              }
+            },
+            {
+              "label": "Workplace coaching",
+              "to": {
+                "kind": "page",
+                "key": "coaching"
+              }
+            },
+            {
+              "label": "Psychological support",
+              "to": {
+                "kind": "page",
+                "key": "sostegno"
+              }
+            },
+            {
+              "label": "Psychotherapy",
+              "to": {
+                "kind": "page",
+                "key": "psicoterapia"
+              }
+            },
+            {
+              "label": "Contact",
+              "to": {
+                "kind": "page",
+                "key": "contatti"
+              }
+            },
+            {
+              "label": "For organisations",
+              "to": {
+                "kind": "page",
+                "key": "aziende"
+              }
+            },
+            {
+              "label": "Team",
+              "to": {
+                "kind": "page",
+                "key": "team"
+              }
+            },
+            {
+              "label": "Fees & booking",
+              "to": {
+                "kind": "page",
+                "key": "costi-e-faq"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Contact",
+          "kind": "contacts",
+          "links": [
+            {
+              "label": "Write to us",
+              "to": {
+                "kind": "page",
+                "key": "contatti"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Information",
+          "kind": "info",
+          "links": [
+            {
+              "label": "Privacy",
+              "to": {
+                "kind": "page",
+                "key": "privacy"
+              }
+            },
+            {
+              "label": "Cookies",
+              "to": {
+                "kind": "page",
+                "key": "cookie"
+              }
+            }
+          ]
+        }
+      ],
+      "emergency": {
+        "p": [
+          [
+            {
+              "t": "This is not an emergency service.",
+              "b": true
+            },
+            {
+              "t": " This website, email, WhatsApp and the booking system are not suitable for emergencies. If you are in immediate danger, call "
+            },
+            {
+              "t": "112",
+              "href": "tel:112"
+            },
+            {
+              "t": " or "
+            },
+            {
+              "t": "118",
+              "href": "tel:118"
+            },
+            {
+              "t": ", or go to the nearest emergency department (Pronto Soccorso)."
+            }
+          ]
+        ]
+      },
+      "cookieLine": "This site uses no profiling cookies or tracking tools.",
+      "legalLine": "Blooming – Psychology and coaching practice"
+    }
+  },
+  "studio": {
+    "phone": "+39 [telefono]",
+    "email": "[email]@[dominio].it",
+    "whatsapp": "[numero WhatsApp]",
+    "legalName": "Blooming – Studio associato",
+    "vat": "[P.IVA dello studio]"
+  }
+}

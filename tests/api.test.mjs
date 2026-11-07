@@ -703,3 +703,76 @@ test('media library: upload once, see where it is used, delete only when unused;
   const log = (await as('admin')('GET', '/audit')).body.entries.map((e) => e.action);
   assert.ok(log.includes('immagine caricata') && log.includes('immagine cancellata') && log.includes('PDF caricato'));
 });
+
+test('header, footer and studio details: edited once, shown on every page after publishing', opts, async () => {
+  const purged = [];
+  const kit = editorKit();
+  const ed = createAdminApi({ ...deps, kit, purge: async (tags) => { purged.push(...tags); } });
+  cookies.admin = cookieOf(await login(adminUser.email, adminUser.secret));
+  const call2 = (method, path, body) => call(ed, method, `/api/admin${path}`, body, { headers: { cookie: `${COOKIE}=${cookies.admin}`, 'x-agenda': '1' } });
+  const serve = (path, env) => pageResponse(new Request(`https://studio.example.it${path}`), { kit, env, store: deps.store, loadCatalog: () => kit.loadCatalog(), createSite });
+
+  let r = await call2('GET', '/site/globals');
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.ok(r.body.schema.header && r.body.schema.footer && r.body.schema.studio);
+  const it = r.body.scopes.it;
+  assert.ok(it.draft.header.items.length >= 5, 'menu items from the current layout');
+
+  // Move the last menu item to the top and rename it; change the studio's phone.
+  const items = [...it.draft.header.items];
+  const last = { ...items.pop(), label: 'Scrivici' };
+  r = await call2('PUT', '/site/globals/it', { data: { ...it.draft, header: { ...it.draft.header, items: [last, ...items] } }, expected: it.draftUpdatedAt });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  r = await call2('PUT', '/site/globals/studio', { data: { ...r.body.data, phone: '+39 051 123456', email: 'info@blooming.example', whatsapp: '393331234567', legalName: 'Blooming', vat: '01234567890' } });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  r = await call2('PUT', '/site/globals/studio', { data: { phone: '+39', email: 'a@b.it?bcc=x@y.it' } });
+  assert.equal(r.status, 400, 'invalid email refused');
+
+  // Production keeps the published header until "Pubblica"; staging shows the draft.
+  let html = await (await serve('/prova/', { CONTEXT: 'production' })).text();
+  assert.doesNotMatch(html, />Scrivici<\/a><\/li>\s*<li><a href="\/servizi\/"/);
+  html = await (await serve('/prova/', { CONTEXT: 'branch-deploy' })).text();
+  assert.match(html, /<ul role="list">\s*<li><a href="[^"]*" data-roll>Scrivici<\/a><\/li>/, 'renamed item first in the menu');
+  assert.match(html, /tel:\+39051123456/);
+
+  r = await call2('POST', '/site/globals/it/publish', {});
+  assert.equal(r.status, 200);
+  await call2('POST', '/site/globals/studio/publish', {});
+  assert.deepEqual([...new Set(purged)], ['pages'], 'the whole site leaves the cache');
+  html = await (await serve('/prova/', { CONTEXT: 'production' })).text();
+  assert.match(html, /data-roll>Scrivici<\/a>/);
+  assert.match(html, /P\.IVA 01234567890/);
+  assert.match(html, /© <span data-year data-since="2026">20\d\d(–20\d\d)?<\/span>/);
+
+  // Hand-written pages (privacy) get the same header and footer through the page function.
+  const privacy = await serve('/privacy/', { CONTEXT: 'production' });
+  assert.equal(privacy.status, 200);
+  const ph = await privacy.text();
+  assert.match(ph, /data-roll>Scrivici<\/a>/);
+  assert.match(ph, /Informativa/);
+  const manage = await serve('/prenota/gestisci/', { CONTEXT: 'production' });
+  assert.equal(manage.headers.get('referrer-policy'), 'no-referrer');
+});
+
+test('SEO of a page: title, description, sharing image and "not in search engines"', opts, async () => {
+  const kit = editorKit();
+  const ed = createAdminApi({ ...deps, kit, purge: async () => {} });
+  const call2 = (method, path, body) => call(ed, method, `/api/admin${path}`, body, { headers: { cookie: `${COOKIE}=${cookies.admin}`, 'x-agenda': '1' } });
+  const list = (await call2('GET', '/site/pages')).body.pages;
+  const it = list.find((p) => p.key === 'prova' && p.lang === 'it');
+  const page = (await call2('GET', `/site/pages/${it.id}`)).body.page;
+  let r = await call2('PUT', `/site/pages/${it.id}`, {
+    title: 'Titolo per Google', description: 'Descrizione breve', blocks: page.draft.blocks, expected: page.draftUpdatedAt,
+    seo: { image: { id: 'abcdef0123456789abcdef01', alt: 'Lo studio', w: 1200, h: 630 }, noindex: true },
+  });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.equal(r.body.draft.seo.noindex, true);
+  const html = await (await pageResponse(new Request('https://studio.example.it/prova/'), { kit, env: { CONTEXT: 'branch-deploy', SITE_URL: 'https://blooming.example' }, store: deps.store, loadCatalog: () => kit.loadCatalog(), createSite })).text();
+  assert.match(html, /<title>Titolo per Google<\/title>/);
+  assert.match(html, /<meta name="robots" content="noindex, nofollow">/);
+  assert.match(html, /<meta property="og:image" content="https:\/\/blooming\.example\/media\/abcdef0123456789abcdef01-1200x630\.jpg">/);
+  assert.match(html, /<meta property="og:url" content="https:\/\/blooming\.example\/prova\/">/);
+  assert.doesNotMatch(html, /rel="alternate" hreflang/, 'a page hidden from search engines has no language alternates');
+  r = await call2('PUT', `/site/pages/${it.id}`, { title: 'Titolo', blocks: page.draft.blocks, seo: { image: { id: 'abcdef0123456789abcdef01' } } });
+  assert.equal(r.status, 400, 'the sharing image needs a description');
+});

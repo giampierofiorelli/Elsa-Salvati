@@ -12,6 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="{{pageTitle}}">
 <meta property="og:description" content="{{pageDescription}}">
+<!--og-->
 <meta property="og:locale" content="en_GB">
 <link rel="icon" href="/assets/img/favicon-64.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
@@ -29,28 +30,23 @@
 <!--scripts-->
 </head>
 <body class="site">
-<a class="skip" href="#contenuto">Skip to content</a>
+<a class="skip" href="#contenuto"><!--g:skip--></a>
 <!--demo-->
 <header class="site-header hdr">
   <div class="hdr-inner">
-    <a class="brand" href="/en/" aria-label="Blooming · Psychology and coaching practice – home">
+    <a class="brand" href="/en/" aria-label="<!--g:brandAria-->">
       <img class="brand-icon" src="/assets/img/logo-icon.webp" width="293" height="224" alt=""><img class="brand-icon brand-icon-light" src="/assets/img/logo-icon-light.webp" width="293" height="224" alt="">
       <span class="brand-name">Blooming</span>
     </a>
     <nav id="menu" class="hdr-nav" aria-label="Main">
-      <p class="eyebrow hdr-nav-label">Navigation</p>
+      <p class="eyebrow hdr-nav-label"><!--g:menuLabel--></p>
       <ul role="list">
-        <li><a href="/en/how-we-can-help/" data-nav="help" data-roll>How we can help</a></li>
-        <li><a href="/en/career-guidance/" data-nav="career" data-roll>Career guidance</a></li>
-        <li><a href="/en/organisations/" data-nav="organisations" data-roll>For organisations</a></li>
-        <li><a href="/en/team/" data-nav="team" data-roll>Team</a></li>
-        <li><a href="/en/fees/" data-nav="fees" data-roll>Fees &amp; booking</a></li>
-        <li><a href="/en/contact/" data-nav="contact" data-roll>Contact</a></li>
+        <!--g:items-->
       </ul>
       <p class="hdr-nav-lang"><!--langswitch--></p>
     </nav>
-    <a class="hdr-cta" href="/en/book/">Book <svg class="hdr-cta-icon" aria-hidden="true" viewBox="0 0 16 16" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-    <button class="menu-toggle hdr-toggle" type="button" aria-expanded="false" aria-controls="menu" data-open="Menu" data-close="Close">Menu</button>
+    <!--g:cta-->
+    <button class="menu-toggle hdr-toggle" type="button" aria-expanded="false" aria-controls="menu" data-open="<!--g:menuOpen-->" data-close="<!--g:menuClose-->"><!--g:menuOpen--></button>
   </div>
 </header>
 
@@ -59,50 +55,7 @@
 </main>
 
 <footer class="site-footer footer-v4" data-theme-section="dark">
-  <div class="wrap footer-v4-grid">
-    <div class="footer-v4-brand">
-      <p class="footer-v4-sign">Bloom in your own time.</p>
-      <p>Blooming – Psychology and coaching practice. Registered psychologists. Online sessions in English and Italian, for people living in Italy or moving here.</p>
-      <a class="btn btn-light" href="/en/book/">Book a free first meeting</a>
-    </div>
-    <nav class="footer-v4-col" aria-label="Site pages">
-      <p class="footer-v4-label">Pages</p>
-      <ul role="list">
-        <li><a href="/en/how-we-can-help/">How we can help</a></li>
-        <li><a href="/en/career-guidance/">Career coaching &amp; guidance</a></li>
-        <li><a href="/en/workplace-coaching/">Workplace coaching</a></li>
-        <li><a href="/en/psychological-support/">Psychological support</a></li>
-        <li><a href="/en/psychotherapy/">Psychotherapy</a></li>
-        <li><a href="/en/contact/">Contact</a></li>
-        <li><a href="/en/organisations/">For organisations</a></li>
-        <li><a href="/en/team/">Team</a></li>
-        <li><a href="/en/fees/">Fees &amp; booking</a></li>
-      </ul>
-    </nav>
-    <div class="footer-v4-col">
-      <p class="footer-v4-label">Contact</p>
-      <ul role="list">
-        <li><a href="tel:{{contact.phoneHref}}">{{contact.phone}}</a></li>
-        <li><a href="mailto:{{contact.email}}">{{contact.email}}</a></li>
-        <li><a href="/en/contact/">Write to us</a></li>
-      </ul>
-    </div>
-    <div class="footer-v4-col">
-      <p class="footer-v4-label">Information</p>
-      <ul role="list">
-        <li><a href="/en/privacy/">Privacy</a></li>
-        <li><a href="/en/cookies/">Cookies</a></li>
-        <li><!--langswitch--></li>
-      </ul>
-    </div>
-  </div>
-  <div class="wrap">
-    <p class="emergency"><strong>This is not an emergency service.</strong> This website, email, WhatsApp and the booking system are not suitable for emergencies. If you are in immediate danger, call <a href="tel:112">112</a> or <a href="tel:118">118</a>, or go to the nearest emergency department (Pronto Soccorso).</p>
-    <div class="footer-v4-bottom">
-      <p>© 2026 Blooming – Psychology and coaching practice · VAT no. {{vat}}</p>
-      <p>This site uses no profiling cookies or tracking tools.</p>
-    </div>
-  </div>
+  <!--g:footer-->
   <p class="giant-word footer-v4-giant" aria-hidden="true">Blooming</p>
 </footer>
 

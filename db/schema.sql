@@ -273,6 +273,17 @@ create table if not exists site_images (
   created_by  bigint references users(id) on delete set null,
   primary key (id, variant)
 );
+-- Intestazione e piè di pagina (una riga per lingua) e dati dello studio: bozza e pubblicato.
+create table if not exists site_globals (
+  scope             text primary key check (scope in ('it', 'en', 'studio')),
+  draft             jsonb not null,
+  published         jsonb,
+  draft_updated_at  timestamptz not null default now(),
+  draft_updated_by  bigint references users(id) on delete set null,
+  published_at      timestamptz,
+  published_by      bigint references users(id) on delete set null
+);
+alter table site_globals enable row level security;
 -- Permesso di modificare il sito (non dà accesso ai dati delle persone).
 alter table users add column if not exists can_edit_site boolean not null default false;
 alter table site_pages enable row level security;

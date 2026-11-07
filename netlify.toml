@@ -109,6 +109,43 @@
   conditions = {Language = ["en", "fr", "de", "es", "pt", "nl", "pl", "ro", "ru", "uk", "zh", "ja", "ko", "ar", "tr", "el", "sv", "da", "no", "nb", "fi", "cs", "sk", "hu", "bg", "hr", "sr", "sl", "sq", "he", "hi", "bn", "ur", "fa", "vi", "th", "id", "ms", "tl", "lt", "lv", "et", "ca"]}
 
 # English visitors on a missing page see the English 404.
+# Hand-written pages, served with the current header and footer.
+[[redirects]]
+  from = "/privacy/"
+  to = "/.netlify/functions/page?p=/privacy/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/cookie/"
+  to = "/.netlify/functions/page?p=/cookie/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/prenota/gestisci/"
+  to = "/.netlify/functions/page?p=/prenota/gestisci/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/privacy/"
+  to = "/.netlify/functions/page?p=/en/privacy/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/cookies/"
+  to = "/.netlify/functions/page?p=/en/cookies/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/book/manage/"
+  to = "/.netlify/functions/page?p=/en/book/manage/"
+  status = 200
+  force = true
+
 # Editable pages (after the language redirect of the home page).
 [[redirects]]
   from = "/"
