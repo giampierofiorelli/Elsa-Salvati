@@ -44,7 +44,12 @@ function proList(cat) {
 }
 const catalog = await readCatalog();
 const layouts = Object.fromEntries(LANGS.map((l) => [l, readFileSync(join(src, `partials/layout.${l}.html`), 'utf8')]));
-const site = createSite({ config, layouts, catalog, demo });
+// Fixed templates of the special blocks (booking, forms, contacts): src/partials/special/<type>.<lang>[.<variant>].html
+const specialDir = join(src, 'partials/special');
+const specials = statSync(specialDir, { throwIfNoEntry: false })
+  ? Object.fromEntries(readdirSync(specialDir).filter((f) => f.endsWith('.html')).map((f) => [f.replace(/\.html$/, ''), readFileSync(join(specialDir, f), 'utf8')]))
+  : {};
+const site = createSite({ config, layouts, catalog, demo, specials });
 const { render, page, register, equivalents, base } = site;
 
 function parsePage(text) {
@@ -78,12 +83,27 @@ mkdirSync(out, { recursive: true });
 cpSync(join(src, 'assets'), join(out, 'assets'), { recursive: true });
 
 // Pass 1: read every page of both sites and register equivalents.
+// Pages made of blocks (content/pages/<lang>/*.json, the editor's starting content) replace the
+// hand-written page with the same path.
 const pages = [];
+const contentDir = join(root, 'content', 'pages');
+const blockPaths = new Set();
+for (const lang of LANGS) {
+  const dir = join(contentDir, lang);
+  if (!statSync(dir, { throwIfNoEntry: false })) continue;
+  for (const file of readdirSync(dir).filter((f) => f.endsWith('.json'))) {
+    const pg = { ...JSON.parse(readFileSync(join(dir, file), 'utf8')), lang };
+    pages.push({ lang, blockPage: pg, path: pg.path, meta: { key: pg.key, noindex: pg.noindex ? 'true' : undefined } });
+    blockPaths.add(pg.path);
+    if (!pg.noindex) register(pg.key, lang, pg.path);
+  }
+}
 for (const lang of LANGS) {
   const dir = join(src, 'pages', lang);
   for (const file of walk(dir).filter((f) => f.endsWith('.html'))) {
     const { meta, body } = parsePage(readFileSync(file, 'utf8'));
     meta.key = meta.key || file.slice(dir.length + 1).replace(/\.html$/, '');
+    if (blockPaths.has(meta.path)) continue;
     pages.push({ lang, meta, body, path: meta.path });
     if (meta.path !== '/404' && meta.path !== '/en/404') register(meta.key, lang, meta.path);
   }
@@ -93,6 +113,12 @@ for (const lang of LANGS) {
 const urls = []; // { path, key, noindex }
 for (const pg of pages) {
   const { lang, meta, body, path } = pg;
+  if (pg.blockPage) {
+    // Internal notes show on previews and staging, never in production.
+    write(path, site.blockPage(pg.blockPage, { notes: process.env.CONTEXT !== 'production' }));
+    if (!pg.blockPage.noindex) urls.push({ path, key: meta.key });
+    continue;
+  }
   const html = page({ ...meta, title: render(meta.title), description: render(meta.description || '') }, body, path, { lang });
   write(path === '/404' ? '404.html' : path === '/en/404' ? 'en/404.html' : path, html);
   if (meta.noindex !== 'true' && path !== '/404' && path !== '/en/404') urls.push({ path, key: meta.key });
