@@ -9,7 +9,9 @@ const { chromium, devices } = require('playwright');
 
 const base = process.argv[2] || 'http://localhost:8890';
 const pages = ['/', '/servizi/', '/orientamento-carriera/', '/aziende/', '/team/', '/tariffe-e-prenotazioni/', '/contatti/', '/prenota/',
-  '/en/', '/en/how-we-can-help/', '/en/career-guidance/', '/en/organisations/', '/en/team/', '/en/fees/', '/en/contact/', '/en/book/'];
+  '/en/', '/en/how-we-can-help/', '/en/career-guidance/', '/en/organisations/', '/en/team/', '/en/fees/', '/en/contact/', '/en/book/',
+  '/coaching/', '/sostegno-psicologico/', '/psicoterapia/', '/differenze/',
+  '/en/workplace-coaching/', '/en/psychological-support/', '/en/psychotherapy/', '/en/differences/'];
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ ...devices['iPhone 13'], reducedMotion: 'reduce' });

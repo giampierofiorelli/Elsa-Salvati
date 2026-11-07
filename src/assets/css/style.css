@@ -968,3 +968,7 @@ html[data-palette]:not([data-palette="x"]) .lang-notice { background: var(--nigh
 .faq-v4 .answer { padding: 0 0 20px; max-width: 70ch; }
 .faq-v4 .answer > :last-child { margin-bottom: 0; }
 .page-v4-hero + .section-tight { padding-top: 0; }
+
+/* Psicoterapia: situazioni divise in due gruppi */
+.rows-group { margin: clamp(32px, 5vw, 64px) 0 0; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.rows-group + .rows { margin-top: 16px; }
