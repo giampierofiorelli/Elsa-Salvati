@@ -190,6 +190,8 @@
     check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
     cursor: '<path d="m4 4 7 16 2.5-6.5L20 11z"/>',
     x: '<path d="M6 6l12 12M18 6 6 18"/>',
+    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+    redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/>',
   };
   function svg(name, size) {
     return '<svg viewBox="0 0 24 24" width="' + (size || 20) + '" height="' + (size || 20) + '" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + (ICONS[name] || '') + '</svg>';

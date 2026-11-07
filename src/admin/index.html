@@ -357,16 +357,22 @@
         <button type="button" data-se-device="phone" aria-pressed="false" aria-label="Telefono" title="Telefono"><span data-icon="mobile"></span><span class="seg-text">Telefono</span></button>
       </div>
       <div class="ed-state">
+        <button type="button" class="se-changes" data-se-changes>Tutto pubblicato</button>
         <span class="se-badge pill" data-se-badge></span>
         <p class="se-status" role="status" aria-live="polite" data-se-status></p>
       </div>
       <div class="se-bar-actions">
+        <div class="seg se-undo" role="group" aria-label="Annulla e ripeti">
+          <button type="button" data-se-undo disabled aria-label="Annulla l'ultima modifica (Ctrl/Cmd+Z)" title="Annulla (Ctrl/Cmd+Z)"><span data-icon="undo"></span></button>
+          <button type="button" data-se-redo disabled aria-label="Ripeti (Maiusc+Ctrl/Cmd+Z)" title="Ripeti (Maiusc+Ctrl/Cmd+Z)"><span data-icon="redo"></span></button>
+        </div>
         <button type="button" class="btn btn-ghost btn-small se-openpreview" data-se-openpreview>Anteprima</button>
         <button type="button" class="btn btn-ghost btn-small se-history-btn" data-se-history>Storico</button>
         <button type="button" class="btn btn-primary btn-small" data-se-publish>Pubblica</button>
       </div>
     </header>
     <div class="se-banner" role="alert" data-se-banner hidden></div>
+    <p class="sr-only" aria-live="polite" data-se-live></p>
     <div class="ed-body" data-ed-body>
       <aside class="ed-left" aria-label="Pagine e blocchi">
         <div class="seg ed-ltabs" role="group" aria-label="Pannello">
