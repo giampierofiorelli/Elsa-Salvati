@@ -8,18 +8,23 @@
 <!--robots-->
 <!--canonical-->
 <!--hreflang-->
-<meta name="theme-color" content="#FAF8F3">
+<meta name="theme-color" content="#FAF6F0">
 <meta property="og:type" content="website">
 <meta property="og:title" content="{{pageTitle}}">
 <meta property="og:description" content="{{pageDescription}}">
 <meta property="og:locale" content="it_IT">
 <link rel="icon" href="/assets/img/favicon-64.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
-<link rel="preload" href="/assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/funnel-display-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/funnel-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/style.css">
 <!--jsonld-->
 <script src="/assets/js/site.js" defer></script>
+<script src="/assets/vendor/gsap.min.js" defer></script>
+<script src="/assets/vendor/ScrollTrigger.min.js" defer></script>
+<script src="/assets/vendor/SplitText.min.js" defer></script>
+<script src="/assets/vendor/lenis.min.js" defer></script>
+<script src="/assets/js/motion.js" defer></script>
 <!--scripts-->
 </head>
 <body>
@@ -31,7 +36,7 @@
       <img class="brand-icon" src="/assets/img/logo-icon.webp" width="293" height="224" alt="">
       <span class="brand-text">
         <img class="brand-word" src="/assets/img/logo-wordmark.webp" width="497" height="144" alt="{{studioName}}">
-        <span>{{studioTagline}}<span class="brand-city"> · {{city}}</span></span>
+        <span>{{studioTagline}}</span>
       </span>
     </a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu">

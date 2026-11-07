@@ -402,7 +402,7 @@ cpSync(join(src, 'admin'), join(out, 'admin'), { recursive: true });
 
 // Cache busting: assets are cached for a week, so every CSS/JS reference gets
 // ?v=<content hash>. A changed file gets a new URL and phones fetch it at once.
-const versioned = ['/assets/css/style.css', '/assets/js/site.js', '/assets/js/booking.js', '/admin/admin.css', '/admin/admin.js', '/admin/vendor/qrcode.js'];
+const versioned = ['/assets/css/style.css', '/assets/js/site.js', '/assets/js/booking.js', '/assets/js/motion.js', '/admin/admin.css', '/admin/admin.js', '/admin/vendor/qrcode.js'];
 const hashes = Object.fromEntries(versioned.map((u) => [u, createHash('sha256').update(readFileSync(join(out, u))).digest('hex').slice(0, 10)]));
 for (const file of walk(out).filter((f) => f.endsWith('.html'))) {
   let html = readFileSync(file, 'utf8');
