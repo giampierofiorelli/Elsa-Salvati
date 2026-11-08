@@ -52,13 +52,12 @@
 
   var other = links[0];
   // The notice speaks to people who read the other language, so it is written in that language: one action,
-  // the whole sentence is the link (research 27, G 2026-11). "Page" when there is an equivalent page,
-  // "site" when the link goes to the other home page.
+  // the whole text is the link (Google pattern, G 2026-11). It leads to the equivalent page, or to the other
+  // home page when there is none (the header switch already points there).
   var target = other.getAttribute('data-lang-switch') === 'en' ? 'en' : 'it';
-  var exact = other.hasAttribute('data-lang-exact');
   var MSG = {
-    en: { link: exact ? 'Read this page in English' : 'Read this site in English', close: 'Close', label: 'Language' },
-    it: { link: exact ? 'Leggi questa pagina in italiano' : 'Leggi il sito in italiano', close: 'Chiudi', label: 'Lingua' },
+    en: { link: 'Switch to English', close: 'Close', label: 'Language' },
+    it: { link: 'Passa all\'italiano', close: 'Chiudi', label: 'Lingua' },
   }[target];
   var bar = document.createElement('div');
   bar.className = 'lang-notice';
