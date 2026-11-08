@@ -158,6 +158,26 @@
   status = 200
   force = true
 
+# Browsers ask for /favicon.ico by default: point them to the site's icon.
+[[redirects]]
+  from = "/favicon.ico"
+  to = "/assets/img/favicon-64.png"
+  status = 301
+
+# Sitemap and llms.txt are built from the published pages by the page function: a publish updates them
+# without a new deploy.
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/.netlify/functions/page?p=/sitemap.xml"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/llms.txt"
+  to = "/.netlify/functions/page?p=/llms.txt"
+  status = 200
+  force = true
+
 # Editable pages (after the language redirect of the home page).
 [[redirects]]
   from = "/"

@@ -60,7 +60,9 @@ const TYPES = { '.wasm': 'application/wasm', '.webp': 'image/webp', '.jpg': 'ima
 createServer(async (nodeReq, res) => {
   const url = new URL(nodeReq.url, `http://localhost:${port}`);
   // Editable pages come from the database, as on staging (drafts, with internal notes).
-  if (nodeReq.method === 'GET' && (blockPaths.has(url.pathname) || url.pathname.startsWith('/media/'))) {
+  // As in production: hand-written pages, the sitemap and llms.txt go through the page function too.
+  const viaPage = blockPaths.has(url.pathname) || (kit.fixedPages || []).some((f) => f.path === url.pathname) || url.pathname === '/sitemap.xml' || url.pathname === '/llms.txt';
+  if (nodeReq.method === 'GET' && (viaPage || url.pathname.startsWith('/media/'))) {
     const r = url.pathname.startsWith('/media/')
       ? await media(new Request(url))
       : await pageResponse(new Request(`http://localhost/.netlify/functions/page?p=${encodeURIComponent(url.pathname)}`), { kit, env: { CONTEXT: 'dev', SITE_URL: env.SITE_URL }, store: deps.store, loadCatalog: () => kit.loadCatalog(), createSite });

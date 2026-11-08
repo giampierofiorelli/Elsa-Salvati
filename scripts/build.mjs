@@ -7,6 +7,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { createSite, LANGS, isPlaceholder } from '../lib/site.mjs';
+import { robotsTxt } from '../lib/robots.mjs';
 import { stripDraftNotes } from '../lib/draft-notes.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -52,7 +53,11 @@ const specials = statSync(specialDir, { throwIfNoEntry: false })
   : {};
 // Header, footer and studio details: the starting values (the editor keeps its own copy in the database).
 const globals = JSON.parse(readFileSync(join(root, 'content', 'globals.json'), 'utf8'));
-const site = createSite({ config, layouts, catalog, demo, specials, globals });
+// Only the production deploy is indexed; previews, branch deploys (staging) and local builds say noindex.
+const production = process.env.CONTEXT === 'production';
+// Absolute addresses for canonical, hreflang, Open Graph and the sitemap: SITE_URL, else Netlify's main URL.
+const siteUrl = process.env.SITE_URL || process.env.URL || '';
+const site = createSite({ config, layouts, catalog, demo, specials, globals, siteUrl, noindexAll: !production || demo });
 const { render, page, register, equivalents, base } = site;
 
 function parsePage(text) {
@@ -165,12 +170,14 @@ for (const file of walk(out).filter((f) => f.endsWith('.html'))) {
   const fixedPages = pages.filter((pg) => !pg.blockPage && !/404$/.test(pg.path)).map((pg) => ({ lang: pg.lang, path: pg.path, meta: pg.meta, body: pg.body }));
   const navOf = {};
   for (const pg of pages) if (pg.meta.key && (pg.meta.nav || (pg.blockPage && pg.blockPage.nav))) (navOf[pg.meta.key] ||= {})[pg.lang] = pg.meta.nav || pg.blockPage.nav;
-  const kit = { config, layouts, specials, hashes, staticPages, fixedPages, navOf, globals, content: pages.filter((pg) => pg.blockPage).map((pg) => pg.blockPage) };
+  const kit = { config, layouts, specials, hashes, staticPages, fixedPages, navOf, globals, builtAt: new Date().toISOString(), content: pages.filter((pg) => pg.blockPage).map((pg) => pg.blockPage) };
   mkdirSync(join(root, 'lib', 'generated'), { recursive: true });
   writeFileSync(join(root, 'lib', 'generated', 'site-kit.json'), JSON.stringify(kit));
 }
 
-write('robots.txt', demo ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nDisallow: /admin/\nDisallow: /prenota/gestisci/\n${base ? `Sitemap: ${base}/sitemap.xml\n` : ''}`);
+write('robots.txt', robotsTxt({ production: production && !demo, base }));
+// Previews and staging: also an HTTP header on every file, so nothing of them can be indexed.
+if (!production || demo) writeFileSync(join(out, '_headers'), '/*\n  X-Robots-Tag: noindex\n');
 if (base) {
   const entry = (u) => {
     const eq = equivalents.get(u.key) || {};

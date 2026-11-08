@@ -3,6 +3,7 @@
   "siteUrl": "https://[dominio].it",
   "studioName": "Blooming",
   "studioTagline": "Studio di psicologia e coaching",
+  "studioTaglineEn": "Psychology and coaching practice",
   "logo": "classico",
   "_logoNota": "Icona del logo in tutto il sito: 'fiore' (loto con Ψ, 7/11) o 'classico' (icona originale). File in src/assets/img/logos/<nome>/icon.webp e icon-light.webp (versione chiara per gli sfondi scuri).",
   "studioFullName": "Blooming – Studio di psicologia e coaching",

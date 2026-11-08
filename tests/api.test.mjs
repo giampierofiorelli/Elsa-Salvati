@@ -1743,3 +1743,52 @@ test('cancel or decline with «non inviare email»: nothing goes to the address,
   assert.ok(log.includes(`annullato senza inviare email: appuntamento ${quiet}`));
   assert.ok(log.includes(`rifiutata senza inviare email: richiesta ${req}`));
 });
+
+test('SEO: sitemap and llms.txt from the pages as published, with alternates both ways; noindex only outside production', opts, async () => {
+  const kit = editorKit();
+  const serve = (path, env) => pageResponse(new Request(`https://studio.example.it${path}`), { kit, env, store: deps.store, loadCatalog: () => kit.loadCatalog(), createSite });
+  const prod = { CONTEXT: 'production', SITE_URL: 'https://studio.example.it' };
+  let r = await serve('/sitemap.xml', prod);
+  assert.equal(r.status, 200);
+  assert.match(r.headers.get('content-type'), /application\/xml/);
+  const xml = await r.text();
+  assert.match(xml, /^<\?xml version="1.0" encoding="UTF-8"\?>\n<urlset xmlns="http:\/\/www.sitemaps.org\/schemas\/sitemap\/0.9"/);
+  const entries = [...xml.matchAll(/<url><loc>([^<]+)<\/loc>(?:<lastmod>([^<]+)<\/lastmod>)?((?:<xhtml:link[^>]+\/>)*)<\/url>/g)]
+    .map((m) => ({ loc: m[1], lastmod: m[2], alts: Object.fromEntries([...m[3].matchAll(/hreflang="([^"]+)" href="([^"]+)"/g)].map((a) => [a[1], a[2]])) }));
+  assert.ok(entries.length >= 2);
+  const locs = new Set(entries.map((e) => e.loc));
+  assert.ok(locs.has('https://studio.example.it/prova/') && locs.has('https://studio.example.it/en/test/'));
+  assert.ok(!xml.includes('/prenota/gestisci/') && !xml.includes('/en/book/manage/'), 'private pages are not listed');
+  // Every alternate points to a listed page, and that page points back (hreflang consistency).
+  for (const e of entries) {
+    if (!Object.keys(e.alts).length) continue;
+    assert.deepEqual(Object.keys(e.alts).sort(), ['en', 'it', 'x-default']);
+    assert.ok(Object.values(e.alts).includes(e.loc), `${e.loc} is among its own alternates`);
+    for (const target of [e.alts.it, e.alts.en]) {
+      const back = entries.find((x) => x.loc === target);
+      assert.ok(back, `${target} is listed`);
+      assert.deepEqual(back.alts, e.alts, `${target} points back to ${e.loc}`);
+    }
+  }
+  const prova = entries.find((e) => e.loc.endsWith('/prova/'));
+  assert.match(prova.lastmod || '', /^\d{4}-\d{2}-\d{2}$/, 'last change of a published page');
+  assert.match(r.headers.get('netlify-cache-tag'), /(^|,)page-\d+(,|$)/, 'a publish of any page refreshes the sitemap');
+  r = await serve('/llms.txt', prod);
+  assert.equal(r.status, 200);
+  const llms = await r.text();
+  assert.match(llms, /^# Blooming/);
+  assert.match(llms, /\(https:\/\/studio\.example\.it\/prova\/\)/);
+  // Production pages: indexable, structured data without placeholders. Previews: noindex (meta and header).
+  r = await serve('/prova/', prod);
+  let html = await r.text();
+  assert.equal(r.headers.get('x-robots-tag'), null);
+  assert.doesNotMatch(html, /<meta name="robots"/);
+  const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+  assert.ok(ld['@graph'].some((x) => x['@type'] === 'Organization') && ld['@graph'].some((x) => x['@type'] === 'BreadcrumbList'));
+  assert.doesNotMatch(JSON.stringify(ld), /\[(P\.IVA|email|dominio|telefono|n\. Albo)[^\]]*\]/);
+  r = await serve('/prova/', { CONTEXT: 'branch-deploy', SITE_URL: 'https://studio.example.it' });
+  html = await r.text();
+  assert.equal(r.headers.get('x-robots-tag'), 'noindex');
+  assert.match(html, /<meta name="robots" content="noindex, nofollow">/);
+  assert.equal((await serve('/sitemap.xml', { CONTEXT: 'branch-deploy' })).headers.get('x-robots-tag'), 'noindex');
+});
