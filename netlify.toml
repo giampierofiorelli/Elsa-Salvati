@@ -123,6 +123,12 @@
   force = true
 
 [[redirects]]
+  from = "/accessibilita/"
+  to = "/.netlify/functions/page?p=/accessibilita/"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/prenota/gestisci/"
   to = "/.netlify/functions/page?p=/prenota/gestisci/"
   status = 200
@@ -137,6 +143,12 @@
 [[redirects]]
   from = "/en/cookies/"
   to = "/.netlify/functions/page?p=/en/cookies/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/en/accessibility/"
+  to = "/.netlify/functions/page?p=/en/accessibility/"
   status = 200
   force = true
 

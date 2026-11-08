@@ -7,7 +7,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { stripDraftNotes } from '../lib/draft-notes.mjs';
 
-const PAGES = ['privacy/index.html', 'en/privacy/index.html', 'cookie/index.html', 'en/cookies/index.html'];
+const PAGES = ['privacy/index.html', 'en/privacy/index.html', 'cookie/index.html', 'en/cookies/index.html',
+  'accessibilita/index.html', 'en/accessibility/index.html'];
 const NOTES = /da verificare|to be checked|placeholder-note|Nota bozza|Draft note|draft-inline/i;
 
 function build(context) {

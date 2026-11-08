@@ -169,6 +169,13 @@
                 "kind": "page",
                 "key": "cookie"
               }
+            },
+            {
+              "label": "Accessibilità",
+              "to": {
+                "kind": "page",
+                "key": "accessibilita"
+              }
             }
           ]
         }
@@ -380,6 +387,13 @@
               "to": {
                 "kind": "page",
                 "key": "cookie"
+              }
+            },
+            {
+              "label": "Accessibility",
+              "to": {
+                "kind": "page",
+                "key": "accessibilita"
               }
             }
           ]

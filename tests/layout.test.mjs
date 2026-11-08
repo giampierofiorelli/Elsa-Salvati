@@ -15,9 +15,9 @@ for (const from of [import.meta.url, '/opt/node-tools/package.json']) {
   try { ({ chromium } = createRequire(from)('playwright')); break; } catch { /* not here */ }
 }
 
-const PAGES = ['/', '/aziende/', '/coaching/', '/contatti/', '/cookie/', '/differenze/', '/orientamento-carriera/', '/prenota/', '/prenota/gestisci/',
+const PAGES = ['/', '/accessibilita/', '/aziende/', '/coaching/', '/contatti/', '/cookie/', '/differenze/', '/orientamento-carriera/', '/prenota/', '/prenota/gestisci/',
   '/privacy/', '/psicoterapia/', '/servizi/', '/sostegno-psicologico/', '/tariffe-e-prenotazioni/', '/team/', '/404.html',
-  '/en/', '/en/book/', '/en/book/manage/', '/en/career-guidance/', '/en/contact/', '/en/cookies/', '/en/differences/', '/en/fees/',
+  '/en/', '/en/accessibility/', '/en/book/', '/en/book/manage/', '/en/career-guidance/', '/en/contact/', '/en/cookies/', '/en/differences/', '/en/fees/',
   '/en/how-we-can-help/', '/en/organisations/', '/en/privacy/', '/en/psychological-support/', '/en/psychotherapy/', '/en/team/',
   '/en/workplace-coaching/', '/en/404.html'];
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.json': 'application/json' };

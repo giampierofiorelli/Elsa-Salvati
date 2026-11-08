@@ -29,7 +29,7 @@
     index: 'Home', servizi: 'Come possiamo aiutarti', lavoro: 'Orientamento e carriera', coaching: 'Coaching',
     sostegno: 'Sostegno psicologico', psicoterapia: 'Psicoterapia', differenze: 'Le differenze', team: 'Team',
     'costi-e-faq': 'Tariffe e prenotazioni', aziende: 'Aziende', contatti: 'Contatti', prenota: 'Prenotazione',
-    privacy: 'Privacy', cookie: 'Cookie',
+    privacy: 'Privacy', cookie: 'Cookie', accessibilita: 'Accessibilità',
   };
   var PAGE_ORDER = ['index', 'servizi', 'lavoro', 'coaching', 'sostegno', 'psicoterapia', 'differenze', 'team', 'costi-e-faq', 'aziende', 'contatti', 'prenota'];
   var BG_LABEL = { light: 'Chiaro', soft: 'Tenue (menta)', dark: 'Scuro' };
