@@ -51,30 +51,33 @@
   if (!links.length || /(?:^|;\s*)nf_lang=/.test(document.cookie)) return;
 
   var other = links[0];
-  // The notice is written in the reader's own language (from the browser).
-  var reader = String((navigator.languages && navigator.languages[0]) || navigator.language || '').slice(0, 2).toLowerCase() === 'it' ? 'it' : 'en';
+  // The notice speaks to people who read the other language, so it is written in that language, as one
+  // sentence with the language's own name as the link (G, 2026-11). "Page" when there is an equivalent page,
+  // "site" when the link goes to the other home page.
+  var target = other.getAttribute('data-lang-switch') === 'en' ? 'en' : 'it';
+  var exact = other.hasAttribute('data-lang-exact');
   var MSG = {
-    it: { it: 'Questo sito è anche in inglese.', en: 'Questo sito è anche in italiano.', close: 'Chiudi', label: 'Lingua' },
-    en: { it: 'This site is also available in English.', en: 'This site is also available in Italian.', close: 'Close', label: 'Language' },
-  }[reader];
-  var text = { msg: MSG[pageLang], close: MSG.close };
+    en: { lead: exact ? 'This page is also available in ' : 'This site is also available in ', name: 'English', close: 'Close', label: 'Language' },
+    it: { lead: exact ? 'Questa pagina è disponibile anche in ' : 'Questo sito è disponibile anche in ', name: 'italiano', close: 'Chiudi', label: 'Lingua' },
+  }[target];
   var bar = document.createElement('div');
   bar.className = 'lang-notice';
   bar.setAttribute('role', 'region');
   bar.setAttribute('aria-label', MSG.label);
-  bar.lang = reader;
+  bar.lang = target;
   var p = document.createElement('p');
-  p.appendChild(document.createTextNode(text.msg + ' '));
+  p.appendChild(document.createTextNode(MSG.lead));
   var link = document.createElement('a');
   link.href = other.getAttribute('href');
-  link.lang = other.getAttribute('data-lang-switch');
-  link.textContent = other.textContent;
-  link.addEventListener('click', function () { remember(link.lang); });
+  link.hreflang = target;
+  link.textContent = MSG.name;
+  link.addEventListener('click', function () { remember(target); });
   p.appendChild(link);
+  p.appendChild(document.createTextNode('.'));
   var btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'lang-notice-close';
-  btn.setAttribute('aria-label', text.close);
+  btn.setAttribute('aria-label', MSG.close);
   btn.textContent = '×';
   btn.addEventListener('click', function () { remember(pageLang); bar.remove(); });
   bar.appendChild(p);
