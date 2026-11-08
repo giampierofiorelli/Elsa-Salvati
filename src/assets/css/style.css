@@ -719,6 +719,9 @@ main > section:first-child:not(.hero-v4) { padding-top: calc(var(--section) + 70
   #FAF6F0; }
 .hero-v4-bg::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 32%; background: linear-gradient(to bottom, rgba(250, 246, 240, 0), #FAF6F0); pointer-events: none; }
 .giant-word { display: block; width: 100%; overflow: hidden; font-size: 21vw; }
+/* Decorative brand word (aria-hidden; the name is in the logo and the text): its spacing is part of the drawing and
+   doesn't follow the reader's text-spacing settings, so it never gets clipped (G 2026-11). */
+.giant-word { letter-spacing: -0.055em !important; word-spacing: normal !important; line-height: .9 !important; }
 /* "Menu" as a plain word, no box (as in the reference). */
 .hdr-toggle { border: 0; padding: 8px 2px 8px 6px; min-width: 0; font: 500 .95rem var(--sans); text-transform: none; letter-spacing: 0; color: var(--night); }
 @media (max-width: 699px) { .hdr-toggle { min-width: 0; padding: 8px 0 8px 6px; font-size: .92rem; } }

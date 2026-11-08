@@ -103,7 +103,9 @@
       el.appendChild(probe);
       var natural = probe.getBoundingClientRect().width;
       el.removeChild(probe);
-      if (natural > 0 && avail > 0) el.style.fontSize = Math.min(352, Math.floor(100 * avail / natural * 0.98)) + 'px';
+      // A little smaller on phones, so it never touches the edges (G 2026-11).
+      var room = window.innerWidth < 700 ? 0.9 : 0.98;
+      if (natural > 0 && avail > 0) el.style.fontSize = Math.min(352, Math.floor(100 * avail / natural * room)) + 'px';
     });
   }
   fit();
