@@ -51,6 +51,8 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+/* Text for screen readers only. */
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
@@ -70,6 +72,8 @@ img, svg { max-width: 100%; display: block; }
 a { color: var(--teal); text-underline-offset: 3px; text-decoration-thickness: 1px; }
 a:hover { color: var(--teal-hover); }
 :focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; border-radius: 6px; }
+/* On dark backgrounds the ring is light, so it stays at 3:1 or more (WCAG 2.4.7, 1.4.11). */
+.section-dark :focus-visible, .footer-v4 :focus-visible, .hdr-nav :focus-visible, .site-header.on-dark :focus-visible { outline-color: var(--ivory); }
 
 h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.1; letter-spacing: -0.025em; margin: 0 0 .5em; }
 h1 { font-size: clamp(2.5rem, 7vw, 5.6rem); }
@@ -84,14 +88,14 @@ ul, ol { padding-left: 1.2em; }
 .wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
 .narrow { max-width: 760px; }
 .sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.skip { position: absolute; left: 12px; top: -60px; background: var(--teal); color: #fff; padding: 10px 16px; border-radius: 10px; z-index: 100; }
+.skip { position: absolute; left: 12px; top: -60px; background: var(--teal); color: #fff; padding: 10px 16px; border-radius: 10px; z-index: 200; } /* above the fixed header */
 .skip:focus { top: 12px; color: #fff; }
 
 /* ---------- header ---------- */
 .site-header { position: sticky; top: 0; z-index: 50; background: rgba(250, 246, 240, .94); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid transparent; }
 .site-header.scrolled { border-bottom-color: var(--line); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 72px; }
-.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); min-width: 0; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); min-width: 0; min-height: 44px; }
 .brand-mark { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--teal); color: var(--ivory); display: grid; place-items: center; font-family: var(--serif); font-size: 1.35rem; font-style: italic; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
 .brand-text strong { font-family: var(--serif); font-weight: 500; font-size: 1.1rem; }
@@ -244,9 +248,10 @@ input[type="text"], input[type="email"], input[type="tel"], input[type="password
   font: inherit; color: var(--ink); background: var(--paper); border: 1.5px solid var(--line-strong); border-radius: 12px; padding: 12px 14px; min-height: 50px; width: 100%;
 }
 textarea { min-height: 110px; resize: vertical; }
+::placeholder { color: var(--muted); opacity: 1; } /* example text in fields: 4.5:1 or more */
 input:focus, select:focus, textarea:focus { border-color: var(--teal); outline: 3px solid rgba(32, 90, 84, .2); outline-offset: 0; }
 .check { display: flex; gap: 12px; align-items: flex-start; font-size: .95rem; margin-bottom: 18px; }
-.check input { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--teal); flex: none; }
+.check input { width: 24px; height: 24px; margin-top: 2px; accent-color: var(--teal); flex: none; }
 .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 .form-error { color: var(--danger); font-weight: 500; }
 .form-ok { color: var(--teal); font-weight: 500; }
@@ -535,7 +540,7 @@ a.choice span .icon { vertical-align: -3px; }
 .row { display: grid; gap: 12px 32px; padding: clamp(28px, 4vw, 48px) 0; border-bottom: 1px solid var(--line); }
 @media (min-width: 900px) { .row { grid-template-columns: 120px minmax(0, 1fr); } .row-body { max-width: 780px; } }
 .row-num { color: var(--muted); padding-top: .5em; }
-.row h3 { font-size: clamp(1.5rem, 2.6vw, 2.2rem); margin-bottom: .5em; }
+.row h3, .row .row-title { font-size: clamp(1.5rem, 2.6vw, 2.2rem); margin-bottom: .5em; }
 .stat { border-left: 2px solid var(--accent); padding-left: 14px; font-size: .98rem; }
 .stat .mono { display: block; color: var(--muted); margin-top: 4px; font-size: .68rem; }
 .row-links { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 18px; }
@@ -552,6 +557,7 @@ a.choice span .icon { vertical-align: -3px; }
 @media (min-width: 960px) { .two-col-v4 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 72px; align-items: start; } }
 .steps li { display: grid; grid-template-columns: 56px 1fr; gap: 12px; padding: 22px 0; border-top: 1px solid var(--line); }
 .steps li:last-child { border-bottom: 1px solid var(--line); }
+.steps li > .draft-note { grid-column: 1 / -1; } /* staging note of a step without title: full width, not in the number column */
 .steps .mono { color: var(--accent-ink); padding-top: .35em; font-weight: 500; }
 .steps p { margin: 0; }
 
@@ -693,10 +699,10 @@ main > section:first-child:not(.hero-v4) { padding-top: calc(var(--section) + 70
   .giant-word { font-size: 25vw; margin: 0; padding: 0 16px .08em; }
   h2 { font-size: clamp(1.75rem, 7.4vw, 2.2rem); }
   .h-wide { max-width: none; }
-  .row h3 { font-size: 1.45rem; }
+  .row h3, .row .row-title { font-size: 1.45rem; }
   .row { padding: 28px 0; }
   .section { padding-top: 64px; padding-bottom: 64px; }
-  .light-up { font-size: 1.45rem; }
+  .light-up { font-size: 1.5rem; } /* at least 24px: the words not yet lit (55%) stay at 3:1 or more */
   .cta-row .btn { max-width: 100%; }
 }
 .hdr-toggle { min-width: 68px; text-align: center; letter-spacing: .04em; }
@@ -793,7 +799,11 @@ main .eyebrow + h2, main .eyebrow + h1 { margin-top: 0; }
   .site main .link-arrow { margin-top: 4px; }
   .site main .row-links a::after, .site main .link-arrow::after { content: "→"; font-size: 1.05rem; line-height: 1; }
   .site main .row-links a:active, .site main .link-arrow:active { background: var(--night); border-color: var(--night); color: var(--ivory); }
+  .site main .row-links a, .site main .link-arrow { border-color: var(--line-strong); }
+  .site main .section-dark .row-links a:active, .site main .section-dark .link-arrow:active { background: var(--ivory); border-color: var(--ivory); color: var(--night); }
 }
+/* Links in a dark section: light, never the dark ink (they were invisible on the night background). */
+.section-dark .row-links a, .section-dark .link-arrow, .site main .section-dark .row-links a, .site main .section-dark .link-arrow { color: var(--ivory); }
 
 /* Header "Prenota": same rounded shape as every other button on the site. */
 .hdr-cta { border-radius: 999px; padding-left: 16px; padding-right: 14px; }

@@ -73,6 +73,24 @@
     });
   }
 
+  // Split text stays readable by screen readers: headings keep SplitText's aria-label (allowed on headings);
+  // other elements (a paragraph cannot carry aria-label) get the pieces hidden and a visually hidden copy.
+  var HEADING = /^H[1-6]$/;
+  function split(el, opts) {
+    if (HEADING.test(el.tagName)) return window.SplitText.create(el, Object.assign({ aria: 'auto' }, opts));
+    var text = el.textContent.replace(/\s+/g, ' ').trim();
+    var userSplit = opts.onSplit;
+    var s = window.SplitText.create(el, Object.assign({}, opts, {
+      aria: 'none',
+      onSplit: function (self) {
+        (self.lines || []).concat(self.words || []).forEach(function (n) { n.setAttribute('aria-hidden', 'true'); });
+        if (!el.querySelector(':scope > .sr-only')) { var c = document.createElement('span'); c.className = 'sr-only'; c.textContent = text; el.appendChild(c); }
+        return userSplit ? userSplit(self) : undefined;
+      },
+    }));
+    return s;
+  }
+
   function reveals() {
     autoReveal();
     document.querySelectorAll('[data-reveal="lines"]').forEach(function (el) {
@@ -80,8 +98,8 @@
         gsap.from(el, { autoAlpha: 0, y: 24, duration: 0.8, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 85%', once: true } });
         return;
       }
-      window.SplitText.create(el, {
-        type: 'lines', mask: 'lines', linesClass: 'sl', autoSplit: true, aria: 'auto',
+      split(el, {
+        type: 'lines', mask: 'lines', linesClass: 'sl', autoSplit: true,
         onSplit: function (self) {
           return gsap.from(self.lines, {
             yPercent: 110, duration: 0.9, ease: 'expo.out', stagger: 0.08,
@@ -95,8 +113,9 @@
     });
     document.querySelectorAll('[data-reveal="light"]').forEach(function (el) {
       if (!window.SplitText) return;
-      var split = window.SplitText.create(el, { type: 'words', aria: 'auto' });
-      gsap.fromTo(split.words, { opacity: 0.18 }, {
+      var words = split(el, { type: 'words' });
+      // Words not yet lit stay readable: 55% opacity is at least 3:1 for this large text (WCAG 1.4.3).
+      gsap.fromTo(words.words, { opacity: 0.55 }, {
         opacity: 1, ease: 'none', stagger: 0.1,
         scrollTrigger: { trigger: el, start: 'top 85%', end: 'bottom 45%', scrub: true },
       });

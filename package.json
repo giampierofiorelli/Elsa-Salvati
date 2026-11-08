@@ -15,5 +15,8 @@
   },
   "dependencies": {
     "postgres": "3.4.9"
+  },
+  "devDependencies": {
+    "axe-core": "4.10.2"
   }
 }
