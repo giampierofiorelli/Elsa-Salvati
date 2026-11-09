@@ -16,6 +16,7 @@
       intakeWith: 'Una professionista dello studio, il nome arriva quando accetta la richiesta',
       intakeTitle: 'Una professionista dello studio',
       intakeText: 'Siamo un piccolo team di psicologhe che lavorano insieme e si conoscono. Nel primo colloquio una di noi ti accoglie e, se serve, ti indirizza alla collega giusta per te.',
+      intakeNote: 'Siamo un piccolo team di psicologhe che lavorano insieme. Nel primo colloquio una di noi ti accoglie e, se serve, ti indirizza alla collega giusta per te.',
       notBookable: 'I servizi di quest\'area non sono ancora prenotabili online: chiedici di ricontattarti qui sotto.',
       help: 'Aiutami a scegliere', helpText: 'Vedi gli orari di tutte le professioniste: quando invii la richiesta ti viene assegnata quella libera in quell\'orario, che parla la lingua che hai scelto.',
       needName: 'Inserisci nome e cognome.', needEmail: 'Inserisci un indirizzo email valido.',
@@ -53,6 +54,8 @@
       intakeWith: 'One of our psychologists (you\'ll see who once your request is accepted)',
       intakeTitle: 'One of our psychologists',
       intakeText: 'We\'re a small team of psychologists who know each other and work together. In the first meeting one of us welcomes you and, if it helps, introduces you to the colleague who fits what you need.',
+      // [EN draft for the copy review: mirrors G's shorter Italian sentence.]
+      intakeNote: 'We\'re a small team of psychologists who work together. In the first meeting one of us welcomes you and, if it helps, introduces you to the colleague who fits what you need.',
       notBookable: 'Sessions are arranged with your psychologist after the free first meeting. To ask something first, use the form below.',
       help: 'Help me choose', helpText: 'See all free times. Your request goes to a psychologist who is free then; you\'ll see who once it\'s accepted. In the meeting you\'ll work out together whether she\'s right for you.',
       needName: 'Please enter your full name.', needEmail: 'Please enter a valid email address.',
@@ -357,6 +360,17 @@
       return found;
     }
 
+    // The note of intake mode, at the top of the times (created once).
+    function intakeNoteEl() {
+      var n = $(root, '[data-intake-note]');
+      if (n) return n;
+      n = el('p', { class: 'note intake-note', 'data-intake-note': '', text: T.intakeNote, hidden: true });
+      var slotBox = $(root, '[data-slot-box]');
+      var h = slotBox.querySelector('h2');
+      if (h && h.nextSibling) slotBox.insertBefore(n, h.nextSibling); else slotBox.insertBefore(n, slotBox.firstChild);
+      return n;
+    }
+
     function selectService(id, preset) {
       stat({ step: 1 });
       state.service = state.services.find(function (s) { return s.id === id; });
@@ -365,13 +379,13 @@
       var box = $(root, '[data-pros]');
       box.textContent = '';
       var pros = state.service.professionals;
-      // Intake mode: no choice and no name, only a card about the practice.
-      if (catalog.intake && state.service.firstMeeting && pros.length) {
-        box.appendChild(el('div', { class: 'pro', 'aria-pressed': 'true' }, [
-          el('span', { class: 'pro-photo' }, [el('img', { src: '/assets/img/logo-icon.webp', alt: '', width: '56', height: '56', class: 'pro-logo' })]),
-          el('span', { class: 'pro-text' }, [el('strong', { text: T.intakeTitle }), el('span', { text: T.intakeText })]),
-        ]));
-        $(root, '[data-pro-box]').hidden = false;
+      // Intake mode (one professional holds every first meeting): there is nothing to choose, so the
+      // professional step is skipped; a short note above the times says who will welcome the person (G 2026-11-09).
+      var intakeNote = intakeNoteEl();
+      var intake = catalog.intake && state.service.firstMeeting && pros.length;
+      intakeNote.hidden = !intake;
+      if (intake) {
+        $(root, '[data-pro-box]').hidden = true;
         selectPro(pros[0].id);
         return;
       }
