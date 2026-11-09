@@ -1829,6 +1829,7 @@ test('intake mode: every first meeting goes to one professional', opts, async ()
   catalog = (await pubCall('GET', '/catalog')).body;
   assert.equal(catalog.intake, true);
   assert.deepEqual(supportView().professionals.map((p) => p.id), [host]);
+  assert.equal(supportView().professionals[0].name, undefined, 'no name in the public catalogue');
 
   // Her free times, whatever professional the page sends.
   r = await pubCall('GET', `/slots?service=${supportSvc}&professional=${other}&mode=online&lang=it`);
@@ -1839,8 +1840,8 @@ test('intake mode: every first meeting goes to one professional', opts, async ()
   const since = deps.mailer.sent.length;
   r = await pubCall('POST', '/book', { start, mode: 'online', service: supportSvc, professional: other, lang: 'it', name: 'Persona Accoglienza', email: 'accoglienza@example.it', privacy: true });
   assert.equal(r.status, 201, JSON.stringify(r.body));
-  assert.equal(r.body.booking.professional.id, host, 'the intake professional, by name');
-  assert.equal(r.body.booking.assigned, false);
+  assert.equal(r.body.booking.professional, null, 'no name on the page');
+  assert.equal(r.body.booking.assigned, true);
   assert.equal(await assignedTo('accoglienza@example.it'), String(host));
   const notified = deps.mailer.sent.slice(since).map((m) => m.to);
   assert.ok(notified.includes('ilaria@example.it') && !notified.includes('bruna@example.it'), 'only the intake professional is told');

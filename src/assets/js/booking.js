@@ -13,6 +13,9 @@
       service: 'Servizio', with: 'Con', language: 'Lingua', mode: 'Modalità', when: 'Quando', length: 'Durata', status: 'Stato',
       newTime: 'Nuovo orario', minutes: ' minuti', assigned: 'Una professionista libera in quell\'orario, assegnata quando invii la richiesta',
       assignedPending: 'Una professionista dello studio: il nome arriva quando accetta la richiesta',
+      intakeWith: 'Una professionista dello studio, il nome arriva quando accetta la richiesta',
+      intakeTitle: 'Una professionista dello studio',
+      intakeText: 'Siamo un piccolo team di psicologhe che lavorano insieme e si conoscono. Nel primo colloquio una di noi ti accoglie e, se serve, ti indirizza alla collega giusta per te.',
       notBookable: 'I servizi di quest\'area non sono ancora prenotabili online: chiedici di ricontattarti qui sotto.',
       help: 'Aiutami a scegliere', helpText: 'Vedi gli orari di tutte le professioniste: quando invii la richiesta ti viene assegnata quella libera in quell\'orario, che parla la lingua che hai scelto.',
       needName: 'Inserisci nome e cognome.', needEmail: 'Inserisci un indirizzo email valido.',
@@ -47,6 +50,9 @@
       service: 'Service', with: 'With', language: 'Language', mode: 'Format', when: 'When', length: 'Length', status: 'Status',
       newTime: 'New time', minutes: ' minutes', assigned: 'A psychologist who is free then (you\'ll see who once your request is accepted)',
       assignedPending: 'One of our psychologists: you\'ll see who once your request is accepted',
+      intakeWith: 'One of our psychologists (you\'ll see who once your request is accepted)',
+      intakeTitle: 'One of our psychologists',
+      intakeText: 'We\'re a small team of psychologists who know each other and work together. In the first meeting one of us welcomes you and, if it helps, introduces you to the colleague who fits what you need.',
       notBookable: 'Sessions are arranged with your psychologist after the free first meeting. To ask something first, use the form below.',
       help: 'Help me choose', helpText: 'See all free times. Your request goes to a psychologist who is free then; you\'ll see who once it\'s accepted. In the meeting you\'ll work out together whether she\'s right for you.',
       needName: 'Please enter your full name.', needEmail: 'Please enter a valid email address.',
@@ -272,7 +278,8 @@
     function rows() {
       return [
         [T.service, state.service && loc(state.service, 'name')],
-        [T.with, state.assignedName || (state.pro && (state.pro.id === ANY ? T.assigned : state.pro.name))],
+        [T.with, catalog && catalog.intake && state.service && state.service.firstMeeting ? T.intakeWith
+          : (state.assignedName || (state.pro && (state.pro.id === ANY ? T.assigned : state.pro.name)))],
         [T.language, LANG_LABEL[state.lang]],
         [T.mode, MODE_LABEL[state.mode]],
         [T.when, picker.slot && longDate(picker.slot.start)],
@@ -354,7 +361,17 @@
       var box = $(root, '[data-pros]');
       box.textContent = '';
       var pros = state.service.professionals;
-      if (pros.length > 1 && !catalog.intake) {
+      // Intake mode: no choice and no name, only a card about the practice.
+      if (catalog.intake && state.service.firstMeeting && pros.length) {
+        box.appendChild(el('div', { class: 'pro', 'aria-pressed': 'true' }, [
+          el('span', { class: 'pro-photo' }, [el('img', { src: '/assets/img/logo-icon.webp', alt: '', width: '56', height: '56', class: 'pro-logo' })]),
+          el('span', { class: 'pro-text' }, [el('strong', { text: T.intakeTitle }), el('span', { text: T.intakeText })]),
+        ]));
+        $(root, '[data-pro-box]').hidden = false;
+        selectPro(pros[0].id);
+        return;
+      }
+      if (pros.length > 1) {
         var helper = el('button', { type: 'button', class: 'pro', 'data-pro': ANY, 'aria-pressed': 'false' }, [
           el('span', { class: 'pro-photo' }, [el('img', { src: '/assets/img/logo-icon.webp', alt: '', width: '56', height: '56', class: 'pro-logo' })]),
           el('span', { class: 'pro-text' }, [
@@ -686,7 +703,7 @@
           var seen = {};
           (cat ? cat.services : []).forEach(function (s) {
             s.professionals.forEach(function (p) {
-              if (seen[p.id]) return;
+              if (seen[p.id] || !p.name) return; // intake mode: no name, no choice
               seen[p.id] = true;
               proSelect.appendChild(el('option', { value: p.id, text: p.name }));
             });
