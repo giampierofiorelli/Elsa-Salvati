@@ -125,7 +125,7 @@
       "bg": "soft",
       "data": {
         "eyebrow": "At Blooming",
-        "title": "Career work and therapy, each with its own psychologist.",
+        "title": "Career work and psychological care, with different psychologists.",
         "intro": {
           "p": []
         },
@@ -140,7 +140,7 @@
                     "b": true
                   },
                   {
-                    "t": " are with a psychologist, registered since 2014, who has worked in HR for over ten years. She works in English. She isn't a psychotherapist."
+                    "t": " are offered by a psychologist, registered since 2014, who has worked in HR for over ten years. She works in English. She isn't a psychotherapist."
                   }
                 ]
               ]
@@ -156,7 +156,7 @@
                     "b": true
                   },
                   {
-                    "t": " are with a psychologist, registered since 2010, who is a cognitive behavioural psychotherapist."
+                    "t": " are offered by a psychologist, registered since 2010, who is a cognitive behavioural psychotherapist."
                   }
                 ]
               ]
@@ -389,7 +389,7 @@
             ],
             [
               {
-                "t": "When you book, you choose the kind of help, or \"Not sure yet\", and the language. The psychologist you meet works out with you what fits. If it turns out to be another psychologist's area, she can suggest her colleague."
+                "t": "When you book, you choose the kind of help, or \"Not sure yet\", and the language. The psychologist you meet works out with you what fits. If it turns out to be another psychologist's area, she can suggest a colleague."
               }
             ]
           ]
