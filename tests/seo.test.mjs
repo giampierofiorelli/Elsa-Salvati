@@ -64,6 +64,9 @@ test('production build: indexable, absolute canonical, hreflang both ways, valid
       const data = JSON.parse(ld[1]);
       assert.equal(data['@context'], 'https://schema.org');
       assert.ok(data['@graph'].some((x) => x['@type'] === 'Organization'));
+      // People are named only on «Chi siamo» (decision 2026-11-09).
+      const team = p.path === '/team/' || p.path === '/en/team/';
+      assert.equal(data['@graph'].some((x) => x['@type'] === 'Person'), team, `${p.path}: Person entries only on the team page`);
       assert.doesNotMatch(ld[1], /\[(P\.IVA|email|dominio|telefono|n\. Albo|Via)[^\]]*\]/, `${p.path}: no placeholders`);
       assert.match(p.html, /<meta property="og:title" content="[^"]+">/);
       assert.match(p.html, /<meta name="twitter:card" content="summary(_large_image)?">/);
