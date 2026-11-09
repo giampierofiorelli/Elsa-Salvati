@@ -1852,6 +1852,24 @@ test('intake mode: every first meeting goes to one professional', opts, async ()
   r = await pubCall('GET', `/slots?service=${supportSvc}&professional=${other}&mode=studio`);
   assert.equal(r.status, 400);
 
+  // The name stays hidden in the request email and on «Gestisci» until she accepts.
+  const reqMail = deps.mailer.sent.slice(since).find((m) => m.to === 'accoglienza@example.it');
+  assert.doesNotMatch(reqMail.text, /Ilaria|Bruna/);
+  const tok = lastToken('accoglienza@example.it');
+  let m = await pubCall('POST', '/manage', { t: tok });
+  assert.equal(m.body.booking.professional, null);
+  assert.deepEqual(m.body.booking.modes, ['online']);
+  const [evRow] = await sql`select id::text as id from events where contact_hash = ${deps.vault.lookupHash('email:accoglienza@example.it')}`;
+  assert.equal((await adm('POST', `/events/${evRow.id}/approve`, {})).status, 200);
+  const tok2 = lastToken('accoglienza@example.it');
+  m = await pubCall('POST', '/manage', { t: tok2 });
+  assert.equal(m.body.booking.professional.name, 'Ilaria Accoglienza', 'once accepted, the name shows');
+  // Moving it: online only (she doesn't offer this area's meeting herself), also after the setting is off.
+  const free = (await pubCall('POST', '/manage/slots', { t: tok2, mode: 'online' })).body;
+  assert.ok(free.days && free.days.length, JSON.stringify(free));
+  const newStart = free.days.flatMap((d) => d.slots).map((x) => x.start).find((x) => x !== start);
+  assert.equal((await pubCall('POST', '/manage/slots', { t: tok2, mode: 'studio' })).status, 400);
+
   // Back to the person's choice: nothing else changes.
   r = await adm('PUT', '/settings', { settings: { intakeProfessional: '' } });
   assert.equal(r.status, 200);
@@ -1859,6 +1877,13 @@ test('intake mode: every first meeting goes to one professional', opts, async ()
   assert.equal(catalog.intake, false);
   assert.deepEqual(supportView().professionals.map((p) => p.id), [other]);
 
+  const moved = await pubCall('POST', '/manage/reschedule', { t: tok2, start: newStart, mode: 'online' });
+  assert.equal(moved.status, 200, JSON.stringify(moved.body));
+
   r = await adm('PUT', '/settings', { settings: { intakeProfessional: 'nessuna' } });
   assert.equal(r.status, 400, 'only an id or empty');
+  // Turning it on or off from the admin is in the activity log.
+  const log = (await sql`select detail from audit_log where action = 'impostazioni cambiate' order by id desc limit 5`).map((x) => x.detail);
+  assert.ok(log.some((d) => d.includes(`intakeProfessional: "" → "${host}"`)), JSON.stringify(log));
+  assert.ok(log.some((d) => d.includes(`intakeProfessional: "${host}" → ""`)));
 });

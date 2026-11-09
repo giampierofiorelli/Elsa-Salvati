@@ -60,6 +60,12 @@ const TYPES = { '.wasm': 'application/wasm', '.webp': 'image/webp', '.jpg': 'ima
 createServer(async (nodeReq, res) => {
   const url = new URL(nodeReq.url, `http://localhost:${port}`);
   // Editable pages come from the database, as on staging (drafts, with internal notes).
+  // Local preview only: the emails "sent" so far (the test mailer keeps them in memory), for end-to-end checks.
+  if (url.pathname === '/__dev/mails') {
+    res.writeHead(200, { 'content-type': 'application/json' });
+    res.end(JSON.stringify(deps.mailer.sent.slice(-50).map((m) => ({ to: m.to, subject: m.subject, text: m.text }))));
+    return;
+  }
   // As in production: hand-written pages, the sitemap and llms.txt go through the page function too.
   const viaPage = blockPaths.has(url.pathname) || (kit.fixedPages || []).some((f) => f.path === url.pathname) || url.pathname === '/sitemap.xml' || url.pathname === '/llms.txt';
   if (nodeReq.method === 'GET' && (viaPage || url.pathname.startsWith('/media/'))) {
