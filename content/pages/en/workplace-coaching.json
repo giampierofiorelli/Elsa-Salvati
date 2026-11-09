@@ -2,7 +2,7 @@
   "key": "coaching",
   "path": "/en/workplace-coaching/",
   "title": "Workplace coaching in English with a psychologist, online – Blooming",
-  "description": "One-to-one workplace coaching with Elsa Salvati, a psychologist with over ten years in HR: working in Italian, a new manager, a reorganisation, leading a team for the first time. Online. Free 30-minute first meeting.",
+  "description": "One-to-one workplace coaching with a psychologist with over ten years in HR: working in Italian, a new manager, a reorganisation, leading a team for the first time. Online. Free 30-minute first meeting.",
   "nav": "help",
   "blocks": [
     {
@@ -14,17 +14,17 @@
           "p": [
             [
               {
-                "t": "You have a job, and something about it isn't working: the meetings in Italian, perhaps, or a manager whose expectations you can't read. Workplace coaching with Elsa Salvati, a psychologist who has worked in HR for over ten years, is one-to-one work on your current job, online, in English. A hard week at work tends to follow you home, so the sessions also look at how it's affecting the rest of your life."
+                "t": "You have a job, and something about it isn't working: the meetings in Italian, perhaps, or a manager whose expectations you can't read. Workplace coaching with a psychologist who has worked in HR for over ten years is one-to-one work on your current job, online, in English. A hard week at work tends to follow you home, so the sessions also look at how it's affecting the rest of your life."
               }
             ]
           ]
         },
         "buttons": [
           {
-            "label": "Book with Elsa",
+            "label": "Book a free first meeting",
             "to": {
               "kind": "book",
-              "pro": "elsa-salvati"
+              "area": "coaching"
             },
             "style": "primary"
           },
@@ -165,7 +165,7 @@
       "bg": "soft",
       "data": {
         "eyebrow": "How it works",
-        "title": "Coaching with Elsa starts from your situation, then one or two goals you choose.",
+        "title": "Coaching starts from your situation, then one or two goals you choose.",
         "intro": {
           "p": [
             [
@@ -182,7 +182,7 @@
               "p": [
                 [
                   {
-                    "t": "Elsa asks about your role and what a good week at work would look like. She also asks about what surrounds the job, such as how much Italian you use and how settled you feel, because that shapes what's realistic. Together you choose one or two goals you'll recognise when you reach them, for example speaking up in the weekly meeting, or handing over work you've been holding on to."
+                    "t": "Your psychologist asks about your role and what a good week at work would look like. She also asks about what surrounds the job, such as how much Italian you use and how settled you feel, because that shapes what's realistic. Together you choose one or two goals you'll recognise when you reach them, for example speaking up in the weekly meeting, or handing over work you've been holding on to."
                   }
                 ]
               ]
@@ -219,7 +219,7 @@
               "p": [
                 [
                   {
-                    "t": "Every few sessions you and Elsa look back at the goals: what has moved, what hasn't, and whether they still make sense. Coaching ends when you've reached your goals."
+                    "t": "Every few sessions you and your psychologist look back at the goals: what has moved, what hasn't, and whether they still make sense. Coaching ends when you've reached your goals."
                   }
                 ]
               ]
@@ -237,12 +237,12 @@
       "bg": "light",
       "data": {
         "eyebrow": "What it covers",
-        "title": "What workplace coaching with Elsa can cover.",
+        "title": "What workplace coaching can cover.",
         "intro": {
           "p": [
             [
               {
-                "t": "After the first sessions, you and Elsa agree which of these to work on."
+                "t": "After the first sessions, you and your psychologist agree which of these to work on."
               }
             ]
           ]
@@ -380,7 +380,7 @@
               "p": [
                 [
                   {
-                    "t": "If the question becomes whether to stay in this job or look for another, that's career guidance, also with Elsa. "
+                    "t": "If the question becomes whether to stay in this job or look for another, that's career guidance, with the same psychologist. "
                   },
                   {
                     "t": "Career coaching & guidance",
@@ -396,7 +396,7 @@
               "p": [
                 [
                   {
-                    "t": "Sometimes what looks like stress at work turns out to need something coaching isn't designed for: anxiety that doesn't switch off at the weekend, low mood that lasts, sleep that has gone. Elsa will tell you and can suggest working with Monica Federico, the practice's psychotherapist. With your consent, Elsa and Monica can talk to each other."
+                    "t": "Sometimes what looks like stress at work turns out to need something coaching isn't designed for: anxiety that doesn't switch off at the weekend, low mood that lasts, sleep that has gone. Your psychologist will tell you and can suggest working with one of our psychotherapists. With your consent, the two of them can talk to each other."
                   }
                 ]
               ]
@@ -444,30 +444,30 @@
       "bg": "dark",
       "data": {
         "eyebrow": "Who",
-        "title": "Elsa Salvati, psychologist and HR professional.",
+        "title": "A psychologist who is also an HR professional.",
         "people": [
           {
-            "name": "",
+            "name": "Workplace coaching",
             "text": {
               "p": [
                 [
                   {
-                    "t": "Elsa has been registered with the Italian Order of Psychologists since 2014, and her entry in the register states that she offers sessions in English. In more than ten years in HR, she has worked on recruitment, development, training, organisation and change management, which is much of the ground workplace coaching covers. She knows the Italian job market. As a psychologist, she can also notice when the strain of a job is affecting more than the job, and say so."
+                    "t": "Workplace coaching is led by a psychologist, registered with the Italian Order of Psychologists since 2014, whose entry in the register states that she offers sessions in English. In more than ten years in HR, she has worked on recruitment, development, training, organisation and change management, which is much of the ground workplace coaching covers. She knows the Italian job market. As a psychologist, she can also notice when the strain of a job is affecting more than the job, and say so."
                   }
                 ]
               ]
             },
             "tag": "Postgraduate diploma in People Development and Management · International academic and professional experience",
             "button": {
-              "label": "Book with Elsa",
+              "label": "Book a free first meeting",
               "to": {
                 "kind": "book",
-                "pro": "elsa-salvati"
+                "area": "coaching"
               },
               "style": "light"
             },
             "link": {
-              "label": "Elsa's profile",
+              "label": "Team",
               "to": {
                 "kind": "page",
                 "key": "team",
@@ -665,7 +665,7 @@
     {
       "bg": "dark",
       "data": {
-        "title": "Book a free first meeting with Elsa.",
+        "title": "Book a free first meeting.",
         "text": {
           "p": [
             [
@@ -677,10 +677,10 @@
         },
         "buttons": [
           {
-            "label": "Book with Elsa",
+            "label": "Book a free first meeting",
             "to": {
               "kind": "book",
-              "pro": "elsa-salvati"
+              "area": "coaching"
             },
             "style": "light"
           },

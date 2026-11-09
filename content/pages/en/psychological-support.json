@@ -2,7 +2,7 @@
   "key": "sostegno",
   "path": "/en/psychological-support/",
   "title": "Psychological support online with a psychologist in Italy – Blooming",
-  "description": "Psychological support with Monica Federico, psychologist and psychotherapist, for a hard time: illness in the family, bereavement, separation, job loss, infertility, a new baby, a move. Online. Free 30-minute first meeting.",
+  "description": "Psychological support with a psychologist and psychotherapist, for a hard time: illness in the family, bereavement, separation, job loss, infertility, a new baby, a move. Online. Free 30-minute first meeting.",
   "nav": "help",
   "blocks": [
     {
@@ -14,17 +14,17 @@
           "p": [
             [
               {
-                "t": "Psychological support is for something you're going through now: a loss, a separation, a baby, a family member who is seriously ill. It's with Monica Federico, a psychologist and psychotherapist with clinical experience in hospitals, clinics and private practice, online by video call."
+                "t": "Psychological support is for something you're going through now: a loss, a separation, a baby, a family member who is seriously ill. It's with a psychologist and psychotherapist with clinical experience in hospitals, clinics and private practice, online by video call."
               }
             ]
           ]
         },
         "buttons": [
           {
-            "label": "Book with Monica",
+            "label": "Book a free first meeting",
             "to": {
               "kind": "book",
-              "pro": "monica-federico"
+              "area": "psicologia"
             },
             "style": "primary"
           },
@@ -200,7 +200,7 @@
       "bg": "soft",
       "data": {
         "eyebrow": "How it works",
-        "title": "Psychological support with Monica focuses on what's happening now.",
+        "title": "Psychological support focuses on what's happening now.",
         "intro": {
           "p": [
             [
@@ -217,7 +217,7 @@
               "p": [
                 [
                   {
-                    "t": "Monica asks about what's going on and how it's affecting you day to day, including who you can count on, here and at home. Together you agree what you'd like the sessions to help with."
+                    "t": "Your psychologist asks about what's going on and how it's affecting you day to day, including who you can count on, here and at home. Together you agree what you'd like the sessions to help with."
                   }
                 ]
               ]
@@ -243,7 +243,7 @@
               "p": [
                 [
                   {
-                    "t": "Along the way, you and Monica look at whether the sessions are helping and what you still need. If something longer would help more, she will tell you (see below)."
+                    "t": "Along the way, you and your psychologist look at whether the sessions are helping and what you still need. If something longer would help more, she will tell you (see below)."
                   }
                 ]
               ]
@@ -261,7 +261,7 @@
       "bg": "light",
       "data": {
         "eyebrow": "What it covers",
-        "title": "What psychological support with Monica can cover.",
+        "title": "What psychological support can cover.",
         "intro": {
           "p": []
         },
@@ -370,7 +370,7 @@
               "p": [
                 [
                   {
-                    "t": "If what comes up turns out to run deeper, or was there long before this hard time, Monica may suggest psychotherapy, which she also offers. You decide whether to go on. "
+                    "t": "If what comes up turns out to run deeper, or was there long before this hard time, your psychologist may suggest psychotherapy, which she also offers. You decide whether to go on. "
                   },
                   {
                     "t": "Psychotherapy",
@@ -386,7 +386,7 @@
               "p": [
                 [
                   {
-                    "t": "If what you need is help with your career or your job, Monica can suggest Elsa. With your consent, they can talk to each other."
+                    "t": "If what you need is help with your career or your job, your psychologist can suggest career coaching with a colleague at the practice. With your consent, the two of them can talk to each other."
                   }
                 ]
               ]
@@ -428,30 +428,30 @@
       "bg": "dark",
       "data": {
         "eyebrow": "Who",
-        "title": "Monica Federico, psychologist and psychotherapist.",
+        "title": "A psychologist who is also a psychotherapist.",
         "people": [
           {
-            "name": "",
+            "name": "Psychological support and psychotherapy",
             "text": {
               "p": [
                 [
                   {
-                    "t": "Monica has been registered with the Italian Order of Psychologists since 2010 and is a cognitive behavioural psychotherapist. Her clinical experience includes hospital psychology, clinics and private practice. She works with a bio-psycho-social approach, explained on the psychotherapy page. She also has an MSc in work and organisational psychology."
+                    "t": "Psychological support is with a psychologist, registered with the Italian Order of Psychologists since 2010, who is a cognitive behavioural psychotherapist. Her clinical experience includes hospital psychology, clinics and private practice. She works with a bio-psycho-social approach, explained on the psychotherapy page. She also has an MSc in work and organisational psychology."
                   }
                 ]
               ]
             },
             "tag": "",
             "button": {
-              "label": "Book with Monica",
+              "label": "Book a free first meeting",
               "to": {
                 "kind": "book",
-                "pro": "monica-federico"
+                "area": "psicologia"
               },
               "style": "light"
             },
             "link": {
-              "label": "Monica's profile",
+              "label": "Team",
               "to": {
                 "kind": "page",
                 "key": "team",
@@ -482,7 +482,7 @@
               "p": [
                 [
                   {
-                    "t": "30 minutes by video call, with no obligation to continue. It isn't a session: you say what you're going through and find out whether support with Monica fits."
+                    "t": "30 minutes by video call, with no obligation to continue. It isn't a session: you say what you're going through and find out whether psychological support fits."
                   }
                 ]
               ]
@@ -649,22 +649,22 @@
     {
       "bg": "dark",
       "data": {
-        "title": "Start with a free first meeting with Monica.",
+        "title": "Start with a free first meeting.",
         "text": {
           "p": [
             [
               {
-                "t": "Thirty minutes on video to say what's happening and hear how Monica could help. You don't need to have the words ready."
+                "t": "Thirty minutes on video to say what's happening and hear how we could help. You don't need to have the words ready."
               }
             ]
           ]
         },
         "buttons": [
           {
-            "label": "Book with Monica",
+            "label": "Book a free first meeting",
             "to": {
               "kind": "book",
-              "pro": "monica-federico"
+              "area": "psicologia"
             },
             "style": "light"
           },

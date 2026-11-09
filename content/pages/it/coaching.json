@@ -2,23 +2,23 @@
   "key": "coaching",
   "path": "/coaching/",
   "title": "Coaching online con una psicologa – Blooming",
-  "description": "Coaching online con Elsa Salvati, psicologa iscritta all'Albo, da oltre dieci anni nelle risorse umane. Primo colloquio gratuito di 30 minuti.",
+  "description": "Coaching online con una psicologa iscritta all'Albo, da oltre dieci anni nelle risorse umane. Primo colloquio gratuito di 30 minuti.",
   "nav": "servizi",
   "blocks": [
     {
       "data": {
         "eyebrow": "Coaching",
         "title": "Per il lavoro che hai già, quando qualcosa si è inceppato.",
-        "subtitle": "Coaching con Elsa Salvati, psicologa iscritta all'Albo, che da oltre dieci anni lavora nelle risorse umane.",
+        "subtitle": "Coaching con una psicologa iscritta all'Albo, che da oltre dieci anni lavora nelle risorse umane.",
         "intro": {
           "p": []
         },
         "buttons": [
           {
-            "label": "Prenota con Elsa",
+            "label": "Prenota",
             "to": {
               "kind": "book",
-              "pro": "elsa-salvati"
+              "area": "coaching"
             },
             "style": "primary"
           },
@@ -47,7 +47,7 @@
         "items": [
           {
             "group": "",
-            "title": "Ti hanno promosso a capo dei tuoi ex colleghi",
+            "title": "Ti hanno promosso a responsabile dei tuoi ex colleghi",
             "who": "",
             "body": [
               {
@@ -68,7 +68,7 @@
           },
           {
             "group": "",
-            "title": "Sei in mezzo a un conflitto nel gruppo",
+            "title": "Sei in mezzo a un conflitto nel team",
             "who": "",
             "body": [
               {
@@ -191,7 +191,7 @@
               "p": [
                 [
                   {
-                    "t": "Nella prima seduta racconti la situazione e scegli con Elsa un obiettivo preciso: per esempio riuscire a dire la tua in riunione, o organizzare la settimana e arrivare al venerdì con il lavoro fatto."
+                    "t": "Nella prima seduta racconti la situazione e insieme scegliete un obiettivo preciso: per esempio riuscire a dire la tua in riunione, o organizzare la settimana e arrivare al venerdì con il lavoro fatto."
                   }
                 ]
               ]
@@ -203,7 +203,7 @@
               "p": [
                 [
                   {
-                    "t": "Elsa ti aiuta a vedere cosa alimenta il problema: le abitudini, il modo in cui comunichi, come è organizzato il lavoro intorno a te."
+                    "t": "Insieme vedete cosa alimenta il problema: le abitudini, il modo in cui comunichi, come è organizzato il lavoro intorno a te."
                   }
                 ]
               ]
@@ -256,7 +256,7 @@
               "p": [
                 [
                   {
-                    "t": "Comprende la gestione dello stress e del tempo, i conflitti e le relazioni di lavoro, anche con chi ti dirige, la comunicazione nei momenti difficili, la guida di un gruppo, i cambiamenti organizzativi e personali, la motivazione e i blocchi che ti fermano."
+                    "t": "Comprende la gestione dello stress e del tempo, i conflitti e le relazioni di lavoro, anche con chi ti dirige, la comunicazione nei momenti difficili, la guida di un team, i cambiamenti organizzativi e personali, la motivazione e i blocchi che ti fermano."
                   }
                 ]
               ]
@@ -268,7 +268,7 @@
               "p": [
                 [
                   {
-                    "t": "Comprende anche lo sviluppo nel ruolo che hai: un obiettivo di crescita e il piano per arrivarci. Se la domanda diventa se restare o cambiare lavoro, è orientamento, sempre con Elsa."
+                    "t": "Comprende anche lo sviluppo nel ruolo che hai: un obiettivo di crescita e il piano per arrivarci. Se la domanda diventa se restare o cambiare lavoro, è orientamento, sempre con la stessa psicologa."
                   }
                 ]
               ]
@@ -290,7 +290,7 @@
               "p": [
                 [
                   {
-                    "t": "Se nel coaching emerge un disagio più profondo, per esempio un'ansia che non ti lascia dormire, Elsa te lo dice e, se vuoi, ti propone di lavorarci con Monica, psicoterapeuta. Con il tuo consenso possono confrontarsi."
+                    "t": "Se nel coaching emerge un disagio più profondo, per esempio un'ansia che non ti lascia dormire, la psicologa te lo dice e, se vuoi, ti propone di lavorarci con una psicoterapeuta dello studio. Con il tuo consenso possono confrontarsi."
                   }
                 ]
               ]
@@ -305,10 +305,10 @@
       "bg": "dark",
       "data": {
         "eyebrow": "Chi se ne occupa",
-        "title": "Elsa Salvati, psicologa, da oltre dieci anni nelle risorse umane.",
+        "title": "Una psicologa, da oltre dieci anni nelle risorse umane.",
         "people": [
           {
-            "name": "",
+            "name": "Orientamento, carriera e coaching",
             "text": {
               "p": [
                 [
@@ -320,15 +320,15 @@
             },
             "tag": "",
             "button": {
-              "label": "Prenota con Elsa",
+              "label": "Prenota",
               "to": {
                 "kind": "book",
-                "pro": "elsa-salvati"
+                "area": "coaching"
               },
               "style": "light"
             },
             "link": {
-              "label": "Scheda di Elsa",
+              "label": "Chi siamo",
               "to": {
                 "kind": "page",
                 "key": "team",
@@ -484,22 +484,22 @@
     {
       "bg": "dark",
       "data": {
-        "title": "Parti da mezz'ora con Elsa, gratis.",
+        "title": "Parti da mezz'ora, gratis.",
         "text": {
           "p": [
             [
               {
-                "t": "Le racconti cosa succede al lavoro; ti dice se il coaching è la strada giusta o se ti serve altro, per esempio l'orientamento."
+                "t": "Racconti cosa succede al lavoro; ti diciamo se il coaching è la strada giusta o se ti serve altro, per esempio l'orientamento."
               }
             ]
           ]
         },
         "buttons": [
           {
-            "label": "Prenota con Elsa",
+            "label": "Prenota",
             "to": {
               "kind": "book",
-              "pro": "elsa-salvati"
+              "area": "coaching"
             },
             "style": "light"
           },

@@ -14,7 +14,7 @@
       newTime: 'Nuovo orario', minutes: ' minuti', assigned: 'Una professionista libera in quell\'orario, assegnata quando invii la richiesta',
       assignedPending: 'Una professionista dello studio: il nome arriva quando accetta la richiesta',
       notBookable: 'I servizi di quest\'area non sono ancora prenotabili online: chiedici di ricontattarti qui sotto.',
-      help: 'Aiutami a scegliere', helpText: 'Vedi gli orari di tutte e due: quando invii la richiesta ti viene assegnata una professionista libera in quell\'orario che parla la lingua che hai scelto. Nel colloquio capite insieme se fa per te o se è meglio la collega.',
+      help: 'Aiutami a scegliere', helpText: 'Vedi gli orari di tutte le professioniste: quando invii la richiesta ti viene assegnata quella libera in quell\'orario, che parla la lingua che hai scelto.',
       needName: 'Inserisci nome e cognome.', needEmail: 'Inserisci un indirizzo email valido.',
       needPrivacy: 'Per prenotare è necessario prendere visione dell\'informativa privacy.',
       confirming: 'Invio in corso…', confirm: 'Invia la richiesta',

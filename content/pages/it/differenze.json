@@ -130,11 +130,11 @@
               "p": [
                 [
                   {
-                    "t": "Elsa Salvati",
+                    "t": "Orientamento e carriera, coaching",
                     "b": true
                   },
                   {
-                    "t": ", psicologa, iscritta all'Albo dal 2014, da oltre dieci anni nelle risorse umane: orientamento e carriera, coaching. Non è psicoterapeuta."
+                    "t": ": una psicologa, iscritta all'Albo dal 2014, da oltre dieci anni nelle risorse umane. Non è psicoterapeuta."
                   }
                 ]
               ]
@@ -146,11 +146,11 @@
               "p": [
                 [
                   {
-                    "t": "Monica Federico",
+                    "t": "Sostegno psicologico, psicoterapia",
                     "b": true
                   },
                   {
-                    "t": ", psicologa, iscritta all'Albo dal 2010, psicoterapeuta cognitivo-comportamentale: sostegno psicologico, psicoterapia."
+                    "t": ": una psicologa, iscritta all'Albo dal 2010, psicoterapeuta cognitivo-comportamentale."
                   }
                 ]
               ]
@@ -288,7 +288,7 @@
                         "b": true
                       },
                       {
-                        "t": " è orientamento, con Elsa."
+                        "t": " è orientamento."
                       }
                     ]
                   ]
@@ -321,7 +321,7 @@
                         "b": true
                       },
                       {
-                        "t": " è coaching, con Elsa. Se dietro c'è altro, Elsa ti propone di parlarne con Monica."
+                        "t": " è coaching. Se dietro c'è altro, la psicologa ti propone di parlarne con una psicoterapeuta dello studio."
                       }
                     ]
                   ]
@@ -354,7 +354,7 @@
                         "b": true
                       },
                       {
-                        "t": " è sostegno psicologico, con Monica."
+                        "t": " è sostegno psicologico."
                       }
                     ]
                   ]
@@ -387,7 +387,7 @@
                         "b": true
                       },
                       {
-                        "t": " è psicoterapia, con Monica."
+                        "t": " è psicoterapia."
                       }
                     ]
                   ]
@@ -432,7 +432,7 @@
           "p": [
             [
               {
-                "t": "Puoi scegliere la professionista oppure «Aiutami a scegliere»: incontri una delle due professioniste; se il tuo bisogno riguarda l'area della collega, te lo dice."
+                "t": "Scegli una tematica e un orario, oppure «Non lo so ancora»: nel colloquio una psicologa dello studio capisce con te che tipo di aiuto ti serve e, se riguarda un'altra area, te lo dice."
               }
             ]
           ]

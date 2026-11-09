@@ -86,7 +86,7 @@
                   "p": [
                     [
                       {
-                        "t": "Elsa, a psychologist, has worked in HR for over ten years, in recruitment, training and change management, and knows the Italian job market. She'll be straight with you about what you can realistically aim for and how much your Italian matters. Nobody can promise you a job, and she won't. Together you build a concrete strategy. If there's more going on than work, she'll notice, and if you want, she can suggest working on it with Monica too."
+                        "t": "The psychologist who guides your career has worked in HR for over ten years, in recruitment, training and change management, and knows the Italian job market. She'll be straight with you about what you can realistically aim for and how much your Italian matters. Nobody can promise you a job, and she won't. Together you build a concrete strategy. If there's more going on than work, she'll notice, and if you want, she can suggest working on it with one of our psychotherapists too."
                       }
                     ]
                   ]
@@ -147,7 +147,7 @@
                   "p": [
                     [
                       {
-                        "t": "Elsa helps you rebuild your working life here. Monica helps with the loneliness and the homesickness."
+                        "t": "Career guidance helps you rebuild your working life here. Psychological support helps with the loneliness and the homesickness."
                       }
                     ]
                   ]
@@ -189,7 +189,7 @@
                   "p": [
                     [
                       {
-                        "t": "Here you work with Monica, a psychologist and psychotherapist. You don't have to explain from scratch how things work here."
+                        "t": "Here you work with a psychologist and psychotherapist. You don't have to explain from scratch how things work here."
                       }
                     ]
                   ]
@@ -295,7 +295,7 @@
               "p": [
                 [
                   {
-                    "t": "Pick a time and, if you want, the person you'd like to see. Not sure? Pick \"Help me choose\": in the first meeting we work out together which of us is right for you."
+                    "t": "Pick what you need and a time. Not sure? Pick \"Not sure yet\": in the first meeting we work out together which path to take."
                   }
                 ]
               ]
@@ -335,10 +335,10 @@
       "bg": "dark",
       "data": {
         "eyebrow": "Who you'll be talking to",
-        "title": "Elsa and Monica.",
+        "title": "Psychologists registered with the Italian Order.",
         "people": [
           {
-            "name": "Elsa Salvati",
+            "name": "Career coaching & guidance, and workplace coaching",
             "text": {
               "p": [
                 [
@@ -350,17 +350,23 @@
             },
             "tag": "Career coaching and guidance · Workplace coaching",
             "button": {
-              "label": "Book with Elsa",
+              "label": "Book a free first meeting",
               "to": {
                 "kind": "book",
-                "pro": "elsa-salvati"
+                "area": "carriera"
               },
               "style": "light"
             },
-            "link": null
+            "link": {
+              "label": "Team",
+              "to": {
+                "kind": "page",
+                "key": "team"
+              }
+            }
           },
           {
-            "name": "Monica Federico",
+            "name": "Psychological support and psychotherapy",
             "text": {
               "p": [
                 [
@@ -372,14 +378,20 @@
             },
             "tag": "Psychological support · Psychotherapy",
             "button": {
-              "label": "Book with Monica",
+              "label": "Book a free first meeting",
               "to": {
                 "kind": "book",
-                "pro": "monica-federico"
+                "area": "psicologia"
               },
               "style": "light"
             },
-            "link": null
+            "link": {
+              "label": "Team",
+              "to": {
+                "kind": "page",
+                "key": "team"
+              }
+            }
           }
         ],
         "why": [

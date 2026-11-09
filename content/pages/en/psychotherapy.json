@@ -2,7 +2,7 @@
   "key": "psicoterapia",
   "path": "/en/psychotherapy/",
   "title": "Psychotherapy online, CBT with a psychotherapist in Italy – Blooming",
-  "description": "Cognitive behavioural psychotherapy with Monica Federico, psychologist and psychotherapist, for anxiety, depression, OCD, eating disorders, addictions, personality disorders and trauma. Online. Free 30-minute first meeting.",
+  "description": "Cognitive behavioural psychotherapy with a psychologist and psychotherapist, for anxiety, depression, OCD, eating disorders, addictions, personality disorders and trauma. Online. Free 30-minute first meeting.",
   "nav": "help",
   "blocks": [
     {
@@ -14,17 +14,17 @@
           "p": [
             [
               {
-                "t": "Psychotherapy is for difficulties that have lasted a long time, return again and again, or have started to shape your days. Monica Federico is a cognitive behavioural psychotherapist with clinical experience in hospitals, clinics and private practice, and she works online, by video call."
+                "t": "Psychotherapy is for difficulties that have lasted a long time, return again and again, or have started to shape your days. It's with a cognitive behavioural psychotherapist with clinical experience in hospitals, clinics and private practice, and she works online, by video call."
               }
             ]
           ]
         },
         "buttons": [
           {
-            "label": "Book with Monica",
+            "label": "Book a free first meeting",
             "to": {
               "kind": "book",
-              "pro": "monica-federico"
+              "area": "psicoterapia"
             },
             "style": "primary"
           },
@@ -144,7 +144,7 @@
               "p": [
                 [
                   {
-                    "t": "You don't need a name for what you're going through to get in touch. The free first meeting is for finding out whether psychotherapy with Monica could fit; the first sessions are where you work out together what's going on."
+                    "t": "You don't need a name for what you're going through to get in touch. The free first meeting is for finding out whether psychotherapy could fit; the first sessions are where you work out together what's going on."
                   }
                 ]
               ]
@@ -158,7 +158,7 @@
       "bg": "soft",
       "data": {
         "eyebrow": "What it can help with",
-        "title": "Psychotherapy with Monica can help with these difficulties.",
+        "title": "Psychotherapy can help with these difficulties.",
         "intro": {
           "p": []
         },
@@ -270,7 +270,7 @@
             ],
             [
               {
-                "t": "Monica also works with a bio-psycho-social approach. Alongside your thoughts and feelings, she takes into account your physical health and your circumstances, your work included. A difficulty that seems to be about one thing is often tied up with the others."
+                "t": "Your therapist also works with a bio-psycho-social approach. Alongside your thoughts and feelings, she takes into account your physical health and your circumstances, your work included. A difficulty that seems to be about one thing is often tied up with the others."
               }
             ]
           ]
@@ -282,7 +282,7 @@
               "p": [
                 [
                   {
-                    "t": "Monica asks about what's happening now, when it started and what makes it better or worse, and what you'd like to be different. At the end of this phase she shares how she understands the difficulty, and you agree on goals together."
+                    "t": "Your therapist asks about what's happening now, when it started and what makes it better or worse, and what you'd like to be different. At the end of this phase she shares how she understands the difficulty, and you agree on goals together."
                   }
                 ]
               ]
@@ -308,7 +308,7 @@
               "p": [
                 [
                   {
-                    "t": "You and Monica check progress against your goals along the way. Towards the end, you prepare for how to keep what you've learned and what to do if things get harder again."
+                    "t": "You and your therapist check progress against your goals along the way. Towards the end, you prepare for how to keep what you've learned and what to do if things get harder again."
                   }
                 ]
               ]
@@ -389,7 +389,7 @@
               "p": [
                 [
                   {
-                    "t": "Monica can suggest Elsa for career or workplace questions, alongside therapy or after it. With your consent, they can talk to each other."
+                    "t": "Your therapist can suggest a colleague at the practice for career or workplace questions, alongside therapy or after it. With your consent, the two of them can talk to each other."
                   }
                 ]
               ]
@@ -402,7 +402,7 @@
               "p": [
                 [
                   {
-                    "t": "If what you're going through is a recent, specific hard time, psychological support may fit better, also with Monica. "
+                    "t": "If what you're going through is a recent, specific hard time, psychological support may fit better, with the same psychologist. "
                   },
                   {
                     "t": "Psychological support",
@@ -423,30 +423,30 @@
       "bg": "dark",
       "data": {
         "eyebrow": "Who",
-        "title": "Monica Federico, cognitive behavioural psychotherapist.",
+        "title": "A cognitive behavioural psychotherapist.",
         "people": [
           {
-            "name": "",
+            "name": "Psychological support and psychotherapy",
             "text": {
               "p": [
                 [
                   {
-                    "t": "Monica is a psychologist, registered with the Italian Order of Psychologists since 2010, and a cognitive behavioural psychotherapist. She has worked in hospital psychology, in clinics and in private practice. She also holds an MSc in work and organisational psychology."
+                    "t": "Psychotherapy is with a psychologist, registered with the Italian Order of Psychologists since 2010, who is a cognitive behavioural psychotherapist. She has worked in hospital psychology, in clinics and in private practice. She also holds an MSc in work and organisational psychology."
                   }
                 ]
               ]
             },
             "tag": "",
             "button": {
-              "label": "Book with Monica",
+              "label": "Book a free first meeting",
               "to": {
                 "kind": "book",
-                "pro": "monica-federico"
+                "area": "psicoterapia"
               },
               "style": "light"
             },
             "link": {
-              "label": "Monica's profile",
+              "label": "Team",
               "to": {
                 "kind": "page",
                 "key": "team",
@@ -477,7 +477,7 @@
               "p": [
                 [
                   {
-                    "t": "30 minutes by video call, with no obligation to continue. It isn't a session or a diagnostic assessment: you say what's going on and find out whether psychotherapy with Monica could fit."
+                    "t": "30 minutes by video call, with no obligation to continue. It isn't a session or a diagnostic assessment: you say what's going on and find out whether psychotherapy could fit."
                   }
                 ]
               ]
@@ -501,7 +501,7 @@
               "p": [
                 [
                   {
-                    "t": "you agree them with Monica after the first sessions, and review them as you go."
+                    "t": "you agree them with your therapist after the first sessions, and review them as you go."
                   }
                 ]
               ]
@@ -600,7 +600,7 @@
                   "p": [
                     [
                       {
-                        "t": "More about Monica"
+                        "t": "More about the team"
                       }
                     ]
                   ]
@@ -609,7 +609,7 @@
             ],
             "links": [
               {
-                "label": "Monica's profile",
+                "label": "Team",
                 "to": {
                   "kind": "page",
                   "key": "team",
@@ -627,7 +627,7 @@
     {
       "bg": "dark",
       "data": {
-        "title": "Start with a free first meeting with Monica.",
+        "title": "Start with a free first meeting.",
         "text": {
           "p": [
             [
@@ -639,10 +639,10 @@
         },
         "buttons": [
           {
-            "label": "Book with Monica",
+            "label": "Book a free first meeting",
             "to": {
               "kind": "book",
-              "pro": "monica-federico"
+              "area": "psicoterapia"
             },
             "style": "light"
           },

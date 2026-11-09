@@ -2,23 +2,23 @@
   "key": "psicoterapia",
   "path": "/psicoterapia/",
   "title": "Psicoterapia cognitivo-comportamentale online – Blooming",
-  "description": "Psicoterapia cognitivo-comportamentale online con Monica Federico: ansia, umore basso, pensieri ossessivi, rapporto con il cibo, dipendenze, traumi. Primo colloquio gratuito.",
+  "description": "Psicoterapia cognitivo-comportamentale online con una psicologa e psicoterapeuta: ansia, umore basso, pensieri ossessivi, rapporto con il cibo, dipendenze, traumi. Primo colloquio gratuito.",
   "nav": "servizi",
   "blocks": [
     {
       "data": {
         "eyebrow": "Psicoterapia",
         "title": "Quando quello che senti non passa, e cambia il modo in cui vivi.",
-        "subtitle": "Psicoterapia cognitivo-comportamentale con Monica Federico.",
+        "subtitle": "Psicoterapia cognitivo-comportamentale con una psicologa e psicoterapeuta.",
         "intro": {
           "p": []
         },
         "buttons": [
           {
-            "label": "Prenota con Monica",
+            "label": "Prenota il primo colloquio gratuito (30 min)",
             "to": {
               "kind": "book",
-              "pro": "monica-federico"
+              "area": "psicoterapia"
             },
             "style": "primary"
           },
@@ -207,7 +207,7 @@
           "p": [
             [
               {
-                "t": "La psicoterapia cognitivo-comportamentale lavora sul legame tra pensieri, emozioni e comportamenti: si guarda cosa succede oggi, cosa lo mantiene e cosa puoi fare di diverso. Monica lo fa guardando anche il corpo e la tua situazione di vita, come il sonno, la salute, il lavoro e le relazioni: è quello che si chiama approccio bio-psico-sociale."
+                "t": "La psicoterapia cognitivo-comportamentale lavora sul legame tra pensieri, emozioni e comportamenti: si guarda cosa succede oggi, cosa lo mantiene e cosa puoi fare di diverso. La psicoterapeuta lo fa guardando anche il corpo e la tua situazione di vita, come il sonno, la salute, il lavoro e le relazioni: è quello che si chiama approccio bio-psico-sociale."
               }
             ]
           ]
@@ -297,7 +297,7 @@
               "p": [
                 [
                   {
-                    "t": "Monica non prescrive farmaci: se serve anche una visita medica o psichiatrica, te lo dice."
+                    "t": "La psicoterapeuta non prescrive farmaci: se serve anche una visita medica o psichiatrica, te lo dice."
                   }
                 ]
               ]
@@ -324,10 +324,10 @@
       "bg": "dark",
       "data": {
         "eyebrow": "Chi se ne occupa",
-        "title": "Monica Federico, psicoterapeuta cognitivo-comportamentale.",
+        "title": "Una psicoterapeuta cognitivo-comportamentale.",
         "people": [
           {
-            "name": "",
+            "name": "Sostegno psicologico e psicoterapia",
             "text": {
               "p": [
                 [
@@ -339,15 +339,15 @@
             },
             "tag": "",
             "button": {
-              "label": "Prenota con Monica",
+              "label": "Prenota il primo colloquio gratuito",
               "to": {
                 "kind": "book",
-                "pro": "monica-federico"
+                "area": "psicoterapia"
               },
               "style": "light"
             },
             "link": {
-              "label": "Scheda di Monica",
+              "label": "Chi siamo",
               "to": {
                 "kind": "page",
                 "key": "team",
@@ -510,22 +510,22 @@
     {
       "bg": "dark",
       "data": {
-        "title": "Parti da mezz'ora con Monica, gratis.",
+        "title": "Parti da mezz'ora, gratis.",
         "text": {
           "p": [
             [
               {
-                "t": "Le racconti cosa succede; ti dice se la psicoterapia è la strada giusta o se basta un sostegno più breve."
+                "t": "Racconti cosa succede; ti diciamo se la psicoterapia è la strada giusta o se basta un sostegno più breve."
               }
             ]
           ]
         },
         "buttons": [
           {
-            "label": "Prenota con Monica",
+            "label": "Prenota il primo colloquio gratuito",
             "to": {
               "kind": "book",
-              "pro": "monica-federico"
+              "area": "psicoterapia"
             },
             "style": "light"
           },

@@ -14,17 +14,17 @@
           "p": [
             [
               {
-                "t": "One-to-one career coaching in English with Elsa Salvati, a psychologist who has worked in HR for over ten years. For anyone who has moved to Italy, or is about to, and wants work that fits the rest of their life. Sessions are online, by video call."
+                "t": "One-to-one career coaching in English with a psychologist who has worked in HR for over ten years. For anyone who has moved to Italy, or is about to, and wants work that fits the rest of their life. Sessions are online, by video call."
               }
             ]
           ]
         },
         "buttons": [
           {
-            "label": "Book a free first meeting with Elsa",
+            "label": "Book a free first meeting",
             "to": {
               "kind": "book",
-              "pro": "elsa-salvati"
+              "area": "carriera"
             },
             "style": "primary"
           },
@@ -184,7 +184,7 @@
           "p": [
             [
               {
-                "t": "Career coaching with Elsa is a series of one-to-one video sessions. It's practical work on your career, led by a psychologist, and it isn't therapy. What you do in the sessions depends on where you're starting from."
+                "t": "Career coaching is a series of one-to-one video sessions. It's practical work on your career, led by a psychologist, and it isn't therapy. What you do in the sessions depends on where you're starting from."
               }
             ]
           ]
@@ -196,7 +196,7 @@
               "p": [
                 [
                   {
-                    "t": "Elsa starts by looking at your skills and experience and what you want from work. Then come the things you have to plan around, such as how much Italian you speak, family, a visa or where you'd like to live. Moving country changes your working life and your home life at the same time, so a career plan that leaves one of them out rarely holds up for long."
+                    "t": "The psychologist starts by looking at your skills and experience and what you want from work. Then come the things you have to plan around, such as how much Italian you speak, family, a visa or where you'd like to live. Moving country changes your working life and your home life at the same time, so a career plan that leaves one of them out rarely holds up for long."
                   }
                 ]
               ]
@@ -208,7 +208,7 @@
               "p": [
                 [
                   {
-                    "t": "An ad that asks for \"fluent Italian\" doesn't always mean it. Elsa has spent years on the other side of job ads, so she can help you tell a hard requirement from a wish list, and say plainly how much Italian the roles you want are likely to need. From there you compare the options that are realistically open, and decide whether a course or a new qualification would actually change your chances."
+                    "t": "An ad that asks for \"fluent Italian\" doesn't always mean it. Your psychologist has spent years on the other side of job ads, so she can help you tell a hard requirement from a wish list, and say plainly how much Italian the roles you want are likely to need. From there you compare the options that are realistically open, and decide whether a course or a new qualification would actually change your chances."
                   }
                 ]
               ]
@@ -273,12 +273,12 @@
       "bg": "light",
       "data": {
         "eyebrow": "What it covers",
-        "title": "What career coaching with Elsa can cover.",
+        "title": "What career coaching can cover.",
         "intro": {
           "p": [
             [
               {
-                "t": "After the first sessions, you and Elsa agree which of these you need."
+                "t": "After the first sessions, you and your psychologist agree which of these you need."
               }
             ]
           ]
@@ -416,7 +416,7 @@
               "p": [
                 [
                   {
-                    "t": "Elsa helps you prepare and decide; she doesn't put clients forward to employers."
+                    "t": "Your psychologist helps you prepare and decide; she doesn't put clients forward to employers."
                   }
                 ]
               ]
@@ -429,7 +429,7 @@
               "p": [
                 [
                   {
-                    "t": "Formal recognition of foreign qualifications, legal questions about a contract, and visa or move paperwork need the relevant office or professional. Job offer work with Elsa isn't legal advice."
+                    "t": "Formal recognition of foreign qualifications, legal questions about a contract, and visa or move paperwork need the relevant office or professional. Going through a job offer together isn't legal advice."
                   }
                 ]
               ]
@@ -442,7 +442,7 @@
               "p": [
                 [
                   {
-                    "t": "Elsa can help you decide what to do with your experience in the meantime."
+                    "t": "career coaching can help you decide what to do with your experience in the meantime."
                   }
                 ]
               ]
@@ -454,7 +454,7 @@
               "p": [
                 [
                   {
-                    "t": "Months of rejections can wear down anyone's confidence, and sometimes what's left goes beyond career work. Then Elsa will say so and, if you'd like, suggest Monica Federico, the practice's psychotherapist, who has an MSc in work and organisational psychology. With your consent, Elsa and Monica can talk to each other."
+                    "t": "Months of rejections can wear down anyone's confidence, and sometimes what's left goes beyond career work. Then your psychologist will say so and, if you'd like, suggest working on it with one of our psychotherapists, who has an MSc in work and organisational psychology. With your consent, the two of them can talk to each other."
                   }
                 ]
               ]
@@ -471,15 +471,15 @@
       "bg": "dark",
       "data": {
         "eyebrow": "Who",
-        "title": "Elsa Salvati, psychologist and HR professional.",
+        "title": "A psychologist who is also an HR professional.",
         "people": [
           {
-            "name": "",
+            "name": "Career coaching & guidance",
             "text": {
               "p": [
                 [
                   {
-                    "t": "Elsa is a psychologist, registered with the Italian Order of Psychologists since 2014, and her entry in the Order's register states that she offers sessions in English. She has worked in HR for over ten years, across recruitment, development, training and change management, and knows the Italian job market. She also has international academic and professional experience."
+                    "t": "Career coaching is led by a psychologist, registered with the Italian Order of Psychologists since 2014, whose entry in the Order's register states that she offers sessions in English. She has worked in HR for over ten years, across recruitment, development, training and change management, and knows the Italian job market. She also has international academic and professional experience."
                   }
                 ],
                 [
@@ -491,14 +491,20 @@
             },
             "tag": "MSc in cognitive neuroscience · Postgraduate diploma in People Development and Management",
             "button": {
-              "label": "Book with Elsa",
+              "label": "Book a free first meeting",
               "to": {
                 "kind": "book",
-                "pro": "elsa-salvati"
+                "area": "carriera"
               },
               "style": "light"
             },
-            "link": null,
+            "link": {
+              "label": "Team",
+              "to": {
+                "kind": "page",
+                "key": "team"
+              }
+            },
             "note": "Accreditation wording to check against the certificate. Short video of Elsa speaking English: to film."
           }
         ],
@@ -654,22 +660,22 @@
     {
       "bg": "dark",
       "data": {
-        "title": "Start with a free first meeting with Elsa.",
+        "title": "Start with a free first meeting.",
         "text": {
           "p": [
             [
               {
-                "t": "Thirty minutes on video to tell Elsa what you'd like to change. By the end you'll both have a clearer idea of whether career coaching suits you, and what working together could look like."
+                "t": "Thirty minutes on video to tell us what you'd like to change. By the end you'll have a clearer idea of whether career coaching suits you, and what working together could look like."
               }
             ]
           ]
         },
         "buttons": [
           {
-            "label": "Book a free first meeting with Elsa",
+            "label": "Book a free first meeting",
             "to": {
               "kind": "book",
-              "pro": "elsa-salvati"
+              "area": "carriera"
             },
             "style": "light"
           },

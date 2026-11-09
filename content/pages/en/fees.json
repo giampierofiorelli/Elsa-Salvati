@@ -14,7 +14,7 @@
           "p": [
             [
               {
-                "t": "You request a time on the website and meet one of the psychologists by video. After that, you decide whether to go on. This page explains each step and how sessions work."
+                "t": "You request a time on the website and meet a psychologist from the practice by video. After that, you decide whether to go on. This page explains each step and how sessions work."
               }
             ]
           ]
@@ -57,12 +57,12 @@
         },
         "items": [
           {
-            "title": "Request a time online",
+            "title": "Pick a topic and a time",
             "text": {
               "p": [
                 [
                   {
-                    "t": "Say what you'd like help with, or choose \"Not sure yet\". Then choose Elsa or Monica, or \"Help me choose\", and the language of the meeting, English or Italian. Pick a time and leave your name and email; a phone number is optional. We hold that time for you. The psychologist replies at the latest by 6 pm (Italian time) the day before the meeting. Once she accepts, we email you a link to move or cancel the meeting."
+                    "t": "Say what you'd like help with, or choose \"Not sure yet\". Then choose the language of the meeting, English or Italian, pick a time and leave your name and email; a phone number is optional. We hold that time for you. The psychologist replies at the latest by 6 pm (Italian time) the day before the meeting. Once she accepts, we email you a link to move or cancel the meeting. In the meeting, she works out with you what the difficulty is and what kind of help fits: support with work only, wider psychological support, or therapy."
                   }
                 ]
               ]
@@ -99,7 +99,7 @@
               "p": [
                 [
                   {
-                    "t": "If what you need turns out to fit the other psychologist's work, you can move to her. You can stop at any point."
+                    "t": "If what you need turns out to fit another psychologist's work, you can carry on with her at the practice. You can stop at any point."
                   }
                 ]
               ]
@@ -129,7 +129,7 @@
         "variant": "prices",
         "items": [
           {
-            "term": "Career coaching & guidance · Elsa",
+            "term": "Career coaching & guidance",
             "text": {
               "p": [
                 [
@@ -142,7 +142,7 @@
             "tbd": true
           },
           {
-            "term": "Workplace coaching · Elsa",
+            "term": "Workplace coaching",
             "text": {
               "p": [
                 [
@@ -155,7 +155,7 @@
             "tbd": true
           },
           {
-            "term": "Psychological support · Monica",
+            "term": "Psychological support",
             "text": {
               "p": [
                 [
@@ -168,7 +168,7 @@
             "tbd": true
           },
           {
-            "term": "Psychotherapy · Monica",
+            "term": "Psychotherapy",
             "text": {
               "p": [
                 [
@@ -261,7 +261,7 @@
               "p": [
                 [
                   {
-                    "t": "No. Elsa works in English."
+                    "t": "No. Career coaching & guidance and workplace coaching are in English too."
                   }
                 ]
               ]
@@ -355,7 +355,7 @@
               "p": [
                 [
                   {
-                    "t": "Yes, if what you need fits the other psychologist's work: Elsa works on careers and work, Monica on psychological support and psychotherapy. If it doesn't feel right, tell your psychologist, or contact the practice. You can stop at any point."
+                    "t": "Yes, if what you need fits the work of another psychologist at the practice: careers and work, or psychological support and psychotherapy. If it doesn't feel right, tell your psychologist, or contact the practice. You can stop at any point."
                   }
                 ]
               ]
@@ -368,7 +368,7 @@
               "p": [
                 [
                   {
-                    "t": "Elsa and Monica are bound by professional confidentiality, and they only talk to each other about you with your consent. On this site, your name, email and phone number are stored encrypted, and the site uses no tracking tools."
+                    "t": "The psychologists at the practice are bound by professional confidentiality, and they only talk to each other about you with your consent. On this site, your name, email and phone number are stored encrypted, and the site uses no tracking tools."
                   }
                 ]
               ]

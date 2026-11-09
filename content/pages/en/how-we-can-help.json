@@ -2,7 +2,7 @@
   "key": "servizi",
   "path": "/en/how-we-can-help/",
   "title": "How we can help | English-speaking psychologists for work and life in Italy – Blooming",
-  "description": "Career coaching & guidance, workplace coaching, psychological support and psychotherapy online, with two psychologists who work together. For people living in Italy or moving here. Free first meeting.",
+  "description": "Career coaching & guidance, workplace coaching, psychological support and psychotherapy online, with psychologists who work together. For people living in Italy or moving here. Free first meeting.",
   "nav": "help",
   "blocks": [
     {
@@ -14,7 +14,7 @@
           "p": [
             [
               {
-                "t": "Elsa Salvati and Monica Federico are psychologists, and they work online, by video call, with people living in Italy or about to move here. Work and the rest of your life don't run on separate tracks, so career help and psychological help sit in the same small practice."
+                "t": "Blooming's psychologists work online, by video call, with people living in Italy or about to move here. Work and the rest of your life don't run on separate tracks, so career help and psychological help sit in the same small practice."
               }
             ]
           ]
@@ -45,7 +45,7 @@
       "bg": "soft",
       "data": {
         "eyebrow": "The four areas",
-        "title": "Elsa for careers and work, Monica for hard times and deeper difficulties.",
+        "title": "Careers and work on one side, hard times and deeper difficulties on the other.",
         "intro": {
           "p": [
             [
@@ -60,7 +60,7 @@
           {
             "group": "",
             "title": "Career coaching & guidance",
-            "who": "With Elsa Salvati · psychologist, over ten years in HR",
+            "who": "With a psychologist · over ten years in HR",
             "body": [
               {
                 "kind": "p",
@@ -68,7 +68,7 @@
                   "p": [
                     [
                       {
-                        "t": "Perhaps you've sent application after application and can't even get an interview, or your partner's job brought you to Italy and your own career has been on hold ever since. Elsa is a psychologist who has worked in HR for over ten years and knows the Italian job market. She works with you on your CV, where and how to look, interviews, and building contacts on LinkedIn and beyond. You can also take stock of your skills, choose a direction when none looks obvious, decide whether a course is worth it, or go through a job offer before you negotiate. She'll also give you a realistic idea of how much Italian the roles you want are likely to need."
+                        "t": "Perhaps you've sent application after application and can't even get an interview, or your partner's job brought you to Italy and your own career has been on hold ever since. The psychologist you work with has spent over ten years in HR and knows the Italian job market. She works with you on your CV, where and how to look, interviews, and building contacts on LinkedIn and beyond. You can also take stock of your skills, choose a direction when none looks obvious, decide whether a course is worth it, or go through a job offer before you negotiate. She'll also give you a realistic idea of how much Italian the roles you want are likely to need."
                       }
                     ]
                   ]
@@ -80,7 +80,7 @@
                   "p": [
                     [
                       {
-                        "t": "Nobody can promise you a job; Elsa helps you prepare and decide, including when months of rejections start to wear you down. Recognition of a foreign qualification is a separate process run by other bodies, and in the meantime Elsa can help you decide what to do with your experience."
+                        "t": "Nobody can promise you a job; your psychologist helps you prepare and decide, including when months of rejections start to wear you down. Recognition of a foreign qualification is a separate process run by other bodies, and in the meantime she can help you decide what to do with your experience."
                       }
                     ]
                   ]
@@ -96,10 +96,10 @@
                 }
               },
               {
-                "label": "Book with Elsa",
+                "label": "Book a free first meeting",
                 "to": {
                   "kind": "book",
-                  "pro": "elsa-salvati"
+                  "area": "carriera"
                 }
               }
             ],
@@ -109,7 +109,7 @@
           {
             "group": "",
             "title": "Workplace coaching",
-            "who": "With Elsa Salvati · psychologist, over ten years in HR",
+            "who": "With a psychologist · over ten years in HR",
             "body": [
               {
                 "kind": "p",
@@ -117,7 +117,7 @@
                   "p": [
                     [
                       {
-                        "t": "Having a job doesn't mean work is going well. Every meeting may be in Italian, and you come home exhausted from following it and from never quite saying what you meant. Or a conflict with a colleague has dragged on for months, or a reorganisation you didn't ask for has changed your role. In coaching, Elsa works with you on stress, on relationships with colleagues and managers, and on getting things done without running yourself into the ground. It also covers finding your motivation again when you feel stuck, leading a team for the first time and planning your next step at work. If the question becomes whether to stay or move on, that's career guidance, also with Elsa."
+                        "t": "Having a job doesn't mean work is going well. Every meeting may be in Italian, and you come home exhausted from following it and from never quite saying what you meant. Or a conflict with a colleague has dragged on for months, or a reorganisation you didn't ask for has changed your role. In coaching, the psychologist works with you on stress, on relationships with colleagues and managers, and on getting things done without running yourself into the ground. It also covers finding your motivation again when you feel stuck, leading a team for the first time and planning your next step at work. If the question becomes whether to stay or move on, that's career guidance, with the same psychologist."
                       }
                     ]
                   ]
@@ -129,7 +129,7 @@
                   "p": [
                     [
                       {
-                        "t": "Coaching isn't therapy. If something heavier comes up, Elsa will tell you and can suggest working with Monica."
+                        "t": "Coaching isn't therapy. If something heavier comes up, she will tell you and can suggest working with one of our psychotherapists."
                       }
                     ]
                   ]
@@ -145,10 +145,10 @@
                 }
               },
               {
-                "label": "Book with Elsa",
+                "label": "Book a free first meeting",
                 "to": {
                   "kind": "book",
-                  "pro": "elsa-salvati"
+                  "area": "coaching"
                 }
               }
             ],
@@ -158,7 +158,7 @@
           {
             "group": "",
             "title": "Psychological support",
-            "who": "With Monica Federico · psychologist and psychotherapist",
+            "who": "With a psychologist and psychotherapist",
             "body": [
               {
                 "kind": "p",
@@ -178,7 +178,7 @@
                   "p": [
                     [
                       {
-                        "t": "Monica is a psychologist and psychotherapist who has worked in hospitals, clinics and private practice. She also has an MSc in work and organisational psychology."
+                        "t": "Your psychologist is also a psychotherapist and has worked in hospitals, clinics and private practice. She has an MSc in work and organisational psychology too."
                       }
                     ]
                   ]
@@ -194,10 +194,10 @@
                 }
               },
               {
-                "label": "Book with Monica",
+                "label": "Book a free first meeting",
                 "to": {
                   "kind": "book",
-                  "pro": "monica-federico"
+                  "area": "psicologia"
                 }
               }
             ],
@@ -207,7 +207,7 @@
           {
             "group": "",
             "title": "Psychotherapy",
-            "who": "With Monica Federico · cognitive behavioural psychotherapist",
+            "who": "With a cognitive behavioural psychotherapist",
             "body": [
               {
                 "kind": "p",
@@ -227,7 +227,7 @@
                   "p": [
                     [
                       {
-                        "t": "Psychotherapy is for difficulties that run deep or have lasted a long time. Monica is a cognitive behavioural psychotherapist, and she looks at your body, your mind and your circumstances together, including the distance from home."
+                        "t": "Psychotherapy is for difficulties that run deep or have lasted a long time. Your therapist works in a cognitive behavioural way and looks at your body, your mind and your circumstances together, including the distance from home."
                       }
                     ]
                   ]
@@ -243,10 +243,10 @@
                 }
               },
               {
-                "label": "Book with Monica",
+                "label": "Book a free first meeting",
                 "to": {
                   "kind": "book",
-                  "pro": "monica-federico"
+                  "area": "psicoterapia"
                 }
               }
             ],
@@ -297,11 +297,11 @@
                   "p": [
                     [
                       {
-                        "t": "Work, with Elsa.",
+                        "t": "Work.",
                         "b": true
                       },
                       {
-                        "t": " Elsa looks with you at where your experience fits here and what to change in your CV. She can help you build contacts when you hardly know anyone yet, and give you a sense of how much Italian your field asks for."
+                        "t": " In career guidance you look at where your experience fits here and what to change in your CV. Your psychologist can help you build contacts when you hardly know anyone yet, and give you a sense of how much Italian your field asks for."
                       }
                     ]
                   ]
@@ -313,11 +313,11 @@
                   "p": [
                     [
                       {
-                        "t": "Settling in, with Monica.",
+                        "t": "Settling in.",
                         "b": true
                       },
                       {
-                        "t": " Loneliness can creep up in the months when nobody calls you by name. Missing people at home, or feeling slow and awkward in every conversation, can wear you down even when the move was your choice. Monica helps with the strain of settling in."
+                        "t": " Loneliness can creep up in the months when nobody calls you by name. Missing people at home, or feeling slow and awkward in every conversation, can wear you down even when the move was your choice. Psychological support helps with the strain of settling in."
                       }
                     ]
                   ]
@@ -398,7 +398,7 @@
                   "p": [
                     [
                       {
-                        "t": "Elsa can help you put some shape back into your days, and think about where your career goes from here if working alone has left you unsure. The loneliness is something to talk through with Monica."
+                        "t": "Workplace coaching can help you put some shape back into your days, and think about where your career goes from here if working alone has left you unsure. The loneliness is something to talk through in psychological support."
                       }
                     ]
                   ]
@@ -432,8 +432,8 @@
     {
       "bg": "soft",
       "data": {
-        "eyebrow": "Working with both",
-        "title": "When work and life tangle, Elsa and Monica can work together.",
+        "eyebrow": "Career help and therapy together",
+        "title": "When work and life tangle, your coach and your therapist can work together.",
         "intro": {
           "p": []
         },
@@ -444,7 +444,7 @@
               "p": [
                 [
                   {
-                    "t": "Say your job search has dragged on for months. You're working on applications with Elsa, but the rejections have started to affect your sleep and your confidence. Elsa can suggest a few sessions with Monica alongside the career work. It can go the other way too. A hard time at home can make work feel impossible, and once things are steadier, Monica can suggest Elsa to help you get back on track at work."
+                    "t": "Say your job search has dragged on for months. You're working on applications in career coaching, but the rejections have started to affect your sleep and your confidence. Your coach can suggest a few sessions with one of our psychotherapists alongside the career work. It can go the other way too. A hard time at home can make work feel impossible, and once things are steadier, your therapist can suggest career coaching to help you get back on track at work."
                   }
                 ]
               ]
@@ -456,7 +456,7 @@
               "p": [
                 [
                   {
-                    "t": "With your consent, Elsa and Monica can talk to each other."
+                    "t": "With your consent, your coach and your therapist can talk to each other."
                   }
                 ]
               ]
@@ -483,7 +483,7 @@
               "p": [
                 [
                   {
-                    "t": "In Italy, psychologists are registered with the Order of Psychologists. Psychologists can offer psychological support and career guidance. Elsa has been registered since 2014 and Monica since 2010."
+                    "t": "In Italy, psychologists are registered with the Order of Psychologists. Psychologists can offer psychological support and career guidance. The psychologists at this practice are registered."
                   }
                 ]
               ]
@@ -496,7 +496,7 @@
               "p": [
                 [
                   {
-                    "t": "A psychotherapist is a psychologist or doctor with at least four years of specialist training in psychotherapy. Monica is the practice's psychotherapist."
+                    "t": "A psychotherapist is a psychologist or doctor with at least four years of specialist training in psychotherapy. At this practice, psychotherapy is offered by a cognitive behavioural psychotherapist."
                   }
                 ]
               ]
@@ -509,7 +509,7 @@
               "p": [
                 [
                   {
-                    "t": "Coaching isn't a regulated profession in Italy, so coaches come from many different backgrounds. At this practice, coaching is done by Elsa, a registered psychologist."
+                    "t": "Coaching isn't a regulated profession in Italy, so coaches come from many different backgrounds. At this practice, coaching is done by a registered psychologist."
                   }
                 ]
               ]
@@ -568,7 +568,7 @@
               "p": [
                 [
                   {
-                    "t": "You can book with the psychologist you'd like to see. If you're not sure, pick \"Help me choose\", and in the meeting you work out together whether Elsa or Monica suits what you need."
+                    "t": "When you book, choose what you need. If you're not sure, pick \"Not sure yet\", and in the meeting you work out together which path to take."
                   }
                 ]
               ]
@@ -580,7 +580,7 @@
               "p": [
                 [
                   {
-                    "t": "If you decide to go on, you plan the next steps with the psychologist you met. If it doesn't feel right, you can switch to the other psychologist or stop there. If you decide not to go on, we won't contact you again."
+                    "t": "If you decide to go on, you plan the next steps with the psychologist you met. If it doesn't feel right, you can switch to another psychologist at the practice or stop there. If you decide not to go on, we won't contact you again."
                   }
                 ]
               ]

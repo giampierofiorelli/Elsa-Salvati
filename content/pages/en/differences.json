@@ -125,7 +125,7 @@
       "bg": "soft",
       "data": {
         "eyebrow": "At Blooming",
-        "title": "Two psychologists, each with her own areas.",
+        "title": "Career work and therapy, each with its own psychologist.",
         "intro": {
           "p": []
         },
@@ -136,11 +136,11 @@
               "p": [
                 [
                   {
-                    "t": "Elsa Salvati",
+                    "t": "Career coaching & guidance and workplace coaching",
                     "b": true
                   },
                   {
-                    "t": " is a psychologist, registered since 2014, and has worked in HR for over ten years. She offers career coaching & guidance and workplace coaching, in English. She isn't a psychotherapist."
+                    "t": " are with a psychologist, registered since 2014, who has worked in HR for over ten years. She works in English. She isn't a psychotherapist."
                   }
                 ]
               ]
@@ -152,11 +152,11 @@
               "p": [
                 [
                   {
-                    "t": "Monica Federico",
+                    "t": "Psychological support and psychotherapy",
                     "b": true
                   },
                   {
-                    "t": " is a psychologist, registered since 2010, and a cognitive behavioural psychotherapist. She offers psychological support and psychotherapy."
+                    "t": " are with a psychologist, registered since 2010, who is a cognitive behavioural psychotherapist."
                   }
                 ]
               ]
@@ -168,7 +168,7 @@
               "p": [
                 [
                   {
-                    "t": "So the person coaching you is a psychologist who has spent years in HR and knows the Italian job market. And because trouble at work and a hard time at home often make each other worse, Elsa and Monica can each bring the other in, with your consent."
+                    "t": "So the person coaching you is a psychologist who has spent years in HR and knows the Italian job market. And because trouble at work and a hard time at home often make each other worse, the coach and the therapist can bring each other in, with your consent."
                   }
                 ]
               ]
@@ -214,7 +214,7 @@
                         "b": true
                       },
                       {
-                        "t": " Workplace coaching with Elsa."
+                        "t": " Workplace coaching."
                       }
                     ]
                   ]
@@ -247,7 +247,7 @@
                         "b": true
                       },
                       {
-                        "t": " Career coaching & guidance with Elsa."
+                        "t": " Career coaching & guidance."
                       }
                     ]
                   ]
@@ -280,7 +280,7 @@
                         "b": true
                       },
                       {
-                        "t": " Psychological support with Monica."
+                        "t": " Psychological support."
                       }
                     ]
                   ]
@@ -314,7 +314,7 @@
                         "b": true
                       },
                       {
-                        "t": " Psychotherapy with Monica."
+                        "t": " Psychotherapy."
                       }
                     ]
                   ]
@@ -389,7 +389,7 @@
             ],
             [
               {
-                "t": "You can book with Elsa or Monica directly, or pick \"Help me choose\": you'll meet one of the psychologists who works in the language you chose, and together you work out what fits. If it turns out to be the other psychologist's area, she can suggest her colleague."
+                "t": "When you book, you choose the kind of help, or \"Not sure yet\", and the language. The psychologist you meet works out with you what fits. If it turns out to be another psychologist's area, she can suggest her colleague."
               }
             ]
           ]

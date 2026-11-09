@@ -2,7 +2,7 @@
   "key": "lavoro",
   "path": "/orientamento-carriera/",
   "title": "Orientamento professionale online con una psicologa – Blooming",
-  "description": "Capire che lavoro fare, e come arrivarci. Orientamento professionale online con Elsa Salvati, psicologa che da oltre dieci anni lavora nelle risorse umane. Primo colloquio gratuito di 30 minuti.",
+  "description": "Capire che lavoro fare, e come arrivarci. Orientamento professionale online con una psicologa che da oltre dieci anni lavora nelle risorse umane. Primo colloquio gratuito di 30 minuti.",
   "nav": "lavoro",
   "blocks": [
     {
@@ -15,10 +15,10 @@
         },
         "buttons": [
           {
-            "label": "Prenota il primo colloquio gratuito con Elsa (30 min)",
+            "label": "Prenota il primo colloquio gratuito (30 min)",
             "to": {
               "kind": "book",
-              "pro": "elsa-salvati"
+              "area": "carriera"
             },
             "style": "primary"
           },
@@ -110,7 +110,7 @@
                   "p": [
                     [
                       {
-                        "t": "Non succede solo a te: quasi otto lavoratori su dieci, in Italia, non si sentono valorizzati nel proprio lavoro."
+                        "t": "Non succede solo a te: quasi 8 lavoratori su 10, in Italia, non si sentono abbastanza valorizzati nel proprio lavoro."
                       }
                     ]
                   ]
@@ -198,7 +198,7 @@
           "p": [
             [
               {
-                "t": "Si tratta di orientamento professionale svolto da una psicologa iscritta all'Albo. Negli incontri Elsa ti fa domande e ti propone esercizi e simulazioni di colloquio con un riscontro preciso; tra un incontro e l'altro hai qualcosa da provare."
+                "t": "Si tratta di orientamento professionale svolto da una psicologa iscritta all'Albo. Negli incontri la psicologa ti fa domande e ti propone esercizi e simulazioni di colloquio con un riscontro preciso; tra un incontro e l'altro hai qualcosa da provare."
               }
             ]
           ]
@@ -210,7 +210,7 @@
               "p": [
                 [
                   {
-                    "t": "Con Elsa guardi esperienze e competenze, quello che ti interessa e quello che conta per te, e i vincoli concreti, per esempio di tempo o di famiglia. È un lavoro simile a un bilancio di competenze."
+                    "t": "Insieme guardate esperienze e competenze, quello che ti interessa e quello che conta per te, e i vincoli concreti, per esempio di tempo o di famiglia. È un lavoro simile a un bilancio di competenze."
                   }
                 ]
               ]
@@ -223,7 +223,7 @@
               "p": [
                 [
                   {
-                    "t": "Elsa legge con te annunci e requisiti reali dei ruoli che ti interessano, con lo sguardo di chi fa selezione: vedi cosa hai già e cosa ti manca. Valuti le alternative con i loro pro e contro, e capisci se ti serve un corso o un aggiornamento, e quale."
+                    "t": "La psicologa legge con te annunci e requisiti reali dei ruoli che ti interessano, con lo sguardo di chi fa selezione: vedi cosa hai già e cosa ti manca. Valuti le alternative con i loro pro e contro, e capisci se ti serve un corso o un aggiornamento, e quale."
                   }
                 ]
               ]
@@ -247,7 +247,7 @@
               "p": [
                 [
                   {
-                    "t": "Concordi i passi e i tempi, e a ogni incontro vedi con Elsa cosa sta funzionando."
+                    "t": "Concordi i passi e i tempi, e a ogni incontro vedete insieme cosa sta funzionando."
                   }
                 ]
               ]
@@ -262,7 +262,7 @@
               "p": [
                 [
                   {
-                    "t": "Lavoro e vita non viaggiano separati: per questo lo stress e i dubbi di una scelta fanno parte del percorso. Se però l'ansia, per esempio, ti toglie il sonno o ti blocca, Elsa ne parla con te e, se vuoi, ti propone di lavorarci con Monica, psicoterapeuta laureata in psicologia del lavoro. Con il tuo consenso possono confrontarsi, così il passaggio è più semplice."
+                    "t": "Lavoro e vita non viaggiano separati: per questo lo stress e i dubbi di una scelta fanno parte del percorso. Se però l'ansia, per esempio, ti toglie il sonno o ti blocca, la psicologa ne parla con te e, se vuoi, ti propone di lavorarci con una psicoterapeuta dello studio, laureata in psicologia del lavoro. Con il tuo consenso possono confrontarsi, così il passaggio è più semplice."
                   }
                 ]
               ]
@@ -328,10 +328,10 @@
       "bg": "dark",
       "data": {
         "eyebrow": "Chi se ne occupa",
-        "title": "Elsa Salvati, psicologa, da oltre dieci anni nelle risorse umane.",
+        "title": "Una psicologa, da oltre dieci anni nelle risorse umane.",
         "people": [
           {
-            "name": "",
+            "name": "Orientamento, carriera e coaching",
             "text": {
               "p": [
                 [
@@ -343,15 +343,15 @@
             },
             "tag": "",
             "button": {
-              "label": "Prenota con Elsa",
+              "label": "Prenota il primo colloquio gratuito",
               "to": {
                 "kind": "book",
-                "pro": "elsa-salvati"
+                "area": "carriera"
               },
               "style": "light"
             },
             "link": {
-              "label": "Scheda di Elsa",
+              "label": "Chi siamo",
               "to": {
                 "kind": "page",
                 "key": "team"
@@ -422,7 +422,7 @@
                   "p": [
                     [
                       {
-                        "t": "Se il lavoro ti pesa per un capo, un conflitto o lo stress"
+                        "t": "Se il lavoro ti pesa per un responsabile, un conflitto o lo stress"
                       }
                     ]
                   ]
@@ -536,22 +536,22 @@
     {
       "bg": "dark",
       "data": {
-        "title": "Inizia con un colloquio gratuito con Elsa.",
+        "title": "Inizia con un colloquio gratuito.",
         "text": {
           "p": [
             [
               {
-                "t": "In 30 minuti le racconti a che punto sei e capisci se può aiutarti, e come. Nessun obbligo di continuare."
+                "t": "In 30 minuti racconti a che punto sei e capisci se possiamo aiutarti, e come. Nessun obbligo di continuare."
               }
             ]
           ]
         },
         "buttons": [
           {
-            "label": "Prenota il primo colloquio gratuito con Elsa",
+            "label": "Prenota il primo colloquio gratuito",
             "to": {
               "kind": "book",
-              "pro": "elsa-salvati"
+              "area": "carriera"
             },
             "style": "light"
           },

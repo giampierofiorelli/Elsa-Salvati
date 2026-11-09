@@ -168,7 +168,7 @@
         "psicoterapia"
       ],
       "labelEn": "Psychological support or psychotherapy",
-      "textEn": "Getting through a hard time, or working on difficulties that have lasted a long time. With Monica.",
+      "textEn": "Getting through a hard time, or working on difficulties that have lasted a long time.",
       "_notaEn": "[In English: to confirm. If not: \"With Monica, in Italian.\"]"
     },
     {
@@ -183,7 +183,7 @@
         "coaching"
       ],
       "labelEn": "Career coaching & guidance, or workplace coaching",
-      "textEn": "Choosing a direction, planning a job search, or dealing with problems in the job you have. With Elsa."
+      "textEn": "Choosing a direction, planning a job search, or dealing with problems in the job you have."
     },
     {
       "slug": "aziende",

@@ -2,23 +2,23 @@
   "key": "sostegno",
   "path": "/sostegno-psicologico/",
   "title": "Sostegno psicologico online con una psicoterapeuta – Blooming",
-  "description": "Sostegno psicologico online con Monica Federico, psicologa e psicoterapeuta: lutto, separazione, malattia di una persona cara, genitorialità. Primo colloquio gratuito.",
+  "description": "Sostegno psicologico online con una psicologa e psicoterapeuta: lutto, separazione, malattia di una persona cara, genitorialità. Primo colloquio gratuito.",
   "nav": "servizi",
   "blocks": [
     {
       "data": {
         "eyebrow": "Sostegno psicologico",
         "title": "Un lutto, una separazione, un figlio che non arriva: non devi attraversarli da te.",
-        "subtitle": "Sostegno psicologico con Monica Federico, psicologa e psicoterapeuta.",
+        "subtitle": "Sostegno psicologico con una psicologa e psicoterapeuta.",
         "intro": {
           "p": []
         },
         "buttons": [
           {
-            "label": "Prenota con Monica",
+            "label": "Prenota il primo colloquio gratuito (30 min)",
             "to": {
               "kind": "book",
-              "pro": "monica-federico"
+              "area": "psicologia"
             },
             "style": "primary"
           },
@@ -165,7 +165,7 @@
           "p": [
             [
               {
-                "t": "Con Monica il sostegno psicologico si concentra su un momento preciso della tua vita."
+                "t": "Il sostegno psicologico si concentra su un momento preciso della tua vita."
               }
             ]
           ]
@@ -177,7 +177,7 @@
               "p": [
                 [
                   {
-                    "t": "Nelle prime sedute racconti cosa succede, con i tuoi tempi. Monica ti aiuta a dare un nome a quello che provi."
+                    "t": "Nelle prime sedute racconti cosa succede, con i tuoi tempi. La psicologa ti aiuta a dare un nome a quello che provi."
                   }
                 ]
               ]
@@ -219,7 +219,7 @@
       "bg": "light",
       "data": {
         "eyebrow": "Cosa comprende e quando serve altro",
-        "title": "Se il disagio è più profondo, Monica può proporti la psicoterapia.",
+        "title": "Se il disagio è più profondo, la psicologa può proporti la psicoterapia.",
         "intro": {
           "p": []
         },
@@ -230,7 +230,7 @@
               "p": [
                 [
                   {
-                    "t": "Se emerge che il disagio dura da tempo o pesa molto, Monica, che è anche psicoterapeuta, te lo dice e, se vuoi, ti propone un percorso di psicoterapia."
+                    "t": "Se emerge che il disagio dura da tempo o pesa molto, la psicologa, che è anche psicoterapeuta, te lo dice e, se vuoi, ti propone un percorso di psicoterapia."
                   }
                 ]
               ]
@@ -264,7 +264,7 @@
               "p": [
                 [
                   {
-                    "t": "Lavoro e vita non viaggiano separati: se il periodo difficile pesa soprattutto sul lavoro, Monica può proporti di lavorarci anche con Elsa."
+                    "t": "Lavoro e vita non viaggiano separati: se il periodo difficile pesa soprattutto sul lavoro, la psicologa può proporti di lavorarci anche con una collega dello studio esperta di risorse umane."
                   }
                 ]
               ]
@@ -291,10 +291,10 @@
       "bg": "dark",
       "data": {
         "eyebrow": "Chi se ne occupa",
-        "title": "Monica Federico, psicologa e psicoterapeuta, con esperienza in ospedale e in centri clinici.",
+        "title": "Una psicologa e psicoterapeuta, con esperienza in ospedale e in centri clinici.",
         "people": [
           {
-            "name": "",
+            "name": "Sostegno psicologico e psicoterapia",
             "text": {
               "p": [
                 [
@@ -306,15 +306,15 @@
             },
             "tag": "",
             "button": {
-              "label": "Prenota con Monica",
+              "label": "Prenota il primo colloquio gratuito",
               "to": {
                 "kind": "book",
-                "pro": "monica-federico"
+                "area": "psicologia"
               },
               "style": "light"
             },
             "link": {
-              "label": "Scheda di Monica",
+              "label": "Chi siamo",
               "to": {
                 "kind": "page",
                 "key": "team",
@@ -477,22 +477,22 @@
     {
       "bg": "dark",
       "data": {
-        "title": "Parti da mezz'ora con Monica, gratis.",
+        "title": "Parti da mezz'ora, gratis.",
         "text": {
           "p": [
             [
               {
-                "t": "Le racconti cosa sta succedendo, anche se non sai da dove cominciare. Ti dice come potete lavorarci e se il sostegno è la strada giusta."
+                "t": "Racconti cosa sta succedendo, anche se non sai da dove cominciare. Ti diciamo come possiamo lavorarci e se il sostegno è la strada giusta."
               }
             ]
           ]
         },
         "buttons": [
           {
-            "label": "Prenota con Monica",
+            "label": "Prenota il primo colloquio gratuito",
             "to": {
               "kind": "book",
-              "pro": "monica-federico"
+              "area": "psicologia"
             },
             "style": "light"
           },
