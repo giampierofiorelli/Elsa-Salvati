@@ -2,7 +2,7 @@
   "key": "index",
   "path": "/",
   "title": "Blooming · Studio di psicologia e coaching – sostegno psicologico, psicoterapia, orientamento e coaching online",
-  "description": "Sostegno psicologico, psicoterapia, orientamento professionale e coaching con due psicologhe: una esperta di risorse umane, l'altra psicoterapeuta. Online, da tutta Italia. Primo colloquio gratuito di 30 minuti.",
+  "description": "Sostegno psicologico, psicoterapia, orientamento professionale e coaching con un team di psicologhe che unisce risorse umane, sviluppo professionale e psicoterapia. Online, da tutta Italia. Primo colloquio gratuito di 30 minuti.",
   "nav": "home",
   "blocks": [
     {
@@ -15,7 +15,7 @@
           "p": [
             [
               {
-                "t": "Sostegno psicologico, psicoterapia, orientamento professionale e coaching, con due psicologhe: una esperta di risorse umane, l'altra psicoterapeuta. Online, da tutta Italia."
+                "t": "Sostegno psicologico, psicoterapia, orientamento professionale e coaching, con un team di psicologhe che unisce risorse umane, sviluppo professionale e psicoterapia. Online, da tutta Italia."
               }
             ]
           ]
@@ -61,7 +61,7 @@
                   "p": [
                     [
                       {
-                        "t": "A trenta o a cinquant'anni ti ritrovi a non sapere più cosa vuoi fare. Oppure il lavoro ce l'hai, ma un capo che ti schiaccia o un conflitto che ti porti a casa la sera ti tolgono il fiato, e non riesci più a dire la tua. O vorresti andartene e non ci riesci."
+                        "t": "Hai appena finito di studiare e non sai da dove cominciare, o ti senti già in ritardo rispetto agli altri. Dopo anni di lavoro ti ritrovi a non sapere più cosa vuoi fare. Oppure il lavoro ce l'hai, ma un responsabile che ti schiaccia o un conflitto che ti porti a casa la sera ti tolgono il fiato, e non riesci più a dire la tua. O vorresti andartene e non ci riesci."
                       }
                     ]
                   ]
@@ -73,7 +73,7 @@
                   "p": [
                     [
                       {
-                        "t": "Non succede solo a te: quasi otto lavoratori su dieci, in Italia, non si sentono valorizzati nel proprio lavoro."
+                        "t": "Non succede solo a te: quasi 8 lavoratori su 10, in Italia, non si sentono abbastanza valorizzati nel proprio lavoro."
                       }
                     ]
                   ]
@@ -86,7 +86,7 @@
                   "p": [
                     [
                       {
-                        "t": "Elsa, psicologa, da oltre dieci anni lavora nelle risorse umane, tra selezione, sviluppo e formazione. Con lei metti in fila quello che sai fare e decidi a cosa puntare, o come cambiare le cose dove sei. Nessuno può prometterti un posto, e lei non lo fa. Costruite insieme una strategia concreta."
+                        "t": "Con una psicologa che da oltre dieci anni lavora nelle risorse umane, tra selezione, sviluppo e formazione, metti in fila quello che sai fare, valuti e valorizzi le tue competenze e decidi a cosa puntare, o come cambiare le cose da dove sei. Nessuno può prometterti un posto: costruite insieme una strategia concreta, passo dopo passo, obiettivo dopo obiettivo."
                       }
                     ]
                   ]
@@ -98,7 +98,7 @@
                   "p": [
                     [
                       {
-                        "t": "Qui il coaching lo fa una psicologa iscritta all'Albo. Se dietro un problema di lavoro c'è altro, Elsa se ne accorge e, se vuoi, ti propone di lavorarci anche con Monica."
+                        "t": "Qui orientamento professionale e coaching li fa una psicologa iscritta all'Albo, con esperienza decennale in azienda. Se dietro una difficoltà di lavoro ci sono anche dinamiche personali, ti propone di lavorarci con una psicoterapeuta dello studio."
                       }
                     ]
                   ]
@@ -146,7 +146,7 @@
                   "p": [
                     [
                       {
-                        "t": "Elsa ti aiuta con il lavoro, nella nuova città o al rientro. Monica ti aiuta con la fatica di ambientarti o di ritrovarti."
+                        "t": "Per il lavoro, nella nuova città o al rientro, ti segue la psicologa esperta di risorse umane. Per la fatica di ambientarti o di ritrovarti, la psicoterapeuta."
                       }
                     ]
                   ]
@@ -188,7 +188,7 @@
                   "p": [
                     [
                       {
-                        "t": "Qui lavori con Monica, psicologa e psicoterapeuta: qualche incontro di sostegno o una psicoterapia, secondo quello di cui hai bisogno."
+                        "t": "Qui lavori con una psicologa e psicoterapeuta: qualche incontro di sostegno o una psicoterapia, secondo quello di cui hai bisogno."
                       }
                     ]
                   ]
@@ -294,7 +294,7 @@
               "p": [
                 [
                   {
-                    "t": "Scegli un orario e, se vuoi, la professionista. Se non lo sai, scegli «Non lo so ancora»: nel colloquio capiamo insieme chi di noi fa per te. La professionista accetta la richiesta e ti arriva un'email."
+                    "t": "Scegli una tematica e un orario. Se non sai ancora di che aiuto hai bisogno, scegli «Non lo so ancora»: nel colloquio lo capiamo insieme. La professionista accetta la richiesta e ti arriva un'email."
                   }
                 ]
               ]
@@ -334,10 +334,10 @@
       "bg": "dark",
       "data": {
         "eyebrow": "Con chi parlerai",
-        "title": "Con Elsa e Monica: una psicologa esperta di risorse umane e una psicoterapeuta.",
+        "title": "Psicologhe iscritte all'Albo, tra risorse umane e psicoterapia.",
         "people": [
           {
-            "name": "Elsa Salvati",
+            "name": "Orientamento, carriera e coaching",
             "text": {
               "p": [
                 [
@@ -349,17 +349,23 @@
             },
             "tag": "Orientamento e carriera · Coaching",
             "button": {
-              "label": "Prenota con Elsa",
+              "label": "Prenota il primo colloquio gratuito",
               "to": {
                 "kind": "book",
-                "pro": "elsa-salvati"
+                "area": "carriera"
               },
               "style": "light"
             },
-            "link": null
+            "link": {
+              "label": "Chi siamo",
+              "to": {
+                "kind": "page",
+                "key": "team"
+              }
+            }
           },
           {
-            "name": "Monica Federico",
+            "name": "Sostegno psicologico e psicoterapia",
             "text": {
               "p": [
                 [
@@ -371,14 +377,20 @@
             },
             "tag": "Sostegno psicologico · Psicoterapia",
             "button": {
-              "label": "Prenota con Monica",
+              "label": "Prenota il primo colloquio gratuito",
               "to": {
                 "kind": "book",
-                "pro": "monica-federico"
+                "area": "psicologia"
               },
               "style": "light"
             },
-            "link": null
+            "link": {
+              "label": "Chi siamo",
+              "to": {
+                "kind": "page",
+                "key": "team"
+              }
+            }
           }
         ],
         "why": [

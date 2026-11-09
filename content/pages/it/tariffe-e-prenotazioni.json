@@ -44,12 +44,12 @@
         },
         "items": [
           {
-            "title": "Scegli con chi parlare e un orario",
+            "title": "Scegli una tematica e un orario",
             "text": {
               "p": [
                 [
                   {
-                    "t": "Se non sai chi scegliere, scegli «Non lo so ancora» e poi «Aiutami a scegliere»: incontri una delle due professioniste; se il tuo bisogno riguarda l'area della collega, te lo dice."
+                    "t": "La professionista iniziale si occuperà con te di definire la criticità e l'ambito di intervento: se esclusivamente lavoro, o un sostegno più ampio, o una terapia."
                   }
                 ]
               ]
@@ -300,7 +300,7 @@
               "p": [
                 [
                   {
-                    "t": "Se il tuo bisogno riguarda l'area dell'altra professionista, sì: puoi continuare con lei e, se sei d'accordo, si passano le informazioni utili. Per sostegno psicologico e psicoterapia nello studio c'è solo Monica: se non ti trovi bene, puoi dirlo e fermarti, senza spiegazioni."
+                    "t": "Se il tuo bisogno riguarda un'altra area, sì: puoi continuare con la collega che se ne occupa e, se sei d'accordo, si passano le informazioni utili. Se non ti trovi bene, puoi dirlo e fermarti, senza spiegazioni."
                   }
                 ]
               ]
@@ -313,7 +313,7 @@
               "p": [
                 [
                   {
-                    "t": "Quello che dici negli incontri resta tra te e la professionista. Elsa e Monica si confrontano su di te solo se sei d'accordo."
+                    "t": "Quello che dici negli incontri resta tra te e la professionista. Le professioniste dello studio si confrontano su di te solo se sei d'accordo."
                   }
                 ]
               ]

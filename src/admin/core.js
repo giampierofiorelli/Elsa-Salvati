@@ -158,7 +158,8 @@
       buildNav();
       buildProSwitch();
       $$('[data-staff-only]').forEach(function (n) { n.hidden = isTech(); });
-      return Promise.all([loadCatalog(), A.loadSettings(), isTech() ? null : A.loadRequests()]);
+      // Settings after the catalogue: the first-meeting choice lists the professionals.
+      return Promise.all([loadCatalog().then(A.loadSettings), isTech() ? null : A.loadRequests()]);
     }).then(function () {
       if (!/^#\//.test(location.hash)) history.replaceState(null, '', location.pathname + homeHash());
       onRoute();

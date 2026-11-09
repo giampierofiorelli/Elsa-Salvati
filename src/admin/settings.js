@@ -108,12 +108,21 @@
     return api('GET', '/settings').then(function (res) {
       state.settings = res.settings;
       var f = $('[data-settings-form]');
+      // Professionals who can take every first meeting (intake mode); '' keeps the choice to the person.
+      var intake = $('[data-intake-select]', f);
+      if (intake && state.catalog) {
+        while (intake.options.length > 1) intake.remove(1);
+        state.catalog.professionals.forEach(function (p) {
+          if (p.active === false) return;
+          intake.appendChild(el('option', { value: p.id, text: 'Tutti i primi colloqui con ' + p.name }));
+        });
+      }
       Object.keys(res.settings).forEach(function (k) { if (f.elements[k]) f.elements[k].value = res.settings[k]; });
       var wd = res.settings.approvalWorkdays || [1, 2, 3, 4, 5];
       $$('[data-workday]', f).forEach(function (c) { c.checked = wd.indexOf(Number(c.value)) !== -1; });
       // The technical role reads the settings only.
       var ro = A.isTech();
-      $$('input', f).forEach(function (i) { i.disabled = ro; });
+      $$('input, select', f).forEach(function (i) { i.disabled = ro; });
       $$('button[type="submit"]', f).forEach(function (b) { b.hidden = ro; });
       $('[data-settings-readonly]').hidden = !ro;
     });
@@ -123,6 +132,8 @@
     var status = $('[data-settings-status]');
     var s = {};
     $$('input', e.target).forEach(function (i) { if (i.name && i.value.trim() !== '') s[i.name] = i.type === 'time' ? i.value : Number(i.value); });
+    var intakeField = e.target.elements.intakeProfessional;
+    if (intakeField) s.intakeProfessional = intakeField.value;
     s.approvalWorkdays = $$('[data-workday]', e.target).filter(function (c) { return c.checked; }).map(function (c) { return Number(c.value); });
     if (!s.approvalWorkdays.length) { status.className = 'status form-error'; status.textContent = 'Scegli almeno un giorno lavorativo.'; return; }
     api('PUT', '/settings', { settings: s }).then(function (res) {

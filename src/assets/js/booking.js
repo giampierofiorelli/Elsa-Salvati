@@ -310,12 +310,17 @@
         cats = '*';
         bookable = servicesFor(cats).filter(function (x) { return x.service.professionals.length; });
       }
+      // Intake mode: one free first meeting per need, held by the same psychologist whatever the area.
+      if (catalog.intake) {
+        var firsts = bookable.filter(function (x) { return x.service.firstMeeting; });
+        if (firsts.length) bookable = firsts.slice(0, 1);
+      }
       state.services = bookable.map(function (x) { return x.service; });
       if (!bookable.length) {
         box.appendChild(el('p', { class: 'note', text: T.notBookable }));
       }
       var many = cats === '*' || cats.indexOf(',') >= 0;
-      if (cats === 'da-scegliere') many = false;
+      if (cats === 'da-scegliere' || catalog.intake) many = false;
       bookable.forEach(function (x) {
         var s = x.service;
         var b = el('button', { type: 'button', class: 'choice', 'data-svc': s.id, 'aria-pressed': 'false' }, [
@@ -349,7 +354,7 @@
       var box = $(root, '[data-pros]');
       box.textContent = '';
       var pros = state.service.professionals;
-      if (pros.length > 1) {
+      if (pros.length > 1 && !catalog.intake) {
         var helper = el('button', { type: 'button', class: 'pro', 'data-pro': ANY, 'aria-pressed': 'false' }, [
           el('span', { class: 'pro-photo' }, [el('img', { src: '/assets/img/logo-icon.webp', alt: '', width: '56', height: '56', class: 'pro-logo' })]),
           el('span', { class: 'pro-text' }, [

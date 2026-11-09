@@ -1792,3 +1792,72 @@ test('SEO: sitemap and llms.txt from the pages as published, with alternates bot
   assert.match(html, /<meta name="robots" content="noindex, nofollow">/);
   assert.equal((await serve('/sitemap.xml', { CONTEXT: 'branch-deploy' })).headers.get('x-robots-tag'), 'noindex');
 });
+
+test('intake mode: every first meeting goes to one professional', opts, async () => {
+  const adm = as('admin');
+  const cats = (await adm('GET', '/catalog')).body.categories;
+  const coaching = cats.find((c) => c.slug === 'coaching');
+  const support = cats.find((c) => c.slug === 'psicologia');
+  assert.ok(coaching && support, 'coaching and support areas exist');
+  const mkSvc = async (categoryId, name) => {
+    const res = await adm('POST', '/services', { categoryId, name, nameEn: 'Free first meeting', durationMinutes: 30, price: 'Gratuito', priceEn: 'Free', firstMeeting: true });
+    assert.equal(res.status, 201, JSON.stringify(res.body));
+    return res.body.id;
+  };
+  const coachSvc = await mkSvc(coaching.id, 'Primo colloquio accoglienza coaching');
+  const supportSvc = await mkSvc(support.id, 'Primo colloquio accoglienza sostegno');
+  const mkPro = async (body) => { const res = await adm('POST', '/professionals', body); assert.equal(res.status, 201, JSON.stringify(res.body)); return res.body.id; };
+  const host = await mkPro({ name: 'Ilaria Accoglienza', title: 'Psicologa', languages: ['it', 'en'], notifyEmail: 'ilaria@example.it' });
+  const other = await mkPro({ name: 'Bruna Terapia', title: 'Psicoterapeuta', languages: ['it'], notifyEmail: 'bruna@example.it' });
+  await adm('PUT', `/professionals/${host}/services`, { offerings: [{ serviceId: coachSvc, inStudio: false, online: true }] });
+  await adm('PUT', `/professionals/${other}/services`, { offerings: [{ serviceId: supportSvc, inStudio: false, online: true }] });
+  for (const pro of [host, other]) {
+    const r = await adm('PUT', '/rules', { professionalId: pro, rules: [{ weekday: 1, start_time: '09:00', end_time: '13:00', mode: 'online', public: true }] });
+    assert.equal(r.status, 200, JSON.stringify(r.body));
+  }
+
+  // Off by default: the support meeting belongs to its own professional.
+  let catalog = (await pubCall('GET', '/catalog')).body;
+  assert.equal(catalog.intake, false);
+  const supportView = () => catalog.categories.flatMap((c) => c.services).find((s) => s.id === supportSvc);
+  assert.deepEqual(supportView().professionals.map((p) => p.id), [other]);
+
+  // On: the intake professional holds the support meeting too.
+  let r = await adm('PUT', '/settings', { settings: { intakeProfessional: host } });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.equal(r.body.settings.intakeProfessional, host);
+  catalog = (await pubCall('GET', '/catalog')).body;
+  assert.equal(catalog.intake, true);
+  assert.deepEqual(supportView().professionals.map((p) => p.id), [host]);
+
+  // Her free times, whatever professional the page sends.
+  r = await pubCall('GET', `/slots?service=${supportSvc}&professional=${other}&mode=online&lang=it`);
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.ok(r.body.days.length > 0);
+  const start = r.body.days[0].slots[0].start;
+
+  const since = deps.mailer.sent.length;
+  r = await pubCall('POST', '/book', { start, mode: 'online', service: supportSvc, professional: other, lang: 'it', name: 'Persona Accoglienza', email: 'accoglienza@example.it', privacy: true });
+  assert.equal(r.status, 201, JSON.stringify(r.body));
+  assert.equal(r.body.booking.professional.id, host, 'the intake professional, by name');
+  assert.equal(r.body.booking.assigned, false);
+  assert.equal(await assignedTo('accoglienza@example.it'), String(host));
+  const notified = deps.mailer.sent.slice(since).map((m) => m.to);
+  assert.ok(notified.includes('ilaria@example.it') && !notified.includes('bruna@example.it'), 'only the intake professional is told');
+  const [row] = await sql`select service_id::text as service from events where contact_hash = ${deps.vault.lookupHash('email:accoglienza@example.it')}`;
+  assert.equal(row.service, String(supportSvc), 'the area stays on the booking, for the statistics');
+
+  // In person is not offered in intake mode.
+  r = await pubCall('GET', `/slots?service=${supportSvc}&professional=${other}&mode=studio`);
+  assert.equal(r.status, 400);
+
+  // Back to the person's choice: nothing else changes.
+  r = await adm('PUT', '/settings', { settings: { intakeProfessional: '' } });
+  assert.equal(r.status, 200);
+  catalog = (await pubCall('GET', '/catalog')).body;
+  assert.equal(catalog.intake, false);
+  assert.deepEqual(supportView().professionals.map((p) => p.id), [other]);
+
+  r = await adm('PUT', '/settings', { settings: { intakeProfessional: 'nessuna' } });
+  assert.equal(r.status, 400, 'only an id or empty');
+});

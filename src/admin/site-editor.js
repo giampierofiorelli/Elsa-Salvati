@@ -372,6 +372,10 @@
         wrap.appendChild(selectInput('Con la professionista già scelta', [['', 'Nessuna (sceglie chi prenota)']].concat(se.pros.map(function (p) { return [p.slug, p.name]; })), to.pro || '', function (v) {
           if (v) to.pro = v; else delete to.pro; onChange(to);
         }));
+        // Opens the booking on an area without naming anyone (works in both first-meeting modes).
+        wrap.appendChild(selectInput('Con l\'area già scelta (se non c\'è una professionista)', [['', 'Nessuna'], ['carriera', 'Orientamento e carriera'], ['coaching', 'Coaching'], ['psicologia', 'Sostegno psicologico'], ['psicoterapia', 'Psicoterapia'], ['aziende', 'Per la tua organizzazione'], ['da-scegliere', 'Non lo so ancora']], to.area || '', function (v) {
+          if (v) to.area = v; else delete to.area; onChange(to);
+        }));
       } else if (isPdf) {
         wrap.appendChild(el('p', { class: 'hint', text: 'Documento: ' + to.href + ' (si apre in una nuova scheda).' }));
         wrap.appendChild(el('button', { type: 'button', class: 'btn btn-ghost btn-small', text: 'Scegli un altro PDF', onclick: function () { pickMedia({ kind: 'pdf' }, function (m) { to = { kind: 'url', href: m.url }; onChange(to); render(); }); } }));
