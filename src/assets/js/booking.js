@@ -303,7 +303,7 @@
       return list;
     }
 
-    function selectNeed(slug, preset) {
+    function selectNeed(slug, preset, preferCat) {
       var btn = $(root, '[data-need="' + slug + '"]');
       if (!btn) return;
       var cats = btn.getAttribute('data-cats');
@@ -317,17 +317,21 @@
         cats = '*';
         bookable = servicesFor(cats).filter(function (x) { return x.service.professionals.length; });
       }
-      // Intake mode: one free first meeting per need, held by the same psychologist whatever the area.
-      if (catalog.intake) {
-        var firsts = bookable.filter(function (x) { return x.service.firstMeeting; });
-        if (firsts.length) bookable = firsts.slice(0, 1);
+      // One free first meeting per need: two identical "Primo colloquio gratuito" (e.g. career and coaching)
+      // only confuse. The one kept is the area asked for (link or preset), otherwise the first.
+      var firsts = bookable.filter(function (x) { return x.service.firstMeeting; });
+      if (firsts.length > 1) {
+        var keep = firsts.find(function (x) { return preferCat && x.category.slug === preferCat; })
+          || firsts.find(function (x) { return preset && x.service.id === preset.service; })
+          || firsts[0];
+        bookable = bookable.filter(function (x) { return !x.service.firstMeeting || x === keep; });
       }
       state.services = bookable.map(function (x) { return x.service; });
       if (!bookable.length) {
         box.appendChild(el('p', { class: 'note', text: T.notBookable }));
       }
       var many = cats === '*' || cats.indexOf(',') >= 0;
-      if (cats === 'da-scegliere' || catalog.intake) many = false;
+      if (cats === 'da-scegliere' || firsts.length > 1) many = false;
       bookable.forEach(function (x) {
         var s = x.service;
         var b = el('button', { type: 'button', class: 'choice', 'data-svc': s.id, 'aria-pressed': 'false' }, [
@@ -496,7 +500,7 @@
       } else if (param('bisogno')) {
         selectNeed(param('bisogno'));
       } else if (param('area')) {
-        selectNeed(needForCategory(param('area')));
+        selectNeed(needForCategory(param('area')), null, param('area'));
       }
     }).catch(function (err) {
       var box = $(root, '[data-catalog-error]');
